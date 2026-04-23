@@ -1,0 +1,13 @@
+fastapi 
+uvicorn[standard]
+sqlalchemy
+pydantic 
+python-dotenv
+asyncpg
+psycopg2-binary
+numpy 
+pandas 
+matplotlib
+langchain 
+langgraph
+
