@@ -1,9 +1,9 @@
-from sqlalchemy import Column, Integer, String, TIMESTAMP
+from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.sql import func
 import uuid
 
-from core.config import Base
+from app.core.config import Base
 
 
 class CropRecommendation(Base):
@@ -14,7 +14,7 @@ class CropRecommendation(Base):
     __tablename__ = "crop_recommendations"
 
     id = Column(Integer, primary_key=True, index=True)
-    farm_id = Column(String(50), nullable=True)  # consider UUID if farms.id is UUID
+    farm_id = Column(UUID(as_uuid=True), ForeignKey("farms.id"), nullable=True)
     input_data = Column(JSONB, nullable=True)
     recommendations = Column(JSONB, nullable=True)
     model_version = Column(String(20), nullable=True)

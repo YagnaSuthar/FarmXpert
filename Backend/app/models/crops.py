@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Float, String, Integer
-from core.config import Base
+from app.core.config import Base
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 import uuid
 
