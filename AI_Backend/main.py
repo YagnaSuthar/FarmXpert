@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from routers import weather_watcher
 
 app = FastAPI(
     debug=True,
@@ -25,3 +26,7 @@ app.add_middleware(
 def root():
 
     return {"message": "AI Agent System Running"}
+
+
+#  All Routers 
+app.include_router(weather_watcher.router)

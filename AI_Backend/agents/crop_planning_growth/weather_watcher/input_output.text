@@ -1,0 +1,44 @@
+# Input
+{
+    "location": {"lat": 23.02, "lon": 72.57},
+    "farm_id": "farm_123"
+}
+
+# Output
+{
+    "current_weather": {
+        "temperature": 35,
+        "humidity": 48,
+        "rainfall_today": 0,
+        "wind_speed": 12,
+        "conditions": "Clear"
+    },
+    "forecast_7_days": [
+        {
+            "date": "2024-04-23",
+            "temp_min": 24,
+            "temp_max": 38,
+            "rainfall_probability": 10,
+            "rainfall_mm": 0,
+            "humidity": 45,
+            "wind_speed": 15
+        }
+    ],
+    "alerts": [
+        {
+            "type": "heatwave",
+            "severity": "high",
+            "message": "High temperatures expected (38°C). Increase irrigation.",
+            "recommendations": [
+                "Irrigate early morning or evening",
+                "Provide shade for sensitive crops",
+                "Monitor for heat stress"
+            ]
+        }
+    ],
+    "farming_advisories": {
+        "irrigation": "High priority - increase watering frequency",
+        "spraying": "Favorable conditions on 2024-04-24",
+        "harvesting": "Avoid during peak heat (12-3 PM)"
+    }
+}

@@ -11,3 +11,5 @@ matplotlib
 langchain 
 langgraph
 geoalchemy2
+shapely
+

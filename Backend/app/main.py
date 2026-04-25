@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.blynk_token import router as blynk_token_router
 from app.api.soil_data import router as soil_data_router
+from api.routers import farm_router
 
 app = FastAPI(
     debug=True,
@@ -24,8 +25,11 @@ app.add_middleware(
 )
 app.include_router(blynk_token_router)
 app.include_router(soil_data_router)
+app.include_router(farm_router.router)
 
 @app.get("/")
 def root():
 
     return {"message": " FarmXpert System Running"}
+
+
