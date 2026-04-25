@@ -20,3 +20,5 @@ class Farm(Base):
     location = Column(Geography(geometry_type='POINT', srid=4326))
     
     # user = relationship("User", back_populates="farms")
+    # Farm
+    soil_data = relationship("SoilData", back_populates="farm") 

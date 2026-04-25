@@ -3,6 +3,9 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from routers import weather_watcher
 
+# --- Routers ---
+from routers.soil_health import router as soil_health_router
+
 app = FastAPI(
     debug=True,
     title="Welcome to the AI FarmXpert Swagger Docx",
@@ -11,7 +14,7 @@ app = FastAPI(
     
 )
 
-origins = [""]
+origins = ["*"]
 
 # Cors middlewares allowance
 app.add_middleware(
@@ -21,6 +24,9 @@ app.add_middleware(
     allow_methods = ["*"],
     allow_headers = ["*"]
 )
+
+# --- Register Routers ---
+app.include_router(soil_health_router, prefix="/api/soil-health", tags=["Soil Health"])
 
 @app.get("/")
 def root():

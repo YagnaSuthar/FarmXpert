@@ -1,9 +1,7 @@
-from sqlalchemy import Column, Float, String, Integer, TIMESTAMP, ForeignKey, DateTime, Text
+from sqlalchemy import Column, Float, String, Integer, ForeignKey, DateTime, JSON, func
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from app.core.config import Base
-from sqlalchemy import func
-from datetime import datetime
-from sqlalchemy.dialects.postgresql import UUID
 
 class SoilData(Base):
     """
@@ -20,7 +18,7 @@ class SoilData(Base):
     farm_id = Column(UUID(as_uuid=True), ForeignKey("farms.id"), nullable=True)
 
     # Timestamp
-    recorded_at = Column(DateTime,server_default=func.now(),nullable=False) # Timestamp of the data 
+    recorded_at = Column(DateTime,server_default=func.now(),index=True,nullable=False) # Timestamp of the data 
 
     # --- Soil Parameters (7) ---
     soil_moisture = Column(Float)        # %
@@ -47,5 +45,8 @@ class SoilData(Base):
     # --- AI Outputs ---
     soil_health_score = Column(Float)     # 0–100
     soil_health_status = Column(String(20))  # Excellent / Good / Alert / Critical
-    alerts = Column(Text)                 # JSON or comma-separated
-    recommendations = Column(Text)        # AI-generated suggestions
+    alerts = Column(JSON)
+    recommendations = Column(JSON)        # suggestions
+
+    # --- Relationships ---
+    farm = relationship("Farm", back_populates="soil_data")

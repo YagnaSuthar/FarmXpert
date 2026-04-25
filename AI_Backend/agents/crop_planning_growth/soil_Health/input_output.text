@@ -1,0 +1,108 @@
+INPUT (9 Required + 5 Optional Parameters):
+{
+  "soil_moisture": 25.0,
+  "soil_temperature": 30.0,
+  "soil_ph": 5.2,
+  "nitrogen": 20.0,
+  "phosphorus": 10.0,
+  "potassium": 25.0,
+  "electrical_conductivity": 1.5,
+  "air_temperature": 35.0,
+  "air_humidity": 40.0,
+  "soil_type": "Sandy",
+  "crop_type": "Wheat",
+  "rainfall": 20.0,
+  "irrigation_type": "Manual",
+  "irrigation_amount": 2.0,
+  "fertilizer_type": "None",
+  "fertilizer_amount": 0.0
+}
+
+
+----------------------------------------
+
+EXPECTED OUTPUT:
+
+{
+  "soil_health_score": 18.33,
+  "soil_health_status": "Critical",
+  "summary": "Soil health is critical due to soil acidity, nitrogen deficiency, phosphorus deficiency, potassium deficiency, low moisture levels, and high salinity.",
+  "confidence": "rule-based",
+
+  "alerts": [
+    { "type": "ACIDIC",       "message": "Soil is Acidic",           "severity": "high" },
+    { "type": "LOW_N",        "message": "Low Nitrogen",             "severity": "high" },
+    { "type": "LOW_P",        "message": "Low Phosphorus",           "severity": "medium" },
+    { "type": "LOW_K",        "message": "Low Potassium",            "severity": "medium" },
+    { "type": "LOW_MOISTURE", "message": "Low Soil Moisture",        "severity": "medium" },
+    { "type": "HIGH_EC",      "message": "High Soil Salinity (EC)",  "severity": "high" }
+  ],
+
+  "fertilizers": [
+    { "name": "Lime (CaCO₃)",            "advice": "Apply 1-2 tonnes/acre to raise soil pH gradually" },
+    { "name": "Urea",                    "advice": "Apply 40-50 kg/acre in split doses during early growth stages" },
+    { "name": "DAP / SSP",               "advice": "Apply 25-30 kg/acre before sowing for root development" },
+    { "name": "MOP (Muriate of Potash)", "advice": "Apply 20-30 kg/acre to improve disease resistance" },
+    { "name": "Soil Flushing",           "advice": "Use good quality irrigation water to flush salts; consider adding organic matter" }
+  ],
+
+  "suggestions": [
+    { "message": "Apply agricultural lime and avoid excessive use of ammonium-based fertilizers" },
+    { "message": "Apply nitrogen-rich organic manure or green manure cover crops between seasons" },
+    { "message": "Incorporate bone meal or rock phosphate into the soil before next planting cycle" },
+    { "message": "Add wood ash or potash-rich compost to improve potassium availability" },
+    { "message": "Increase irrigation frequency or switch to drip irrigation for better water retention" },
+    { "message": "Flush soil with fresh water and add organic compost to reduce salinity" }
+  ]
+}
+
+
+----------------------------------------
+
+STATUS RULE:
+
+Score >= 85 → Excellent
+Score >= 70 → Good
+Score >= 50 → Alert
+Score < 50  → Critical
+
+----------------------------------------
+
+SEVERITY LOGIC:
+
+HIGH:   N, EC, extreme pH (critical soil parameters)
+MEDIUM: P, K, moisture (important but less urgent)
+LOW:    Any parameter with < 15% deviation from boundary (minor warning)
+
+----------------------------------------
+
+ALERT LOGIC:
+
+Low Nitrogen     → nitrogen < 50
+Low Phosphorus   → phosphorus < 30
+Low Potassium    → potassium < 40
+Acidic Soil      → pH < 6.0
+Alkaline Soil    → pH > 7.5
+Low Moisture     → moisture < 40
+High Moisture    → moisture > 70
+High EC          → EC > 1.0
+
+----------------------------------------
+
+SYSTEM FLOW:
+
+Sensor Data
+   ↓
+SoilHealthAgent.run()
+   ↓
+SoilHealthService
+   ├── analyze()              → structured alerts with smart severity
+   ├── calculate_score()      → weighted 0-100 score
+   ├── get_status()           → Excellent / Good / Alert / Critical
+   ├── recommend_fertilizer() → deduplicated by fertilizer name
+   ├── suggestions()          → per-alert actionable tips (always ≥ 1)
+   └── generate_summary()     → human-readable one-liner
+   ↓
+API Response (SoilHealthOutput)
+
+========================
