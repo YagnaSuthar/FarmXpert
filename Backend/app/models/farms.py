@@ -22,3 +22,9 @@ class Farm(Base):
     # user = relationship("User", back_populates="farms")
     # Farm
     soil_data = relationship("SoilData", back_populates="farm") 
+    
+    # market recommendations
+    market_recommendations = relationship("MarketRecommendation",back_populates="farm")
+    
+    # mandi price data
+    mandi_prices = relationship("MandiPriceData",back_populates="farm")
