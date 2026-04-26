@@ -12,4 +12,6 @@ langchain
 langgraph
 geoalchemy2
 shapely
-
+httpx
+apscheduler
+alembic

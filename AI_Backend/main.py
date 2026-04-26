@@ -5,6 +5,7 @@ from routers import weather_watcher
 
 # --- Routers ---
 from routers.soil_health import router as soil_health_router
+from routers.market_intelligence import router as market_intelligence_router
 
 app = FastAPI(
     debug=True,
@@ -36,3 +37,4 @@ def root():
 
 #  All Routers 
 app.include_router(weather_watcher.router)
+app.include_router(market_intelligence_router)

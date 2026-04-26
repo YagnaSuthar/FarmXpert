@@ -1,0 +1,206 @@
+================================================================================
+          MARKET INTELLIGENCE AGENT — INPUT / OUTPUT SPECIFICATION
+================================================================================
+
+Agent:      Market Intelligence Agent
+Location:   AI_Backend/agents/supplychain_market_access/market_intelligence/
+Entry:      agent.py → run_market_agent(input_data, trend)
+API:        GET /api/market-intelligence/recommendation
+
+
+================================================================================
+  INPUT
+================================================================================
+
+1. MarketQueryInput (Pydantic Model)
+────────────────────────────────────
+
+  Field           Type              Required    Example
+  ─────────────   ───────────────   ────────    ─────────────
+  commodity       str               ✅ Yes      "Wheat"
+  state           Optional[str]     ❌ No       "Gujarat"
+  district        Optional[str]     ❌ No       "Ahmedabad"
+  local_market    Optional[str]     ❌ No       "Ahmedabad"
+
+2. Additional Parameters
+────────────────────────
+
+  Parameter       Type              Required    Example
+  ─────────────   ───────────────   ────────    ─────────────
+  trend           Optional[str]     ❌ No       "increasing" / "decreasing" / "stable"
+
+
+SAMPLE INPUT (via API):
+───────────────────────
+
+  GET /api/market-intelligence/recommendation
+      ?commodity=Wheat
+      &local_market=Ahmedabad
+      &district=Ahmedabad
+      &trend=stable
+
+
+SAMPLE INPUT (internal call):
+─────────────────────────────
+
+  input_data = MarketQueryInput(
+      commodity="Wheat",
+      state="Gujarat",
+      district="Ahmedabad",
+      local_market="Ahmedabad"
+  )
+
+  result = await run_market_agent(input_data, trend="stable")
+
+
+================================================================================
+  INTERNAL DATA (PriceRecord DTO — fetched from Backend API)
+================================================================================
+
+  The agent fetches price data from Backend via:
+  GET http://localhost:8000/api/v1/market/prices?commodity=Wheat&limit=100
+
+  Each record is converted to a PriceRecord DTO:
+
+  Field           Type              Example
+  ─────────────   ───────────────   ─────────────
+  commodity       str               "Wheat"
+  market          str               "Surat"
+  state           Optional[str]     "Gujarat"
+  district        Optional[str]     "Surat"
+  min_price       Optional[float]   2100.0
+  max_price       Optional[float]   2600.0
+  modal_price     Optional[float]   2450.0
+  arrival_date    Optional[str]     "2026-04-25"
+  variety         Optional[str]     "Lokwan"
+  grade           Optional[str]     "FAQ"
+
+
+================================================================================
+  OUTPUT
+================================================================================
+
+1. MarketRecommendation (Pydantic Model)
+────────────────────────────────────────
+
+  Field               Type                  Example
+  ─────────────────   ───────────────────   ─────────────
+  commodity           str                   "Wheat"
+  best_market         str                   "Surat"
+  best_price          float                 2450.0
+  best_profit         float                 2350.0
+  recommended_action  str                   "SELL_IN_OTHER_MANDI"
+  top_markets         List[RankedMarket]    (see below)
+  reason              str                   "Surat mandi offers ₹50 higher..."
+  confidence          float (0–1)           0.72
+
+2. RankedMarket (sub-model inside top_markets)
+──────────────────────────────────────────────
+
+  Field           Type              Example
+  ─────────────   ───────────────   ─────────────
+  rank            int               1
+  market          str               "Surat"
+  state           Optional[str]     "Gujarat"
+  district        Optional[str]     "Surat"
+  price           float             2450.0
+  profit          float             2350.0
+  transport_cost  float             100.0
+
+3. Possible Actions (recommended_action)
+────────────────────────────────────────
+
+  Action                  When
+  ──────────────────────  ──────────────────────────────────────────
+  SELL_NOW                Best market is local, good profit
+  SELL_IN_OTHER_MANDI     Best market ≠ local market (higher profit elsewhere)
+  HOLD                    Price trend is "increasing" (wait for better price)
+
+
+SAMPLE OUTPUT (JSON):
+─────────────────────
+
+  {
+      "commodity": "Wheat",
+      "best_market": "Surat",
+      "best_price": 2450.0,
+      "best_profit": 2350.0,
+      "recommended_action": "SELL_IN_OTHER_MANDI",
+      "top_markets": [
+          {
+              "rank": 1,
+              "market": "Surat",
+              "state": "Gujarat",
+              "district": "Surat",
+              "price": 2450.0,
+              "profit": 2350.0,
+              "transport_cost": 100.0
+          },
+          {
+              "rank": 2,
+              "market": "Ahmedabad",
+              "state": "Gujarat",
+              "district": "Ahmedabad",
+              "price": 2300.0,
+              "profit": 2300.0,
+              "transport_cost": 0.0
+          },
+          {
+              "rank": 3,
+              "market": "Rajkot",
+              "state": "Gujarat",
+              "district": "Rajkot",
+              "price": 2250.0,
+              "profit": 2150.0,
+              "transport_cost": 100.0
+          }
+      ],
+      "reason": "Surat mandi offers ₹50 higher profit than Ahmedabad after ₹100 transport cost. Best price: ₹2450, net profit: ₹2350.",
+      "confidence": 0.72
+  }
+
+
+SAMPLE OUTPUT (No Data):
+────────────────────────
+
+  HTTP 404
+  {
+      "detail": "Agent could not generate recommendation for 'Wheat'."
+  }
+
+
+================================================================================
+  DECISION LOGIC SUMMARY
+================================================================================
+
+  ┌──────────────────────────────────────────────────────────────────┐
+  │  Step 1: Fetch prices from Backend API                          │
+  │  Step 2: find_best_market() → MAX(modal_price - transport_cost) │
+  │  Step 3: rank_markets()     → Top 3 by profit (deduplicated)    │
+  │  Step 4: determine_action() → SELL_NOW / OTHER / HOLD           │
+  │  Step 5: generate_reason()  → Human-readable explanation        │
+  │  Step 6: calculate_confidence() → 3-factor score (0–1)          │
+  └──────────────────────────────────────────────────────────────────┘
+
+  Confidence Factors:
+  ───────────────────
+    Coverage     (0–0.35)  → Number of unique markets in data
+    Consistency  (0–0.35)  → Low price variance = high confidence
+    Decisiveness (0–0.30)  → Profit gap between #1 and #2 market
+
+  Transport Cost (placeholder):
+  ─────────────────────────────
+    Same district     → ₹0
+    Different district → ₹100
+
+
+================================================================================
+  DEPENDENCIES
+================================================================================
+
+  External:   Backend API (http://localhost:8000/api/v1/market/prices)
+  Internal:   schemas.py, logic.py, service.py, config.py
+  DB Access:  ❌ NONE (all data via Backend HTTP API)
+  ML Model:   ❌ Not yet (model_loader.py is placeholder)
+
+================================================================================
