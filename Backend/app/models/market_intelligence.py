@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from app.core.config import Base
+from Backend.app.core.config import Base
 
 
 # 🔹 1. Raw + Historical Mandi Data
@@ -41,7 +41,7 @@ class MandiPriceData(Base):
     source = Column(String(50), default="AGMARKNET")
 
     # Relationships
-    farm = relationship("Farm", backref="mandi_prices")
+    farm = relationship("Farm", back_populates="mandi_prices")
 
 
 # 🔹 2. Market Recommendation (Agent Output)
@@ -79,4 +79,4 @@ class MarketRecommendation(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     # Relationships
-    farm = relationship("Farm", backref="market_recommendations")
+    farm = relationship("Farm", back_populates="market_recommendations")

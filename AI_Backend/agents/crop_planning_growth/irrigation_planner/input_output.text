@@ -1,0 +1,51 @@
+# Input
+{
+    "farm_id": "farm_123",
+    "crop": "rice",
+    "growth_stage": "vegetative",
+    "soil_moisture": 0.65,  # Current moisture (0-1)
+    "weather_forecast": {
+        "next_7_days": [
+            {"date": "2024-04-23", "rainfall_mm": 0, "temp_max": 38, "humidity": 45},
+            {"date": "2024-04-24", "rainfall_mm": 12, "temp_max": 35, "humidity": 65}
+        ]
+    },
+    "soil_type": "clay",
+    "irrigation_method": "drip",
+    "field_capacity": 0.85,
+    "wilting_point": 0.25
+}
+
+# Output
+{
+    "irrigation_schedule": [
+        {
+            "date": "2024-04-23",
+            "irrigation_required": true,
+            "water_depth_mm": 35,
+            "duration_hours": 3.5,
+            "timing": "Early morning (6-9 AM)",
+            "reason": "No rainfall expected, high evapotranspiration"
+        },
+        {
+            "date": "2024-04-24",
+            "irrigation_required": false,
+            "reason": "12mm rainfall forecasted"
+        }
+    ],
+    "water_savings": {
+        "optimized_usage_liters": 42000,
+        "traditional_usage_liters": 58000,
+        "savings_percentage": 27.6
+    },
+    "alerts": [
+        {
+            "type": "warning",
+            "message": "High evapotranspiration expected on 2024-04-23"
+        }
+    ]
+}
+
+
+
+ # Current one is not much specific with the crop it is just taking based on soil +weather requirements 

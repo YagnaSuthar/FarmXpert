@@ -6,7 +6,7 @@ Pipeline:
   validate → analyze → score → fertilizers → conflicts → suggestions → summary → confidence → data_quality
 """
 
-from agents.crop_planning_growth.soil_Health.config import (
+from AI_Backend.agents.crop_planning_growth.soil_Health.config import (
     VALID_RANGES,
     OPTIMAL_RANGES,
     ALERT_DEFS,
@@ -30,7 +30,7 @@ class SoilHealthService:
     def validate(self, data) -> tuple:
         errors = []
         for field, (lo, hi) in VALID_RANGES.items():
-            val = getattr(data, field, None)
+            val = data.get(field, None) if isinstance(data, dict) else getattr(data, field, None)
             if val is None:
                 continue
             if not (lo <= val <= hi):
@@ -54,7 +54,9 @@ class SoilHealthService:
         ]
         for param, low_key, high_key in checks:
             lo, hi = OPTIMAL_RANGES[param]
-            val = getattr(data, param)
+            val = data.get(param) if isinstance(data, dict) else getattr(data, param)
+            if val is None:
+                continue
             if val < lo:
                 alerts.append(self._build_alert(low_key, val, lo, "below"))
             elif val > hi:
@@ -62,8 +64,9 @@ class SoilHealthService:
 
         # EC — only high matters
         ec_max = OPTIMAL_RANGES["electrical_conductivity"][1]
-        if data.electrical_conductivity > ec_max:
-            alerts.append(self._build_alert("HIGH_EC", data.electrical_conductivity, ec_max, "above"))
+        ec_val = data.get("electrical_conductivity") if isinstance(data, dict) else getattr(data, "electrical_conductivity")
+        if ec_val is not None and ec_val > ec_max:
+            alerts.append(self._build_alert("HIGH_EC", ec_val, ec_max, "above"))
 
         return alerts
 
@@ -72,7 +75,8 @@ class SoilHealthService:
         total = 0
         weight_sum = sum(SCORE_WEIGHTS.values())
         for param, w in SCORE_WEIGHTS.items():
-            total += self._score_param(getattr(data, param), OPTIMAL_RANGES[param], w)
+            val = data.get(param) if isinstance(data, dict) else getattr(data, param)
+            total += self._score_param(val, OPTIMAL_RANGES[param], w)
         return round((total / weight_sum) * 100, 2)
 
     # ─── 4. Fertilizers (deduplicated) ───────────────────
@@ -92,7 +96,7 @@ class SoilHealthService:
         deficiency, flag it — the fertilizer may be insufficient or
         the soil is not absorbing it.
         """
-        fert = getattr(data, "fertilizer_type", None)
+        fert = data.get("fertilizer_type", None) if isinstance(data, dict) else getattr(data, "fertilizer_type", None)
         if not fert:
             return []
 
@@ -213,7 +217,8 @@ class SoilHealthService:
 
         # Deduct for each missing optional field
         for field in OPTIONAL_FIELDS:
-            if getattr(data, field, None) is None:
+            val = data.get(field, None) if isinstance(data, dict) else getattr(data, field, None)
+            if val is None:
                 score -= 0.04   # ~0.28 max deduction for 7 missing fields
 
         # Deduct for each validation error
@@ -253,6 +258,8 @@ class SoilHealthService:
 
     @staticmethod
     def _compute_severity(key: str, param: str, value: float, boundary: float, direction: str) -> str:
+        if value is None or boundary is None:
+            return "low"
         # Step 1: Critical thresholds → "high"
         ct = CRITICAL_THRESHOLDS.get(param)
         if ct:
@@ -272,6 +279,8 @@ class SoilHealthService:
 
     @staticmethod
     def _score_param(value: float, optimal: tuple, weight: float) -> float:
+        if value is None:
+            return 0
         lo, hi = optimal
         if lo <= value <= hi:
             return weight

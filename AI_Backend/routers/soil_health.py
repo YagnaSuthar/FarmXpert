@@ -1,8 +1,8 @@
 # routers/soil_health.py
 
 from fastapi import APIRouter, HTTPException
-from agents.crop_planning_growth.soil_Health.schemas import SoilHealthInput, SoilHealthOutput
-from agents.crop_planning_growth.soil_Health.agent import SoilHealthAgent
+from AI_Backend.agents.crop_planning_growth.soil_Health.schemas import SoilHealthInput, SoilHealthOutput
+from AI_Backend.agents.crop_planning_growth.soil_Health.agent import SoilHealthAgent
 
 router = APIRouter()
 
@@ -24,7 +24,7 @@ async def analyze_soil_health(data: SoilHealthInput):
     Returns score (0-100), status, alerts, fertilizers, and suggestions.
     """
     try:
-        result = soil_agent.run(data)
+        result = await soil_agent.run(data.model_dump())
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Soil analysis failed: {str(e)}")

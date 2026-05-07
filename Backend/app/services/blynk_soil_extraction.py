@@ -37,7 +37,6 @@ class BlynkSoilService:
 
         soil = SoilData(
             farm_id=farm_id,
-            timestamp=datetime.utcnow(),
 
             soil_moisture=float(data.get("V0", 0)),
             soil_temperature=float(data.get("V1", 0)),

@@ -1,6 +1,6 @@
 import asyncio 
 from app.core.config import engine , Base 
-from app.models import farms,users
+from app.models import farms,users,blynk_token,soil_data
 
 async def init_db():
     async with engine.begin() as conn:

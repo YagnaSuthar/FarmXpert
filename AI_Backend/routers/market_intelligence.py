@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
 
-from agents.supplychain_market_access.market_intelligence.schemas import (
+from AI_Backend.agents.supplychain_market_access.market_intelligence.schemas import (
     MarketQueryInput,
     MarketRecommendationResponse,
 )
-from agents.supplychain_market_access.market_intelligence.agent import (
+from AI_Backend.agents.supplychain_market_access.market_intelligence.agent import (
     run_market_agent,
 )
 

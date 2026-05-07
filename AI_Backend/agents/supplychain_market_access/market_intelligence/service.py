@@ -6,14 +6,14 @@ import logging
 import httpx
 from typing import Optional, List
 
-from agents.supplychain_market_access.market_intelligence.config import (
+from AI_Backend.agents.supplychain_market_access.market_intelligence.config import (
     BACKEND_BASE_URL,
 )
-from agents.supplychain_market_access.market_intelligence.schemas import (
+from AI_Backend.agents.supplychain_market_access.market_intelligence.schemas import (
     PriceRecord,
     MarketRecommendation,
 )
-from agents.supplychain_market_access.market_intelligence.logic import (
+from AI_Backend.agents.supplychain_market_access.market_intelligence.logic import (
     find_best_market,
     rank_markets,
     determine_action,
@@ -135,7 +135,7 @@ async def generate_recommendation(
     confidence = calculate_confidence(records, ranked)
 
     # ── 7. Build recommendation ───────────────────────────
-    from agents.supplychain_market_access.market_intelligence.logic import _compute_profit
+    from AI_Backend.agents.supplychain_market_access.market_intelligence.logic import _compute_profit
 
     best_profit = _compute_profit(best, local_district)
 

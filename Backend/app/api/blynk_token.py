@@ -5,7 +5,7 @@ from app.core.config import get_db
 from app.schemas.blynk_token import BlynkTokenCreate, BlynkTokenResponse
 from app.services.blynk_token_store import BlynkTokenService
 
-router = APIRouter(prefix="/blynk", tags=["Blynk Token"])
+router = APIRouter(prefix="/blynk", tags=["Blynk Token store with specific Farm id "])
 
 @router.post("/blynk/token", response_model=BlynkTokenResponse)
 async def create_token(

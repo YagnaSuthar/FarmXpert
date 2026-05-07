@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import get_db
 from app.services.blynk_soil_extraction import BlynkSoilService
 from uuid import UUID
-router = APIRouter(prefix="/soil", tags=["Soil Data"])
+router = APIRouter(prefix="/soil", tags=["Extracts Soil Data from provided farm id "])
 
 
 

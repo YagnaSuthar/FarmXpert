@@ -6,7 +6,7 @@ import logging
 import statistics
 from typing import Optional, List, Dict, Any
 
-from agents.supplychain_market_access.market_intelligence.schemas import (
+from AI_Backend.agents.supplychain_market_access.market_intelligence.schemas import (
     PriceRecord,
     RankedMarket,
 )

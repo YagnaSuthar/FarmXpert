@@ -1,6 +1,6 @@
 # app/crop_planning_growth/soil_Health/agent.py
 
-from agents.crop_planning_growth.soil_Health.service import SoilHealthService
+from AI_Backend.agents.crop_planning_growth.soil_Health.service import SoilHealthService
 
 
 class SoilHealthAgent:
@@ -8,8 +8,10 @@ class SoilHealthAgent:
 
     def __init__(self):
         self.service = SoilHealthService()
+    async def __call__(self, state):
 
-    def run(self, soil_data) -> dict:
+        return await self.run(state)
+    async def run(self, soil_data) -> dict:
         svc = self.service
 
         # 1. Validate inputs

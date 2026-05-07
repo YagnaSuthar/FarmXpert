@@ -28,5 +28,9 @@ class _Settings:
         raw = os.getenv("MANDI_COMMODITIES", "Wheat,Rice,Tomato,Onion,Potato")
         return [c.strip() for c in raw.split(",") if c.strip()]
 
+    @property
+    def GROQ_API_KEY(self) -> str:
+        return os.getenv("Groq_API", "")
+
 
 settings = _Settings()

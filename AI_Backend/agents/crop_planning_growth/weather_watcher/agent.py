@@ -1,12 +1,8 @@
 from fastapi import FastAPI 
-import httpx 
-from datetime import datetime,timedelta
 import os 
 from dotenv import load_dotenv 
-# from langchain.prompts import ChatPromptTemplate  
-from agents.base.base_agent import BaseAgent
-from agents.base.interfaces import AgentInterface
-
+from AI_Backend.agents.base.base_agent import BaseAgent
+from AI_Backend.agents.crop_planning_growth.weather_watcher.service import WeatherService
 
 load_dotenv()
 
@@ -14,13 +10,16 @@ class WeatherAgent(BaseAgent):
     def __init__(self,name:str):
         super().__init__(name)
         self.api_key = os.getenv("OPENWEATHER_API_KEY")
-        # print(self.api_key)
         self.base_url = "https://api.openweathermap.org/data/2.5"
+        self.service = WeatherService(api_key=self.api_key, base_url=self.base_url, logger=self.logger)
         
-        # self.llm = pass 
-    
+
+    async def __call__(self, state):
+
+        return await self.run(state)
+
     async def run(self, input_data: dict) -> dict:
-        self.log("Running Weather Agent Successfully")
+        self.logger.info("Running Weather Agent Successfully")
         
         data = self.preprocess(input_data)
 
@@ -37,154 +36,20 @@ class WeatherAgent(BaseAgent):
             -- alerts from llm 
         """
 
-        current = await self.fetch_current_weather(location)
-        short_forecast = await self.fetch_openweather_forecast(location)
-        long_forecast = await self.fetch_openmeteo_forecast(location)
+        current = await self.service.fetch_current_weather(location)
+        short_forecast = await self.service.fetch_openweather_forecast(location)
+        long_forecast = await self.service.fetch_openmeteo_forecast(location)
+
         # remove overlapping dates
         short_dates = {d["date"] for d in short_forecast}
 
         filtered_long_forecast = [
             d for d in long_forecast if d["date"] not in short_dates
         ]
-        alerts = self.generate_alerts(current,short_forecast+filtered_long_forecast)
+        alerts = self.service.generate_alerts(current, short_forecast + filtered_long_forecast)
         return {
         "current_weather": current,
         "forecast_short_term": short_forecast,   # 5 days (accurate)
         "forecast_long_term": filtered_long_forecast ,     # 10–15 days (trend)
         "alerts": alerts,
         }
-    
-    async def fetch_current_weather(self,location:dict):
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{self.base_url}/weather",
-                params = {
-                "lat":location["lat"],
-                "lon":location["lon"],
-                "appid":self.api_key,
-                "units":"metric"
-            }
-            )
-
-            data = response.json()
-        return {
-            "temperature": data["main"]["temp"],
-            "humidity": data["main"]["humidity"],
-            "wind_speed": data["wind"]["speed"],
-            "conditions": data["weather"][0]["main"],
-            "rainfall_today": data.get("rain", {}).get("1h", 0)
-        }
-
-    async def fetch_openweather_forecast(self,location:dict):
-        "Fetches 1 Week (7 days forecast data )"
-
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{self.base_url}/forecast",
-                params={
-                    "lat": location["lat"],
-                    "lon": location["lon"],
-                    "appid": self.api_key,
-                    "units": "metric",
-                    "cnt": 56  # 7 days * 8 (3-hour intervals)
-                }
-            )
-            data = response.json()
-
-        # Aggregatin Daily Forecasts 
-        daily_forecast = []
-        for i in range(0, len(data["list"]), 8):
-            day_data = data["list"][i:i+8]
-            if not day_data:
-                 continue
-            print("day _ data is given by : ",day_data)
-            temps = [d["main"]["temp"] for d in day_data]
-            rainfall = sum([d.get("rain",{}).get("3h",0) for d in day_data])
-            mid = len(day_data) // 2
-            daily_forecast.append({
-                "date": datetime.fromtimestamp(
-                    day_data[0]["dt"]
-                ).strftime("%Y-%m-%d"),
-                "temp_min": min(temps),
-                "temp_max": max(temps),
-                "rainfall_mm": rainfall,
-                "humidity": day_data[mid]["main"]["humidity"],
-                "wind_speed": day_data[mid]["wind"]["speed"]
-            })
-        
-        return daily_forecast[:7]
-    async def fetch_openmeteo_forecast(self, location: dict):
-        "Forecasts upto 10 days"
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                "https://api.open-meteo.com/v1/forecast",
-                params={
-                    "latitude": location["lat"],
-                    "longitude": location["lon"],
-                    "daily": [
-                        "temperature_2m_max",
-                        "temperature_2m_min",
-                        "precipitation_sum",
-                        "windspeed_10m_max"
-                    ],
-                    "timezone": "auto",
-                    "forecast_days": 14
-                }
-            )
-
-            data = response.json()
-
-        daily = data.get("daily", {})
-
-        forecast = []
-
-        for i in range(len(daily.get("time", []))):
-            forecast.append({
-                "date": daily["time"][i],
-                "temp_min": daily["temperature_2m_min"][i],
-                "temp_max": daily["temperature_2m_max"][i],
-                "rainfall_mm": daily["precipitation_sum"][i],
-                "humidity": None,  # not available directly
-                "wind_speed": daily["windspeed_10m_max"][i]
-            })
-
-        return forecast
-
-    def generate_alerts(self, current, forecast):
-        """Generate weather alerts"""
-        
-        alerts = []
-        
-        # Heatwave alert
-        if current["temperature"] > 35:
-            alerts.append({
-                "type": "heatwave",
-                "severity": "high",
-                "message": f"High temperature ({current['temperature']}°C). Increase irrigation.",
-                "recommendations": [
-                    "Irrigate early morning or evening",
-                    "Provide shade for sensitive crops"
-                ]
-            })
-        
-        # Heavy rainfall alert
-        for day in forecast:
-            if day["rainfall_mm"] > 50:
-                alerts.append({
-                    "type": "heavy_rainfall",
-                    "severity": "medium",
-                    "message": f"Heavy rainfall expected on {day['date']} ({day['rainfall_mm']}mm)",
-                    "recommendations": [
-                        "Ensure proper drainage",
-                        "Postpone fertilizer application",
-                        "Delay harvesting if possible"
-                    ]
-                })
-        
-        return alerts
-    
-
-    async def generate_farming_advisories():
-        pass
-    
-                

@@ -4,11 +4,11 @@
 import logging
 from typing import Optional
 
-from agents.supplychain_market_access.market_intelligence.schemas import (
+from AI_Backend.agents.supplychain_market_access.market_intelligence.schemas import (
     MarketRecommendation,
     MarketQueryInput,
 )
-from agents.supplychain_market_access.market_intelligence.service import (
+from AI_Backend.agents.supplychain_market_access.market_intelligence.service import (
     generate_recommendation,
 )
 

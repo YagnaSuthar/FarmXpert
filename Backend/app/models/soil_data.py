@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Float, String, Integer, ForeignKey, DateTime, JSON, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from app.core.config import Base
+from Backend.app.core.config import Base
+from Backend.app.models.farms import Farm 
 
 class SoilData(Base):
     """
@@ -50,3 +51,5 @@ class SoilData(Base):
 
     # --- Relationships ---
     farm = relationship("Farm", back_populates="soil_data")
+
+    # created_at 

@@ -2,8 +2,9 @@ from sqlalchemy import Integer,Float,String,Column
 from sqlalchemy.dialects.postgresql import UUID
 import uuid 
 from app.core.config import Base
+from app.models.farms import Farm
 # from pgvector.sqlalchemy import Vector
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, foreign
 
 
 class User(Base):
@@ -16,4 +17,8 @@ class User(Base):
     name = Column(String,nullable=False)
 
 
-    farms = relationship("Farm", back_populates="user")
+    farms = relationship(
+        "Farm",
+        primaryjoin=lambda: User.id == foreign(Farm.user_id),
+        foreign_keys=lambda: Farm.user_id,
+    )

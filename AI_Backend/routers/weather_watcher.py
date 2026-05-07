@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
+from AI_Backend.agents.crop_planning_growth.weather_watcher.agent import WeatherAgent
 
 
 router = APIRouter(prefix="/weather-watcher",tags=["This API gives Weather Related Data to the agents/user"])
