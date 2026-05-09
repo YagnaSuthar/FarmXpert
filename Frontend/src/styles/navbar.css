@@ -1,0 +1,66 @@
+/* ============ NAVBAR ============ */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 18px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(13, 13, 13, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.nav-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: 0.1em;
+}
+
+.nav-logo span {
+  color: var(--accent-green);
+}
+
+.nav-links {
+  display: flex;
+  gap: 36px;
+  align-items: center;
+}
+
+.nav-links a {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--accent-green);
+}
+
+.nav-cta {
+  padding: 10px 26px;
+  background: transparent;
+  border: 1px solid var(--accent-green);
+  color: var(--accent-green) !important;
+  border-radius: 4px;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase;
+  cursor: none;
+  transition: background 0.2s, box-shadow 0.2s !important;
+  box-shadow: 0 0 16px rgba(74, 222, 128, 0);
+}
+
+.nav-cta:hover {
+  background: rgba(74, 222, 128, 0.08) !important;
+  box-shadow: 0 0 24px rgba(74, 222, 128, 0.2) !important;
+}

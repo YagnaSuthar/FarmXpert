@@ -1,127 +1,77 @@
-// ============================================================
-// FILE: app/landingpage.jsx
-// FarmXpert Landing Page — orchestrates all sections and a
-// SINGLE Three.js particle canvas layer.
-//
-// Architecture:
-//   - ONE fixed ParticleCanvas covering the viewport
-//   - Scroll listener detects which section is visible
-//   - Hero: sphere at center
-//   - Agents: particles shift right + morph to agent shape
-//   - Smooth interpolation via setOffset() on the particle system
-// ============================================================
-
 'use client';
+import { useEffect } from 'react';
+import '@/styles/landingpage.css';
 
-import { useRef, useEffect, useCallback, useState } from 'react';
-
-// Layout
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-
-// Sections
-import HeroSection from '@/components/sections/HeroSection';
-import AgentsSection from '@/components/sections/AgentsSection';
-import FeaturesSection from '@/components/sections/FeaturesSection';
-import CTASection from '@/components/sections/CTASection';
-
-// Animation
-import ParticleCanvas from '@/components/animation/particlecanvas';
+import Navbar from '@/components/Navbar';
+import HeroSection from '@/components/landingpage/HeroSection';
+import AgentsSection from '@/components/landingpage/AgentsSection';
+import FeaturesSection from '@/components/landingpage/FeaturesSection';
+import HowItWorksSection from '@/components/landingpage/HowItWorksSection';
+import TechSection from '@/components/landingpage/TechSection';
+import ChipSceneSection from '@/components/landingpage/ChipSceneSection';
+import CTASection from '@/components/landingpage/CTASection';
+import Footer from '@/components/Footer';
 
 export default function LandingPage() {
-  const systemRef = useRef(null);
-  const [currentSection, setCurrentSection] = useState('hero');
-
-  const containerRef = useRef(null);
-
-  // ── Scroll-driven particle positioning ──────────────────────
   useEffect(() => {
-    const handleScroll = () => {
-      const system = systemRef.current;
-      const container = containerRef.current;
-      if (!system || !container) return;
+    // ══ CUSTOM CURSOR ══
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
 
-      const scrollY = window.scrollY;
-      const viewH = window.innerHeight;
+    const onMouseMove = (e) => { mx = e.clientX; my = e.clientY; };
+    document.addEventListener('mousemove', onMouseMove);
 
-      const heroEl = document.getElementById('hero');
-      const agentsEl = document.getElementById('agents');
+    function animCursor() {
+      if (dot) { dot.style.left = mx + 'px'; dot.style.top = my + 'px'; }
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      if (ring) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; }
+      requestAnimationFrame(animCursor);
+    }
+    animCursor();
 
-      if (!heroEl || !agentsEl) return;
+    document.querySelectorAll('button,a,.filter-tab,.agent-card,.snode').forEach((el) => {
+      el.addEventListener('mouseenter', () => {
+        if (ring) { ring.style.width = '52px'; ring.style.height = '52px'; }
+        if (dot) dot.style.transform = 'translate(-50%,-50%) scale(1.5)';
+      });
+      el.addEventListener('mouseleave', () => {
+        if (ring) { ring.style.width = '36px'; ring.style.height = '36px'; }
+        if (dot) dot.style.transform = 'translate(-50%,-50%) scale(1)';
+      });
+    });
 
-      // Calculate boundaries
-      const heroBottom = heroEl.offsetTop + heroEl.offsetHeight;
-      const agentsTop = agentsEl.offsetTop;
-      const agentsBottom = agentsEl.offsetTop + agentsEl.offsetHeight;
+    // ══ SCROLL REVEAL ══
+    const reveals = document.querySelectorAll('.reveal');
+    const revObs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); });
+      },
+      { threshold: 0.12 }
+    );
+    reveals.forEach((r) => revObs.observe(r));
 
-      // 1. Determine which section is currently active
-      // We consider Agents active if we've scrolled past the middle of the Hero section
-      const isAgentsActive = scrollY > (heroBottom - viewH * 0.6);
-
-      if (!isAgentsActive) {
-        if (currentSection !== 'hero') {
-          setCurrentSection('hero');
-          // Always revert to sphere in Hero
-          system.morphTo('sphere');
-          system.setOffset(0, 0, 0); // Center
-        }
-      } else {
-        if (currentSection !== 'agents') {
-          setCurrentSection('agents');
-          // Center the particles for the AgentOrbitSystem
-          system.setOffset(0, 0, 0);
-        }
-      }
-
-      // 2. Scroll Out of View (Past Agents)
-      // When the user scrolls past the Agents section, we push the fixed canvas UP
-      // so it appears to stay attached to the bottom of the Agents section.
-      const leaveStart = agentsBottom - viewH;
-      if (scrollY > leaveStart) {
-        const outOffset = scrollY - leaveStart;
-        container.style.transform = `translateY(-${outOffset}px)`;
-      } else {
-        container.style.transform = `translateY(0px)`;
-      }
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      revObs.disconnect();
     };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // initial check
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [currentSection]);
+  }, []);
 
   return (
-    <div className="landing-shell">
-      {/* Grain texture overlay */}
-      <div className="noise-overlay" aria-hidden="true" />
+    <>
+      <div className="cursor-dot" id="cursorDot"></div>
+      <div className="cursor-ring" id="cursorRing"></div>
 
-      {/* ── SINGLE fixed Particle Canvas ────────────────────── */}
-      <div
-        ref={containerRef}
-        className="particle-canvas-container"
-        style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}
-      >
-        <ParticleCanvas
-          systemRef={systemRef}
-          autoMorph={false}
-          className="particle-canvas--fixed"
-        />
-      </div>
-
-      {/* ── Navbar ─────────────────────────────────────────── */}
       <Navbar />
-
-      {/* ── Main content ───────────────────────────────────── */}
-      <main className="main-content">
-        <HeroSection />
-        <AgentsSection systemRef={systemRef} />
-        <FeaturesSection />
-        <CTASection />
-      </main>
-
-      {/* ── Footer ─────────────────────────────────────────── */}
+      <HeroSection />
+      <AgentsSection />
+      <FeaturesSection />
+      <HowItWorksSection />
+      <TechSection />
+      <ChipSceneSection />
+      <CTASection />
       <Footer />
-    </div>
+    </>
   );
 }

@@ -4,12 +4,12 @@
 // Import global styles here; add <head> meta, fonts, providers.
 // ============================================================
 
-import '../styles/landing.css';
-import '../styles/animation.css';
-import '../styles/components.css';
+import '../styles/landingpage.css';
+import '../styles/navbar.css';
+import '../styles/footer.css';
 import './globals.css';
 
-import { ThemeProvider } from '@/components/layout/ThemeProvider';
+
 
 export const metadata = {
   title: 'FarmXpert — AI-Powered Agriculture Platform',
@@ -45,12 +45,12 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <ThemeProvider>
+
           {/* Global site wrapper — used for scroll context & canvas layering */}
           <div id="site-root">
             {children}
           </div>
-        </ThemeProvider>
+
       </body>
     </html>
   );
