@@ -1,0 +1,222 @@
+/* ============================================================
+   FILE: app/globals.css
+   FarmXpert — Global resets, CSS custom properties (design tokens),
+   and base typographic defaults.
+   Green + Dark agriculture theme.
+   ============================================================ */
+
+/* ── FarmXpert Design Tokens (Dynamic Theme) ────────────────── */
+
+:root {
+  /* LIGHT THEME (Default) */
+  --primary-rgb: 0, 176, 80;
+  --primary: #00B050;
+  --primary-soft: #00D463;
+  --primary-dark: #007A38;
+  --primary-glow: rgba(var(--primary-rgb), 0.25);
+
+  --bg-primary-rgb: 250, 252, 250; /* very light green-tinted white */
+  --bg-secondary-rgb: 242, 246, 243;
+  --bg-card-rgb: 255, 255, 255;
+  --bg-surface-rgb: 248, 250, 249;
+  
+  --dark-bg: rgb(var(--bg-primary-rgb));
+  --dark-card: rgb(var(--bg-card-rgb));
+  --dark-surface: rgb(var(--bg-surface-rgb));
+
+  --border-rgb: 0, 176, 80;
+  --border-glow: rgba(var(--border-rgb), 0.3);
+  --border-subtle: rgba(var(--border-rgb), 0.15);
+
+  --text-main-rgb: 22, 34, 26;
+  --text-muted-rgb: 60, 85, 68;
+  --text-dim-rgb: 100, 120, 105;
+  
+  --text-main: rgb(var(--text-main-rgb));
+  --text-muted: rgb(var(--text-muted-rgb));
+  --text-dim: rgb(var(--text-dim-rgb));
+
+  /* Mapped aliases */
+  --color-bg-primary: var(--dark-bg);
+  --color-bg-secondary: rgb(var(--bg-secondary-rgb));
+  --color-surface: var(--dark-card);
+  --color-border: rgba(var(--border-rgb), 0.15);
+
+  --color-accent-primary: var(--primary);
+  --color-accent-secondary: var(--primary-soft);
+  --color-accent-glow: var(--primary-glow);
+
+  --color-text-primary: var(--text-main);
+  --color-text-secondary: var(--text-muted);
+  --color-text-muted: var(--text-dim);
+
+  /* ── Typography ─────────────────────────────────────────── */
+  --font-display: 'Inter', 'Syne', sans-serif;
+  --font-body: 'Inter', 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+  --text-5xl:  3rem;
+  --text-6xl:  3.75rem;
+  --text-7xl:  4.5rem;
+
+  /* ── Spacing scale ──────────────────────────────────────── */
+  --space-1:   0.25rem;
+  --space-2:   0.5rem;
+  --space-3:   0.75rem;
+  --space-4:   1rem;
+  --space-5:   1.25rem;
+  --space-6:   1.5rem;
+  --space-8:   2rem;
+  --space-10:  2.5rem;
+  --space-12:  3rem;
+  --space-16:  4rem;
+  --space-20:  5rem;
+  --space-24:  6rem;
+  --space-32:  8rem;
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  --max-width-content: 1200px;
+  --max-width-narrow:  780px;
+  --header-height:     72px;
+
+  /* ── Borders ────────────────────────────────────────────── */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ────────────────────────────────────────────── */
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg:  0 12px 40px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 40px var(--primary-glow);
+
+  /* ── Animation Easing ───────────────────────────────────── */
+  --ease-in-out:    cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  --duration-fast:  150ms;
+  --duration-base:  250ms;
+  --duration-slow:  400ms;
+  --duration-xslow: 700ms;
+
+  /* ── Z-Index Layers ─────────────────────────────────────── */
+  --z-canvas:  0;
+  --z-content: 10;
+  --z-overlay: 20;
+  --z-header:  50;
+  --z-modal:   100;
+}
+
+[data-theme="dark"] {
+  /* DARK THEME */
+  --primary-rgb: 0, 176, 80;
+  --primary: #00B050;
+  --primary-soft: #00D463;
+  --primary-dark: #007A38;
+  --primary-glow: rgba(var(--primary-rgb), 0.35);
+
+  --bg-primary-rgb: 11, 15, 12;
+  --bg-secondary-rgb: 13, 18, 15;
+  --bg-card-rgb: 18, 24, 22;
+  --bg-surface-rgb: 22, 29, 25;
+  
+  --dark-bg: rgb(var(--bg-primary-rgb));
+  --dark-card: rgb(var(--bg-card-rgb));
+  --dark-surface: rgb(var(--bg-surface-rgb));
+
+  --border-rgb: 76, 175, 80;
+  --border-glow: rgba(var(--border-rgb), 0.4);
+  --border-subtle: rgba(var(--border-rgb), 0.12);
+
+  --text-main-rgb: 232, 245, 233;
+  --text-muted-rgb: 165, 214, 167;
+  --text-dim-rgb: 74, 107, 78;
+  
+  --text-main: rgb(var(--text-main-rgb));
+  --text-muted: rgb(var(--text-muted-rgb));
+  --text-dim: rgb(var(--text-dim-rgb));
+
+  --color-border: rgba(var(--border-rgb), 0.10);
+}
+
+/* ── Global smooth theme transitions ──────────────────────── */
+body, .landing-shell, .main-content, .navbar, .footer, .section {
+  transition: 
+    background-color 0.5s ease, 
+    color 0.5s ease,
+    border-color 0.5s ease;
+}
+
+/* ── CSS Reset ──────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--dark-bg);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+/* ── Site Root ──────────────────────────────────────────────── */
+#site-root {
+  position: relative;
+  isolation: isolate;
+}

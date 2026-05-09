@@ -1,108 +1,175 @@
-INPUT (9 Required + 5 Optional Parameters):
-{
-  "soil_moisture": 25.0,
-  "soil_temperature": 30.0,
-  "soil_ph": 5.2,
-  "nitrogen": 20.0,
-  "phosphorus": 10.0,
-  "potassium": 25.0,
-  "electrical_conductivity": 1.5,
-  "air_temperature": 35.0,
-  "air_humidity": 40.0,
-  "soil_type": "Sandy",
-  "crop_type": "Wheat",
-  "rainfall": 20.0,
-  "irrigation_type": "Manual",
-  "irrigation_amount": 2.0,
-  "fertilizer_type": "None",
-  "fertilizer_amount": 0.0
-}
+INPUT (9 required + 11 optional parameters)
+ {
+   "soil_moisture": 38.0,
+   "soil_temperature": 28.0,
+   "soil_ph": 5.8,
+   "nitrogen": 60.0,
+   "phosphorus": 18.0,
+   "potassium": 45.0,
+   "electrical_conductivity": 2.1,
+   "air_temperature": 36.0,
+   "air_humidity": 78.0,
 
+   "soil_type": "sandy",
+   "crop_type": "wheat",
+   "season": "summer",
+   "growth_stage": "vegetative",
+   "rainfall": 2.0,
+   "irrigation_type": "drip",
+   "irrigation_amount": 5.0,
+   "fertilizer_type": "urea",
+   "fertilizer_amount": 40.0,
+   "field_id": "FIELD-007",
+   "region": "Punjab"
+ }
 
-----------------------------------------
+ ----------------------------------------
 
-EXPECTED OUTPUT:
+ EXPECTED OUTPUT (SoilHealthAgent.run)
+ {
+   "soil_health_score": 54.3,
+   "soil_health_status": "Fair",
+   "summary": "Soil health score is 54.3/100 (fair). 3 issues detected: nitrogen deficiency detected, elevated soil salinity, and drought risk from low recent rainfall. Priority action: Apply immediately; consider foliar urea 2% as emergency.",
 
-{
-  "soil_health_score": 18.33,
-  "soil_health_status": "Critical",
-  "summary": "Soil health is critical due to soil acidity, nitrogen deficiency, phosphorus deficiency, potassium deficiency, low moisture levels, and high salinity.",
-  "confidence": "rule-based",
+   "confidence": { "type": "rule-based", "score": 0.88 },
+   "data_quality_score": 0.84,
+   "validation_errors": [],
 
-  "alerts": [
-    { "type": "ACIDIC",       "message": "Soil is Acidic",           "severity": "high" },
-    { "type": "LOW_N",        "message": "Low Nitrogen",             "severity": "high" },
-    { "type": "LOW_P",        "message": "Low Phosphorus",           "severity": "medium" },
-    { "type": "LOW_K",        "message": "Low Potassium",            "severity": "medium" },
-    { "type": "LOW_MOISTURE", "message": "Low Soil Moisture",        "severity": "medium" },
-    { "type": "HIGH_EC",      "message": "High Soil Salinity (EC)",  "severity": "high" }
-  ],
+   "alerts": [
+     {
+       "type": "CRITICAL_LOW_N",
+       "message": "Severe nitrogen deficiency detected; immediate intervention required.",
+       "severity": "critical",
+       "score_impact": 20,
+       "parameter": "nitrogen",
+       "observed_value": 60.0,
+       "boundary": 150.0,
+       "direction": "below",
+       "source": "soil",
+       "extreme_override": null
+     },
+     {
+       "type": "HIGH_EC",
+       "message": "High salinity detected; osmotic stress limiting water uptake.",
+       "severity": "medium",
+       "score_impact": 10,
+       "parameter": "ec",
+       "observed_value": 2.1,
+       "boundary": 1.2,
+       "direction": "above",
+       "source": "soil",
+       "extreme_override": null
+     },
+     {
+       "type": "DROUGHT_RISK",
+       "message": "Insufficient recent rainfall; drought risk elevated.",
+       "severity": "medium",
+       "score_impact": 3,
+       "parameter": "rainfall",
+       "observed_value": 2.0,
+       "boundary": null,
+       "direction": null,
+       "source": "weather",
+       "extreme_override": null
+     }
+   ],
+   "soil_alerts": [
+     {
+       "type": "CRITICAL_LOW_N",
+       "message": "Severe nitrogen deficiency detected; immediate intervention required.",
+       "severity": "critical",
+       "score_impact": 20,
+       "parameter": "nitrogen",
+       "observed_value": 60.0,
+       "boundary": 150.0,
+       "direction": "below",
+       "source": "soil",
+       "extreme_override": null
+     },
+     {
+       "type": "HIGH_EC",
+       "message": "High salinity detected; osmotic stress limiting water uptake.",
+       "severity": "medium",
+       "score_impact": 10,
+       "parameter": "ec",
+       "observed_value": 2.1,
+       "boundary": 1.2,
+       "direction": "above",
+       "source": "soil",
+       "extreme_override": null
+     }
+   ],
+   "weather_alerts": [
+     {
+       "type": "DROUGHT_RISK",
+       "message": "Insufficient recent rainfall; drought risk elevated.",
+       "severity": "medium",
+       "score_impact": 3,
+       "parameter": "rainfall",
+       "observed_value": 2.0,
+       "boundary": null,
+       "direction": null,
+       "source": "weather",
+       "extreme_override": null
+     }
+   ],
+   "critical_factors": ["CRITICAL_LOW_N"],
 
-  "fertilizers": [
-    { "name": "Lime (CaCO₃)",            "advice": "Apply 1-2 tonnes/acre to raise soil pH gradually" },
-    { "name": "Urea",                    "advice": "Apply 40-50 kg/acre in split doses during early growth stages" },
-    { "name": "DAP / SSP",               "advice": "Apply 25-30 kg/acre before sowing for root development" },
-    { "name": "MOP (Muriate of Potash)", "advice": "Apply 20-30 kg/acre to improve disease resistance" },
-    { "name": "Soil Flushing",           "advice": "Use good quality irrigation water to flush salts; consider adding organic matter" }
-  ],
+   "fertilizers": [
+     {
+       "triggered_by": "CRITICAL_LOW_N",
+       "fertilizer": "ammonium_sulfate",
+       "display_name": "Ammonium Sulphate (21-0-0-24S)",
+       "dosage": "80–120 kg/ha",
+       "timing": "Apply immediately; consider foliar urea 2% as emergency.",
+       "method": "soil_application_with_irrigation",
+       "cautions": ["Monitor pH — ammonium sulfate acidifies soil slightly."]
+     }
+   ],
+   "suggestions": [
+     { "message": "Apply nitrogen immediately…", "priority": "critical", "source": "alert" }
+   ],
+   "conflicts": []
+ }
 
-  "suggestions": [
-    { "message": "Apply agricultural lime and avoid excessive use of ammonium-based fertilizers" },
-    { "message": "Apply nitrogen-rich organic manure or green manure cover crops between seasons" },
-    { "message": "Incorporate bone meal or rock phosphate into the soil before next planting cycle" },
-    { "message": "Add wood ash or potash-rich compost to improve potassium availability" },
-    { "message": "Increase irrigation frequency or switch to drip irrigation for better water retention" },
-    { "message": "Flush soil with fresh water and add organic compost to reduce salinity" }
-  ]
-}
+ ----------------------------------------
 
+ STATUS RULE (score bands)
 
-----------------------------------------
+ Score 85–100 → Excellent
+ Score 70–84  → Good
+ Score 50–69  → Fair
+ Score 30–49  → Poor
+ Score 0–29   → Critical
 
-STATUS RULE:
+ ----------------------------------------
 
-Score >= 85 → Excellent
-Score >= 70 → Good
-Score >= 50 → Alert
-Score < 50  → Critical
+ SEVERITY VALUES
 
-----------------------------------------
+ info | low | medium | high | critical
 
-SEVERITY LOGIC:
+ ----------------------------------------
 
-HIGH:   N, EC, extreme pH (critical soil parameters)
-MEDIUM: P, K, moisture (important but less urgent)
-LOW:    Any parameter with < 15% deviation from boundary (minor warning)
+ SYSTEM FLOW
 
-----------------------------------------
+ Sensor + Context Data
+    ↓
+ SoilHealthAgent.run()
+    ↓
+ SoilHealthService
+    ├── validate               → validation_errors (range + categorical)
+    ├── analyze_soil            → soil_alerts
+    ├── analyze_weather         → weather_alerts
+    ├── detect_conflicts        → conflicts (based on soil_alerts + fertilizer_type)
+    ├── calculate_score         → 0–100 score (weighted + modifiers)
+    ├── get_status              → Excellent | Good | Fair | Poor | Critical
+    ├── recommend_fertilizers   → fertilizers (rich objects)
+    ├── suggestions             → suggestions (deduplicated)
+    ├── generate_summary        → summary
+    ├── compute_confidence      → confidence {type, score}
+    ├── compute_data_quality    → data_quality_score
+    └── extract_critical_factors→ critical_factors
+    ↓
+ API Response (SoilHealthOutput)
 
-ALERT LOGIC:
-
-Low Nitrogen     → nitrogen < 50
-Low Phosphorus   → phosphorus < 30
-Low Potassium    → potassium < 40
-Acidic Soil      → pH < 6.0
-Alkaline Soil    → pH > 7.5
-Low Moisture     → moisture < 40
-High Moisture    → moisture > 70
-High EC          → EC > 1.0
-
-----------------------------------------
-
-SYSTEM FLOW:
-
-Sensor Data
-   ↓
-SoilHealthAgent.run()
-   ↓
-SoilHealthService
-   ├── analyze()              → structured alerts with smart severity
-   ├── calculate_score()      → weighted 0-100 score
-   ├── get_status()           → Excellent / Good / Alert / Critical
-   ├── recommend_fertilizer() → deduplicated by fertilizer name
-   ├── suggestions()          → per-alert actionable tips (always ≥ 1)
-   └── generate_summary()     → human-readable one-liner
-   ↓
-API Response (SoilHealthOutput)
-
-========================
+ ========================

@@ -1,0 +1,201 @@
+/* ============================================================
+   FILE: styles/components.css
+   FarmXpert — Reusable component patterns:
+   badges, dividers, tags, card surfaces, noise overlay,
+   focus rings, and glass effects.
+   ============================================================ */
+
+/* ── Badge ──────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.badge--default {
+  background: var(--dark-card);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.badge--accent {
+  background: rgba(var(--primary-rgb), 0.12);
+  color: var(--primary);
+  border: 1px solid rgba(var(--primary-rgb), 0.25);
+}
+
+.badge--success {
+  background: rgba(var(--primary-rgb), 0.10);
+  color: var(--primary-soft);
+  border: 1px solid rgba(var(--primary-rgb), 0.2);
+}
+
+.badge--warning {
+  background: rgba(250, 189, 47, 0.1);
+  color: #fabd2f;
+  border: 1px solid rgba(250, 189, 47, 0.2);
+}
+
+/* ── Divider ────────────────────────────────────────────────── */
+.divider {
+  border: none;
+  height: 1px;
+  background: var(--border-subtle);
+  margin-block: var(--space-8);
+}
+
+.divider--gradient {
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--border-subtle) 30%,
+    var(--border-subtle) 70%,
+    transparent
+  );
+}
+
+/* ── Icon wrapper ───────────────────────────────────────────── */
+.icon-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: rgba(var(--primary-rgb), 0.08);
+  border: 1px solid rgba(var(--primary-rgb), 0.15);
+  color: var(--primary);
+}
+
+.icon-box--sm { width: 36px; height: 36px; font-size: var(--text-base); }
+.icon-box--md { width: 48px; height: 48px; font-size: var(--text-xl);   }
+.icon-box--lg { width: 64px; height: 64px; font-size: var(--text-2xl);  }
+
+/* ── Tag ────────────────────────────────────────────────────── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  background: var(--dark-card);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  cursor: default;
+  transition: border-color var(--duration-fast), color var(--duration-fast);
+}
+
+.tag:hover,
+.tag--active {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ── Skeleton loader ────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--dark-card) 25%,
+    rgba(var(--primary-rgb), 0.05) 50%,
+    var(--dark-card) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--radius-sm);
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+.skeleton--text    { height: 1em;  border-radius: var(--radius-full); }
+.skeleton--heading { height: 2em;  border-radius: var(--radius-full); }
+.skeleton--block   { height: 120px; border-radius: var(--radius-lg);  }
+
+/* ── Card surface ───────────────────────────────────────────── */
+.card {
+  background: var(--dark-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.card--hoverable {
+  transition:
+    transform   var(--duration-base) var(--ease-out-expo),
+    box-shadow  var(--duration-base),
+    border-color var(--duration-base);
+}
+
+.card--hoverable:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-glow);
+}
+
+.card__body {
+  padding: var(--space-6);
+}
+
+/* ── Glass card effect ──────────────────────────────────────── */
+.glass-card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  background: rgba(var(--bg-card-rgb), 0.7);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-rgb), 0.06) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(var(--primary-rgb), 0.03) 100%
+  );
+  pointer-events: none;
+}
+
+.glass-card:hover {
+  border-color: var(--border-glow);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(var(--primary-rgb), 0.1);
+}
+
+/* ── Noise overlay (grain texture) ─────────────────────────── */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── Glow ring — decorative accent ─────────────────────────── */
+.glow-ring {
+  position: absolute;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--primary);
+  opacity: 0.15;
+  pointer-events: none;
+  animation: float 6s var(--ease-in-out) infinite;
+}
+
+/* ── Focus ring — accessibility ─────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}

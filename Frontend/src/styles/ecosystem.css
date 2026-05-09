@@ -1,0 +1,136 @@
+/* FILE: styles/ecosystem.css */
+/* ============================================================ */
+/* AI Agent Ecosystem Layout & Variables */
+/* Premium, intelligent, calm aesthetic */
+/* ============================================================ */
+
+:root {
+  --eco-bg: #030504; /* Very dark, slightly green tinted background */
+  --eco-primary: #10b981; /* FarmXpert intelligent green */
+  --eco-secondary: #059669; /* Deeper green */
+  --eco-glow-soft: rgba(16, 185, 129, 0.15);
+  --eco-glow-strong: rgba(16, 185, 129, 0.4);
+  --eco-border: rgba(255, 255, 255, 0.08);
+  --eco-text-main: #ffffff;
+  --eco-text-muted: rgba(255, 255, 255, 0.5);
+  --eco-text-active: #10b981;
+  
+  --eco-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --eco-radius-card: 16px;
+  
+  /* Layout constraints */
+  --eco-center-size: 400px;
+  --eco-orbit-radius: 350px;
+}
+
+/* Light mode overrides (assuming ThemeProvider toggles a class on body or wrapper) */
+[data-theme='light'] {
+  --eco-bg: #f8faf9;
+  --eco-primary: #059669;
+  --eco-secondary: #047857;
+  --eco-glow-soft: rgba(5, 150, 105, 0.1);
+  --eco-glow-strong: rgba(5, 150, 105, 0.25);
+  --eco-border: rgba(0, 0, 0, 0.06);
+  --eco-text-main: #111827;
+  --eco-text-muted: rgba(17, 24, 39, 0.5);
+  --eco-text-active: #059669;
+}
+
+/* --- Container --- */
+.eco-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 800px;
+  background-color: transparent;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--eco-font);
+  transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Ambient Background --- */
+.eco-ambient-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, var(--eco-glow-soft) 0%, transparent 60%);
+  opacity: 0.6;
+}
+
+.eco-ambient-lines {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, var(--eco-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--eco-border) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(circle at center, transparent 30%, black 80%);
+  -webkit-mask-image: radial-gradient(circle at center, transparent 30%, black 80%);
+  opacity: 0.4;
+  z-index: 0;
+}
+
+/* --- Center Core Wrapper --- */
+.eco-center-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--eco-center-size);
+  height: var(--eco-center-size);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.eco-center-halo {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--eco-glow-strong) 0%, transparent 70%);
+  opacity: 0.5;
+  filter: blur(20px);
+  animation: pulse-halo 4s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes pulse-halo {
+  0% { transform: scale(0.95); opacity: 0.4; }
+  100% { transform: scale(1.05); opacity: 0.6; }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  :root {
+    --eco-center-size: 300px;
+    --eco-orbit-radius: 260px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --eco-center-size: 250px;
+    --eco-orbit-radius: 180px;
+  }
+  
+  .eco-container {
+    height: auto;
+    min-height: 100vh;
+    padding: 60px 0;
+    align-items: flex-start;
+  }
+  
+  .eco-center-wrapper {
+    position: relative;
+    top: 0;
+    left: 0;
+    transform: none;
+    margin: 40px auto 300px auto;
+  }
+}

@@ -1,0 +1,471 @@
+================================================================================
+  FarmXpert Task Scheduler Agent — Example Inputs & Outputs
+  Version: 1.0.0
+  Purpose: Integration testing, API documentation, developer onboarding
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+SCENARIO 1: HIGH RAIN PROBABILITY — IRRIGATION DELAYED, PEST CONTROL DELAYED
+Farm: Sunrise Farms | Field: FLD-001 | Crop: Wheat | Stage: Flowering
+────────────────────────────────────────────────────────────────────────────────
+
+INPUT (POST /api/v1/schedule):
+{
+  "scheduler_input": {
+    "request_id": "req-20240610-001",
+    "planning_horizon_days": 3,
+    "farm_context": {
+      "farm_id": "farm-sunrise-001",
+      "farm_name": "Sunrise Farms",
+      "field_ids": ["FLD-001"],
+      "total_area_hectares": 12.5,
+      "timezone": "Asia/Kolkata",
+      "current_timestamp": "2024-06-10T06:00:00Z",
+      "active_crop": "wheat",
+      "growth_stage": "flowering",
+      "resources": {
+        "labor_available": true,
+        "labor_units_available": 3,
+        "water_available_liters": 50000,
+        "equipment_available": ["drip_irrigation", "sprayer", "tractor"],
+        "working_hours_start": "06:00",
+        "working_hours_end": "18:00"
+      },
+      "weather_forecast": [
+        {
+          "forecast_date": "2024-06-10",
+          "temperature_high_c": 28.0,
+          "temperature_low_c": 18.0,
+          "rainfall_mm": 12.0,
+          "rain_probability_percent": 82.0,
+          "wind_speed_kmh": 22.0,
+          "humidity_percent": 88.0,
+          "frost_risk": false,
+          "heat_stress_risk": false,
+          "storm_warning": false,
+          "evapotranspiration_mm": 4.2
+        },
+        {
+          "forecast_date": "2024-06-11",
+          "temperature_high_c": 31.0,
+          "temperature_low_c": 20.0,
+          "rainfall_mm": 0.0,
+          "rain_probability_percent": 15.0,
+          "wind_speed_kmh": 8.0,
+          "humidity_percent": 60.0,
+          "frost_risk": false,
+          "heat_stress_risk": false,
+          "storm_warning": false,
+          "evapotranspiration_mm": 5.1
+        }
+      ]
+    },
+    "recommendations": [
+      {
+        "recommendation_id": "irr-001",
+        "source_agent": "irrigation_agent",
+        "farm_id": "farm-sunrise-001",
+        "field_id": "FLD-001",
+        "generated_at": "2024-06-10T05:30:00Z",
+        "task_category": "irrigation",
+        "title": "Morning Drip Irrigation — Wheat Flowering Stage",
+        "description": "Soil moisture deficit of 18mm detected. Apply 3,200L via drip system to restore field capacity and support grain set during critical flowering window.",
+        "urgency_score": 7.5,
+        "risk_score": 8.0,
+        "impact_score": 9.0,
+        "estimated_duration_minutes": 90,
+        "requires_dry_weather": false,
+        "requires_labor": true,
+        "labor_units_required": 1,
+        "equipment_required": ["drip_irrigation"],
+        "irrigation_payload": {
+          "water_volume_liters": 3200,
+          "duration_minutes": 90,
+          "method": "drip",
+          "soil_moisture_current": "dry",
+          "target_moisture_level": 0.75,
+          "deficit_mm": 18.0
+        }
+      },
+      {
+        "recommendation_id": "pest-001",
+        "source_agent": "pest_disease_agent",
+        "farm_id": "farm-sunrise-001",
+        "field_id": "FLD-001",
+        "generated_at": "2024-06-10T05:45:00Z",
+        "task_category": "pest_control",
+        "title": "Aphid Treatment — Systemic Insecticide",
+        "description": "Aphid population severity 6.5/10 on 35% of field area. Apply Imidacloprid 17.8 SL at 0.5 ml/L. Critical to act before flowering peak to avoid pollinator harm.",
+        "urgency_score": 8.5,
+        "risk_score": 9.0,
+        "impact_score": 8.5,
+        "estimated_duration_minutes": 60,
+        "requires_dry_weather": true,
+        "requires_labor": true,
+        "labor_units_required": 2,
+        "equipment_required": ["sprayer"],
+        "pest_disease_payload": {
+          "threat_type": "aphid",
+          "severity": 6.5,
+          "affected_area_percent": 35.0,
+          "treatment_type": "pesticide",
+          "chemical_name": "Imidacloprid 17.8 SL",
+          "application_rate_ml_per_liter": 0.5,
+          "pre_harvest_interval_days": 21,
+          "re_entry_interval_hours": 12,
+          "requires_dry_conditions": true
+        }
+      }
+    ]
+  }
+}
+
+────────────────────────────────────────────────────────────────────────────────
+EXPECTED OUTPUT:
+────────────────────────────────────────────────────────────────────────────────
+{
+  "success": true,
+  "request_id": "req-20240610-001",
+  "processing_time_ms": 12.45,
+  "plan": {
+    "plan_id": "plan-a3f7c91b22",
+    "request_id": "req-20240610-001",
+    "farm_id": "farm-sunrise-001",
+    "generated_at": "2024-06-10T06:00:00Z",
+    "planning_horizon_days": 3,
+    "total_tasks_scheduled": 0,
+    "total_tasks_delayed": 2,
+    "total_tasks_skipped": 0,
+    "execution_summary": "Scheduled 0 task(s) across 1 day(s). 2 task(s) delayed, 0 task(s) skipped. 0 critical task(s). 0 conflict(s) resolved.",
+    "warnings": [],
+    "conflicts_detected": [],
+    "critical_tasks": [],
+    "all_tasks": [
+      {
+        "task_id": "task-8b2e14f012",
+        "source_recommendation_id": "irr-001",
+        "source_agent": "irrigation_agent",
+        "title": "Morning Drip Irrigation — Wheat Flowering Stage",
+        "category": "irrigation",
+        "status": "delayed",
+        "priority": "high",
+        "priority_score": 8.025,
+        "decision": "delay",
+        "delay_until": "2024-06-11T06:00:00Z",
+        "reason": "[WEATHER CONSTRAINT] Rain probability 82% ≥ 70% threshold — natural precipitation may satisfy irrigation requirement. → Rescheduled to 2024-06-11.",
+        "weather_constraint_applied": true,
+        "dependency_constraint_applied": false,
+        "resource_constraint_applied": false,
+        "estimated_duration_minutes": 90,
+        "assigned_labor_units": 1,
+        "equipment_assigned": ["drip_irrigation"],
+        "instructions": [
+          "Verify soil moisture sensors before starting irrigation.",
+          "Set flow rate as specified and monitor for leaks.",
+          "Record actual water volume delivered post-irrigation.",
+          "Check for runoff or pooling and adjust application rate."
+        ],
+        "precautions": [
+          "Do not irrigate during rain or when soil is waterlogged.",
+          "Monitor downstream drainage to prevent runoff contamination."
+        ],
+        "kpis": [
+          "Soil moisture reaches target FC fraction",
+          "No runoff detected",
+          "Water usage within ±5% of plan"
+        ]
+      },
+      {
+        "task_id": "task-cc91a2b034",
+        "source_recommendation_id": "pest-001",
+        "source_agent": "pest_disease_agent",
+        "title": "Aphid Treatment — Systemic Insecticide",
+        "category": "pest_control",
+        "status": "delayed",
+        "priority": "critical",
+        "priority_score": 9.075,
+        "decision": "delay",
+        "delay_until": "2024-06-11T06:00:00Z",
+        "reason": "[WEATHER CONSTRAINT] Task requires dry conditions; rain probability 82% too high. | Wind speed 22.0 km/h exceeds 15 km/h limit for spray applications. → Rescheduled to 2024-06-11.",
+        "weather_constraint_applied": true,
+        "dependency_constraint_applied": false,
+        "resource_constraint_applied": false,
+        "estimated_duration_minutes": 60,
+        "assigned_labor_units": 2,
+        "equipment_assigned": ["sprayer"],
+        "instructions": [
+          "Wear full PPE: gloves, goggles, respirator.",
+          "Calibrate sprayer nozzle pressure before use.",
+          "Apply during early morning or evening — avoid heat of day.",
+          "Observe re-entry interval before allowing workers back.",
+          "Log chemical lot number and application date.",
+          "Dispose of empty containers per local regulations."
+        ],
+        "precautions": [
+          "Observe all label re-entry intervals before allowing field workers back.",
+          "Store unused chemical in original container, locked secure area.",
+          "Never mix chemicals unless explicitly specified in protocol.",
+          "Report any adverse reactions or environmental incidents immediately."
+        ],
+        "kpis": [
+          "Pest severity score reduced by ≥50% within 5 days",
+          "No crop damage spread"
+        ]
+      }
+    ],
+    "daily_plans": [
+      {
+        "plan_date": "2024-06-11",
+        "tasks": ["(both delayed tasks rescheduled here)"],
+        "total_labor_units_required": 3,
+        "total_water_required_liters": 3200.0,
+        "estimated_total_duration_minutes": 150,
+        "critical_tasks_count": 1,
+        "notes": [
+          "Weather forecast for 2024-06-11: High 31°C / Low 20°C, Rain 15% probability, Wind 8 km/h.",
+          "1 CRITICAL task(s) scheduled — ensure resources are ready before work start."
+        ]
+      }
+    ]
+  }
+}
+
+
+================================================================================
+SCENARIO 2: MULTI-AGENT CONFLICT — FERTILIZATION AND IRRIGATION ON SAME DAY
+Farm: GreenLeaf Agro | Field: FLD-002 | Crop: Cotton | Stage: Vegetative
+================================================================================
+
+KEY BEHAVIORS DEMONSTRATED:
+  - Fertilization scheduled AFTER irrigation (dependency gap: 2h)
+  - Soil amendment task pushed to next day (same-category conflict resolution)
+  - Growth stage context informs priority scoring
+
+INPUT SUMMARY (abbreviated for readability):
+  Recommendations:
+    [A] irr-002 (irrigation_agent)     → Irrigation 4,500L       urgency=6, risk=7, impact=8
+    [B] soil-001 (soil_health_agent)   → NPK Fertilizer 120kg/ha urgency=7, risk=6, impact=8
+    [C] soil-002 (soil_health_agent)   → Lime Amendment 200kg/ha urgency=4, risk=3, impact=5
+    [D] growth-001 (growth_stage_agent)→ Critical window monitor urgency=5, risk=4, impact=6
+
+  Weather: June 12 — Clear, 0% rain, wind 6 km/h
+  Resources: 4 labor units, 80,000L water, equipment: [drip_irrigation, spreader, tractor]
+
+CONFLICT DETECTED:
+  - [B] soil-001 and [C] soil-002 are both "fertilization" category on same day
+  - Scores: [B] = 7.0, [C] = 4.2
+  - Resolution: Keep [B] (higher score), push [C] to next day
+
+DEPENDENCY APPLIED:
+  - [B] soil-001 depends on [A] irr-002 being completed first
+  - Gap rule: irrigation → fertilization = 2 hours
+  - [A] irr-002 scheduled 06:00–07:30 (90 min)
+  - [B] soil-001 scheduled at 07:30 + 2h = 09:30
+
+EXPECTED OUTPUT SUMMARY:
+  Scheduled: 3 tasks (irr-002, soil-001, growth-001)
+  Delayed:   1 task  (soil-002 → 2024-06-13)
+  Skipped:   0 tasks
+  Conflicts detected: 1 (duplicate fertilization category)
+  Conflicts resolved: 1 (soil-002 rescheduled)
+
+  Task schedule for 2024-06-12:
+    06:00–07:30  [HIGH]     irr-002   Irrigation 4,500L (drip)
+    09:30–10:30  [HIGH]     soil-001  NPK Fertilizer Application
+    10:30–11:00  [MEDIUM]   growth-001 Growth Stage Monitoring
+
+  Task schedule for 2024-06-13:
+    06:00–07:00  [MEDIUM]   soil-002  Lime Amendment Application
+
+
+================================================================================
+SCENARIO 3: CRITICAL PEST OUTBREAK — NO LABOR AVAILABLE
+Farm: Delta Fields | Field: FLD-005 | Crop: Rice | Stage: Fruiting
+================================================================================
+
+KEY BEHAVIORS DEMONSTRATED:
+  - CRITICAL task warns but does NOT get skipped even with no labor
+  - Low/medium tasks are delayed due to no labor
+  - Warnings are populated in the plan
+
+INPUT SUMMARY:
+  Recommendations:
+    [A] pest-005 (pest_disease_agent)  → Blast fungus treatment severity=9.2  urgency=9.5, risk=9.8, impact=9.0
+    [B] irr-005  (irrigation_agent)    → Routine irrigation 2,000L             urgency=4,   risk=3,   impact=5
+    [C] soil-005 (soil_health_agent)   → Boron micronutrient spray             urgency=3,   risk=2,   impact=4
+
+  Resources:
+    labor_available: false
+    labor_units_available: 0
+    equipment_available: ["sprayer", "drip_irrigation"]
+
+DECISION LOGIC:
+  [A] pest-005 → score = (9.5×0.4) + (9.8×0.35) + (9.0×0.25) × trust_multiplier(1.1)
+              = (3.8 + 3.43 + 2.25) × 1.1 = 9.48 × 1.1 = 10.0 (clamped)
+              = CRITICAL → proceed with warning (no labor)
+  [B] irr-005  → score = (4×0.4) + (3×0.35) + (5×0.25) = 1.6+1.05+1.25 = 3.9 → MEDIUM
+              → No labor → delay (non-critical)
+  [C] soil-005 → score = (3×0.4) + (2×0.35) + (4×0.25) = 1.2+0.7+1.0 = 2.9 → LOW
+              → No labor → delay (non-critical)
+
+EXPECTED OUTPUT SUMMARY:
+  Scheduled: 1 task (pest-005 — CRITICAL, proceed despite no labor)
+  Delayed:   2 tasks (irr-005, soil-005 — delayed until labor available)
+  Skipped:   0 tasks
+  Warnings:
+    - "CRITICAL task pest-005 (Blast Fungus Emergency Treatment) has no labor assigned — farm manager must escalate immediately."
+
+
+================================================================================
+SCENARIO 4: DEPENDENCY CHAIN — PLANTING SEQUENCE
+Farm: Heritage Seeds | Field: FLD-007 | Crop: Tomato | Stage: Germination
+================================================================================
+
+KEY BEHAVIORS DEMONSTRATED:
+  - Strict sequential execution: soil_prep → planting → irrigation
+  - Gaps enforced: soil_prep→planting = 24h, planting→irrigation = 1h
+
+DEPENDENCY CHAIN:
+  soil-010 (soil_preparation) → plant-010 (planting) → irr-010 (irrigation)
+  Timeline:
+    Day 1 06:00 → soil-010 completes 08:00
+    Day 2 06:00 → plant-010 starts (24h gap enforced)
+    Day 2 07:30 → plant-010 completes
+    Day 2 08:30 → irr-010 starts (1h gap)
+    Day 2 10:00 → irr-010 completes
+
+EXPECTED PLAN:
+  2024-06-10:
+    06:00–08:00  soil-010  Soil Preparation — Raised Bed Tilling [MEDIUM]
+  2024-06-11:
+    06:00–07:30  plant-010 Tomato Seedling Transplant [HIGH]
+    08:30–10:00  irr-010   Post-Plant Irrigation 800L [HIGH]
+
+
+================================================================================
+SCENARIO 5: FORECAST HORIZON OVERFLOW — ALL DAYS RAINY
+Farm: Monsoon Valley | Field: FLD-009 | Crop: Sugarcane | Stage: Vegetative
+================================================================================
+
+KEY BEHAVIORS DEMONSTRATED:
+  - 5-day forecast is all high rain probability
+  - Irrigation gets SKIPPED (no suitable window in horizon)
+  - Pesticide gets SKIPPED (same reason)
+  - Warnings generated recommending recalculation next day
+
+INPUT:
+  All 5 forecast days: rain_probability = 78–95%, storm_warning = true days 2–4
+
+OUTPUT:
+  Scheduled: 0 tasks
+  Delayed:   0 tasks
+  Skipped:   2 tasks
+  Warnings:
+    - "Recommendation irr-009 (Sugarcane Irrigation) — no weather-suitable window in 5-day horizon. Recommend re-running scheduler tomorrow."
+    - "Recommendation pest-009 (Herbicide Application) — no weather-suitable window. High storm risk for days 2-4."
+  Notes:
+    - Farm manager should manually review field conditions and consider urgent irrigation if soil moisture drops to critical levels.
+
+
+================================================================================
+PRIORITY SCORING REFERENCE TABLE
+================================================================================
+
+  Formula: priority_score = (U×0.40 + R×0.35 + I×0.25) × trust_multiplier
+
+  Agent Trust Multipliers:
+    irrigation_agent    → 1.0
+    soil_health_agent   → 1.0
+    pest_disease_agent  → 1.1  ← elevated (pest damage is rapid)
+    weather_agent       → 1.2  ← ground truth
+    crop_selector_agent → 0.9
+    growth_stage_agent  → 1.0
+
+  Priority Bands:
+    score ≥ 8.0   → CRITICAL  (Execute immediately)
+    score ≥ 6.0   → HIGH      (Execute today)
+    score ≥ 4.0   → MEDIUM    (Execute in 2–3 days)
+    score ≥ 2.0   → LOW       (Execute this week)
+    score < 2.0   → DEFERRED  (Reschedule when conditions allow)
+
+  Example calculations:
+    urgency=9, risk=9, impact=9, agent=pest_disease_agent:
+      raw = (9×0.40)+(9×0.35)+(9×0.25) = 3.6+3.15+2.25 = 9.0
+      score = 9.0 × 1.1 = 9.9 → CRITICAL
+
+    urgency=5, risk=4, impact=6, agent=irrigation_agent:
+      raw = (5×0.40)+(4×0.35)+(6×0.25) = 2.0+1.4+1.5 = 4.9
+      score = 4.9 × 1.0 = 4.9 → MEDIUM
+
+    urgency=2, risk=1, impact=3, agent=soil_health_agent:
+      raw = (2×0.40)+(1×0.35)+(3×0.25) = 0.8+0.35+0.75 = 1.9
+      score = 1.9 × 1.0 = 1.9 → DEFERRED
+
+
+================================================================================
+WEATHER CONSTRAINT DECISION MATRIX
+================================================================================
+
+  Condition                           | Affected Categories        | Action
+  ------------------------------------|----------------------------|----------
+  rain_probability ≥ 70%              | irrigation                 | DELAY
+  rain_probability ≥ 70%              | pest_control               | DELAY
+  rain_probability ≥ 85%              | fertilization, soil_prep   | DELAY
+  wind_speed > 15 km/h                | pest_control, fertilization| DELAY
+  temperature > 35°C                  | pest_control               | DELAY
+  temperature < 5°C                   | pest_control               | DELAY
+  frost_risk = true                   | planting, irrigation, fert.| DELAY
+  storm_warning = true                | all non-CRITICAL           | DELAY
+  heat_stress_risk = true             | weeding, pruning, harvest  | DELAY (morning)
+  No suitable window in horizon        | any delayed task           | SKIP
+
+
+================================================================================
+TASK DEPENDENCY GAP RULES
+================================================================================
+
+  From Category         → To Category          | Min Gap
+  ----------------------|-----------------------|--------
+  irrigation            → fertilization        | 2 hours
+  fertilization         → irrigation           | 12 hours
+  pest_control          → irrigation           | 6 hours
+  irrigation            → pest_control         | 4 hours
+  soil_preparation      → planting             | 24 hours
+  planting              → irrigation           | 1 hour
+
+
+================================================================================
+API ENDPOINTS REFERENCE
+================================================================================
+
+  POST  /api/v1/schedule             Generate a task plan (persisted)
+  POST  /api/v1/schedule/dry-run     Preview a plan (not persisted)
+  GET   /api/v1/plans/{plan_id}      Retrieve stored plan by ID
+  GET   /api/v1/health               Liveness probe (Kubernetes)
+  GET   /api/v1/ready                Readiness probe (Kubernetes)
+  GET   /api/v1/metrics              Service metrics
+  GET   /api/v1/config               Runtime configuration (non-sensitive)
+  GET   /docs                        Swagger UI
+  GET   /redoc                       ReDoc UI
+
+
+================================================================================
+ENVIRONMENT VARIABLES OVERRIDE REFERENCE
+================================================================================
+
+  FARMXPERT_ENVIRONMENT                  = production
+  FARMXPERT_DEBUG                        = false
+  FARMXPERT_LOG_LEVEL                    = INFO
+  FARMXPERT_API_PORT                     = 8080
+  FARMXPERT_API_WORKERS                  = 4
+  FARMXPERT_DEFAULT_PLANNING_HORIZON_DAYS= 3
+  FARMXPERT_PRIORITY_WEIGHT_URGENCY      = 0.40
+  FARMXPERT_PRIORITY_WEIGHT_RISK         = 0.35
+  FARMXPERT_PRIORITY_WEIGHT_IMPACT       = 0.25
+  FARMXPERT_RAIN_PROBABILITY_DELAY_THRESHOLD = 70.0
+  FARMXPERT_WIND_SPEED_SPRAY_MAX_KMH     = 15.0
+  FARMXPERT_MAX_TASKS_PER_DAY            = 8
+  FARMXPERT_RECOMMENDATION_STALE_HOURS   = 24
+  FARMXPERT_DATABASE_URL                 = postgresql://user:pass@host/db
+  FARMXPERT_REDIS_URL                    = redis://localhost:6379/0
+  FARMXPERT_ENABLE_PERSISTENCE           = true
