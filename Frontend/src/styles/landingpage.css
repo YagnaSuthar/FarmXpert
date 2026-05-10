@@ -385,7 +385,7 @@ section {
   width: 100%;
   flex: 1;
   min-height: 420px;
-  margin-top: 20px;
+  margin-top: 45px;
 }
 
 #rootCanvas {
@@ -567,7 +567,7 @@ section {
   background: linear-gradient(to right, transparent 0%, rgba(180, 175, 165, 0.12) 10%, rgba(180, 175, 165, 0.3) 30%, rgba(200, 196, 186, 0.5) 50%, rgba(180, 175, 165, 0.3) 70%, rgba(180, 175, 165, 0.12) 90%, transparent 100%);
   opacity: 0;
   animation: surfaceIn 1.5s ease 2.6s both;
-  top: 422.125px;
+  top: 496.422px !important;
 }
 
 .surface-lbl {
@@ -582,7 +582,7 @@ section {
   white-space: nowrap;
   opacity: 0;
   animation: surfaceIn 1s ease 2.8s both;
-  top: 429.125px;
+  top: 503.422px;
 }
 
 /* pH node sits ON the surface line (top edge of canvas), not straddling it */

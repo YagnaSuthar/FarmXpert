@@ -257,17 +257,17 @@ export default function ChipSceneSection() {
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Sora:wght@300;400;600&display=swap');
 
         .chip-scene-section-chipsection {
-          background: linear-gradient(135deg,#1a1a1a 0%,#252525 45%,#1e1e1e 70%,#141414 100%);
+          background: #131313ff;
           padding: 60px 0 72px;
           position: relative;
           overflow: hidden;
+                    background-image:
+            linear-gradient(to right, rgba(22, 22, 22, 0.85) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(22,22,22,0.85) 1px, transparent 1px);
+          background-size: 40px 40px;
+          background-position: 40px 40px;
         }
-        .chip-scene-section-chipsection::before {
-          content:''; position:absolute; inset:0; pointer-events:none;
-          background:
-            radial-gradient(ellipse 55% 45% at 15% 50%,rgba(74,222,128,.03) 0%,transparent 65%),
-            radial-gradient(ellipse 50% 55% at 85% 50%,rgba(108,99,255,.04) 0%,transparent 65%);
-        }
+
         .chip-scene-section-chipsection .chip-scene-container-chipsection { max-width:960px; margin:0 auto; padding:0 24px; }
         .chip-scene-section-chipsection .chip-scene-header-chipsection  { text-align:center; margin-bottom:40px; }
         .chip-scene-section-chipsection .section-eyebrow-chipsection {
@@ -284,27 +284,35 @@ export default function ChipSceneSection() {
           font-family:'Sora',sans-serif; font-size:14px; color:#666;
           max-width:500px; margin:0 auto; line-height:1.7; font-weight:300;
         }
+
+        /* ── Card wrapper — same bg as section ── */
         .chip-scene-section-chipsection .chip-scene-wrap-chipsection {
           width:100%; border-radius:16px;
-          box-shadow:
-            0 0 0 1px #1e1e1e,
-            8px 8px 32px rgba(0,0,0,.85),
-            -2px -2px 12px rgba(60,60,60,.08),
-            inset 0 1px 0 rgba(255,255,255,.03);
-          background-color: #0d0d0d;
-          background-image:
-            linear-gradient(to right, rgba(22,22,22,0.5) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(22,22,22,0.5) 1px, transparent 1px);
-          background-size: 40px 40px;
-          background-position: 40px 40px;
-          position:relative; overflow:hidden;
+          background-color: #13131300;
+        //   background-image:
+        //     linear-gradient(to right, rgba(22, 22, 22, 0.85) 1px, transparent 1px),
+        //     linear-gradient(to bottom, rgba(22,22,22,0.85) 1px, transparent 1px);
+        //   background-size: 40px 40px;
+        //   background-position: 40px 40px;
+          position:relative; overflow:visible;
           padding: 24px 0;
         }
-        .chip-scene-section-chipsection .chip-scene-inner-chipsection { position:relative; width:100%; }
+
+        .chip-scene-section-chipsection .chip-scene-inner-chipsection { position:relative; width:100%; z-index:1; }
         .chip-scene-section-chipsection .chip-canvas-chipsection {
-          position:absolute; inset:0; width:100%; height:100%; pointer-events:none;
+          position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:2;
         }
-        .chip-scene-section-chipsection .chip-svg-layer-chipsection { display:block; width:100%; height:auto; }
+        .chip-scene-section-chipsection .chip-svg-layer-chipsection { display:block; width:100%; height:auto; position:relative; z-index:1; }
+
+        .filter-container {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 3;
+          border-radius: 16px;
+        }
       `}</style>
 
             <section className="chip-scene-section-chipsection" id="poweredby">
@@ -321,7 +329,10 @@ export default function ChipSceneSection() {
                         </p>
                     </div>
 
+
+
                     <div className="chip-scene-wrap-chipsection">
+                        <div className="filter-container"></div>
                         <div className="chip-scene-inner-chipsection" style={{ aspectRatio: `${VW}/${VH}` }}>
 
                             <canvas ref={canvasRef} className="chip-canvas-chipsection" width={VW} height={VH} />
@@ -333,14 +344,35 @@ export default function ChipSceneSection() {
                                 xmlns="http://www.w3.org/2000/svg"
                             >
                                 <defs>
+                                    <clipPath id="chipClip">
+                                        <rect x="570" y="155" width="260" height="140" rx="12" />
+                                    </clipPath>
+                                    <linearGradient id="shineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
+                                        <stop offset="40%" stopColor="#ffffff" stopOpacity="0.04" />
+                                        <stop offset="50%" stopColor="#ffffff" stopOpacity="0.13" />
+                                        <stop offset="60%" stopColor="#ffffff" stopOpacity="0.04" />
+                                        <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                                    </linearGradient>
+                                    <linearGradient id="leftGlowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stopColor="#2e2e2e" stopOpacity="0.05" />
+                                        <stop offset="10%" stopColor="#2a2a2a" stopOpacity="0.14" />
+                                        <stop offset="24%" stopColor="#222222" stopOpacity="0.20" />
+                                        <stop offset="42%" stopColor="#1a1a1a" stopOpacity="0.12" />
+                                        <stop offset="60%" stopColor="#121212" stopOpacity="0.06" />
+                                        <stop offset="100%" stopColor="#080808" stopOpacity="0" />
+                                    </linearGradient>
+
                                     <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
                                         <stop offset="0%" stopColor="#0e0e0e" />
                                         <stop offset="100%" stopColor="#0a0a0a" />
                                     </linearGradient>
                                     <linearGradient id="chipGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stopColor="#2e2e2e" />
-                                        <stop offset="50%" stopColor="#1c1c1c" />
-                                        <stop offset="100%" stopColor="#161616" />
+                                        <stop offset="0%" stopColor="#353535" />
+                                        <stop offset="25%" stopColor="#2a2a2c" />
+                                        <stop offset="50%" stopColor="#1f2020" />
+                                        <stop offset="75%" stopColor="#191a1a" />
+                                        <stop offset="100%" stopColor="#131414" />
                                     </linearGradient>
                                     <linearGradient id="chipSheen2" x1="0%" y1="0%" x2="100%" y2="0%">
                                         <stop offset="0%" stopColor="#404040" stopOpacity="0" />
@@ -372,6 +404,28 @@ export default function ChipSceneSection() {
                                     fill="none" stroke="#2e2e2e" strokeWidth="1.3" />
                                 <rect x="580" y="165" width="240" height="120" rx="8"
                                     fill="none" stroke="#1e1e1e" strokeWidth="0.8" />
+                                {/* ── Shine sweep: right → left ── */}
+                                <g clipPath="url(#chipClip)">
+                                    <rect y="155" width="90" height="140" fill="url(#shineGrad)"
+                                        transform="skewX(-10)">
+                                        <animateTransform attributeName="transform" type="translate"
+                                            values="400,0; -150,0" additive="sum"
+                                            dur="3.8s" repeatCount="indefinite" calcMode="spline"
+                                            keySplines="0.4 0 0.6 1" />
+                                    </rect>
+                                </g>
+
+                                {/* ── Glow pulse: sweeps right → left at angle ── */}
+                                <g clipPath="url(#chipClip)">
+                                    <rect x="570" y="155" width="80" height="140" fill="url(#leftGlowGrad)"
+                                        opacity="0.42" transform="skewX(-12)">
+                                        <animateTransform attributeName="transform" type="translate"
+                                            values="340,0; -120,0" additive="sum"
+                                            dur="2.6s" repeatCount="indefinite" begin="1.2s"
+                                            calcMode="spline" keySplines="0.25 0 0.6 1" />
+                                    </rect>
+                                </g>
+
                                 <ellipse cx="700" cy="225" rx="160" ry="90" fill="url(#chipAura)" opacity="0" />
 
                                 <g stroke="#252525" strokeWidth="0.8" opacity="0" fill="none">
