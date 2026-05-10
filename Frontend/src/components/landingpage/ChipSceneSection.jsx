@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const VW = 1400;
 const VH = 500;
@@ -131,6 +131,26 @@ export default function ChipSceneSection() {
     const canvasRef = useRef(null);
     const svgRef = useRef(null);
     const rafRef = useRef(null);
+    const sectionRef = useRef(null);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.15 }
+        );
+
+        if (sectionRef.current) {
+            observer.observe(sectionRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, []);
 
     const paths = MODULES.map(m => buildPath(m.pts));
 
@@ -313,9 +333,26 @@ export default function ChipSceneSection() {
           z-index: 3;
           border-radius: 16px;
         }
+
+        .chip-scene-header-chipsection,
+        .chip-scene-wrap-chipsection {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: opacity 2.0s cubic-bezier(0.16, 1, 0.3, 1), transform 2.0s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .chip-scene-wrap-chipsection {
+            transition-delay: 0.5s;
+        }
+
+        .chip-scene-fade-in.visible .chip-scene-header-chipsection,
+        .chip-scene-fade-in.visible .chip-scene-wrap-chipsection {
+            opacity: 1;
+            transform: translateY(0);
+        }
       `}</style>
 
-            <section className="chip-scene-section-chipsection" id="poweredby">
+            <section ref={sectionRef} className={`chip-scene-section-chipsection chip-scene-fade-in ${isVisible ? 'visible' : ''}`} id="poweredby">
                 <div className="chip-scene-container-chipsection">
                     <div className="chip-scene-header-chipsection">
                         <div className="section-eyebrow-chipsection">Core Architecture</div>

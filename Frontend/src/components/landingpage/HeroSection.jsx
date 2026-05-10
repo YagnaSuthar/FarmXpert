@@ -5,11 +5,18 @@ import { Sun } from 'lucide-react';
 export default function HeroSection() {
   useEffect(() => {
     // ══ HERO TITLE — character by character animation ══
+    // const lineData = [
+    //   { text: 'SMART', green: false },
+    //   { text: 'FARMING', green: true },
+    //   { text: 'REDEFINED', green: false },
+    // ];
+
     const lineData = [
-      { text: 'SMART', green: false },
-      { text: 'FARMING', green: true },
-      { text: 'REDEFINED', green: false },
+      { text: 'Revolutionizing', green: false },
+      { text: 'Agriculture', green: true },
+      { text: 'with FarmXpert.', green: false },
     ];
+    //Revolutionizing Agriculture with AI.
 
     const titleEl = document.getElementById('heroTitle');
     if (!titleEl) return;
@@ -26,7 +33,7 @@ export default function HeroSection() {
       [...line.text].forEach((ch) => {
         const span = document.createElement('span');
         span.className = 'char' + (line.green ? ' char-green' : '');
-        span.textContent = ch;
+        span.textContent = ch === ' ' ? '\u00A0' : ch;
         span.style.animationDelay = baseDelay + charIdx * 55 + 'ms';
         lineSpan.appendChild(span);
         charIdx++;
