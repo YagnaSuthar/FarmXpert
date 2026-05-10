@@ -258,7 +258,7 @@ export default function ChipSceneSection() {
 
         .chip-scene-section-chipsection {
           background: linear-gradient(135deg,#1a1a1a 0%,#252525 45%,#1e1e1e 70%,#141414 100%);
-          padding: 80px 0 100px;
+          padding: 60px 0 72px;
           position: relative;
           overflow: hidden;
         }
@@ -268,24 +268,24 @@ export default function ChipSceneSection() {
             radial-gradient(ellipse 55% 45% at 15% 50%,rgba(74,222,128,.03) 0%,transparent 65%),
             radial-gradient(ellipse 50% 55% at 85% 50%,rgba(108,99,255,.04) 0%,transparent 65%);
         }
-        .chip-scene-section-chipsection .chip-scene-container-chipsection { max-width:1480px; margin:0 auto; padding:0 24px; }
-        .chip-scene-section-chipsection .chip-scene-header-chipsection  { text-align:center; margin-bottom:52px; }
+        .chip-scene-section-chipsection .chip-scene-container-chipsection { max-width:960px; margin:0 auto; padding:0 24px; }
+        .chip-scene-section-chipsection .chip-scene-header-chipsection  { text-align:center; margin-bottom:40px; }
         .chip-scene-section-chipsection .section-eyebrow-chipsection {
           font-family:'Orbitron',monospace; font-size:11px; font-weight:600;
           letter-spacing:4px; color:#4ade80; text-transform:uppercase; margin-bottom:16px;
         }
         .chip-scene-section-chipsection .section-title-chipsection {
           font-family:'Orbitron',monospace;
-          font-size:clamp(24px,3.8vw,40px); font-weight:900;
-          color:#e0e0e0; line-height:1.2; margin:0 0 18px; letter-spacing:1px;
+          font-size:clamp(20px,3vw,32px); font-weight:900;
+          color:#e0e0e0; line-height:1.2; margin:0 0 14px; letter-spacing:1px;
         }
         .chip-scene-section-chipsection .text-green-chipsection { color:#4ade80; }
         .chip-scene-section-chipsection .section-sub-chipsection {
-          font-family:'Sora',sans-serif; font-size:15px; color:#666;
-          max-width:560px; margin:0 auto; line-height:1.7; font-weight:300;
+          font-family:'Sora',sans-serif; font-size:14px; color:#666;
+          max-width:500px; margin:0 auto; line-height:1.7; font-weight:300;
         }
         .chip-scene-section-chipsection .chip-scene-wrap-chipsection {
-          width:100%; border-radius:18px;
+          width:100%; border-radius:16px;
           box-shadow:
             0 0 0 1px #1e1e1e,
             8px 8px 32px rgba(0,0,0,.85),
@@ -298,7 +298,7 @@ export default function ChipSceneSection() {
           background-size: 40px 40px;
           background-position: 40px 40px;
           position:relative; overflow:hidden;
-          padding: 40px 0;
+          padding: 24px 0;
         }
         .chip-scene-section-chipsection .chip-scene-inner-chipsection { position:relative; width:100%; }
         .chip-scene-section-chipsection .chip-canvas-chipsection {

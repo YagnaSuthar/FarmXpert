@@ -1,24 +1,26 @@
+import { Brain, Zap, Satellite, BarChart3 } from 'lucide-react';
+
 const featureItems = [
   {
-    icon: '🧠',
+    icon: <Brain size={20} />,
     title: 'Multi-Agent Collaboration',
     desc: 'Agents communicate asynchronously to produce compound recommendations — for example, irrigation schedules that factor in pest stress and forecasted rain simultaneously.',
     delay: '',
   },
   {
-    icon: '⚡',
+    icon: <Zap size={20} />,
     title: 'Real-Time Edge Analytics',
     desc: 'Sub-200ms latency analytics via edge-deployed TensorFlow Lite models, even in low-connectivity rural areas with intermittent internet.',
     delay: '0.1s',
   },
   {
-    icon: '🛰️',
+    icon: <Satellite size={20} />,
     title: 'Satellite + IoT Fusion',
     desc: 'Sentinel-2 satellite bands fused with on-field sensor telemetry for ground-truth accuracy at every spatial scale from 10m² to 1000 hectares.',
     delay: '0.2s',
   },
   {
-    icon: '📊',
+    icon: <BarChart3 size={20} />,
     title: 'Adaptive Learning Loop',
     desc: "Models retrain monthly on your farm's actual outcomes — yield data, treatment results, weather events — continuously improving recommendation precision.",
     delay: '0.3s',
@@ -41,7 +43,7 @@ export default function FeaturesSection() {
             alt="Farm Analytics"
           />
           <div className="feature-badge-card">
-            <div className="fbc-icon">🤖</div>
+            <div className="fbc-icon"><Brain size={28} /></div>
             <span className="fbc-val">8 Agents</span>
             <span className="fbc-label">Always Active</span>
           </div>

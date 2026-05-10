@@ -1,5 +1,6 @@
 'use client';
 import { useEffect } from 'react';
+import { Sun } from 'lucide-react';
 
 export default function HeroSection() {
   useEffect(() => {
@@ -392,7 +393,7 @@ export default function HeroSection() {
           <span className="snode-lbl">Humidity</span>
         </div>
         <div className="snode sm" id="sn-lux" data-x="0.50" data-y="0.88">
-          <span className="snode-sym">☀</span>
+          <span className="snode-sym"><Sun size={14} /></span>
           <span className="snode-val">780</span>
           <span className="snode-lbl">Light lux</span>
         </div>

@@ -1,5 +1,9 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import {
+  Sprout, Droplets, Bug, Wheat, BarChart3, TrendingUp,
+  Satellite, Mic, Layers, Droplet, Shield, LineChart, Radio
+} from 'lucide-react';
 
 const agentCards = [
   {
@@ -7,7 +11,7 @@ const agentCards = [
     delay: '',
     img: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80',
     imgAlt: 'Soil Analysis',
-    icon: '🌱',
+    icon: <Sprout size={24} />,
     tag: 'Soil Health',
     name: 'Soil Intelligence Agent',
     desc: 'Analyzes pH, NPK ratios, moisture, and microbial activity using IoT sensors and LSTM time-series models to recommend optimal amendments.',
@@ -22,7 +26,7 @@ const agentCards = [
     delay: '0.1s',
     img: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=600&q=80',
     imgAlt: 'Smart Irrigation',
-    icon: '💧',
+    icon: <Droplets size={24} />,
     tag: 'Irrigation',
     name: 'Smart Irrigation Agent',
     desc: 'Integrates weather APIs, soil moisture sensors, and evapotranspiration models to schedule precision drip and sprinkler irrigation automatically.',
@@ -37,7 +41,7 @@ const agentCards = [
     delay: '0.2s',
     img: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=600&q=80',
     imgAlt: 'Pest Detection',
-    icon: '🐛',
+    icon: <Bug size={24} />,
     tag: 'Pest & Disease',
     name: 'Pest Detection Agent',
     desc: 'CNN-powered image recognition identifies 240+ pest species and crop diseases from drone or smartphone photos with treatment recommendations.',
@@ -52,7 +56,7 @@ const agentCards = [
     delay: '0.3s',
     img: 'https://images.unsplash.com/photo-1595771805070-1c15ab7dea82?w=600&q=80',
     imgAlt: 'Crop Recommendation',
-    icon: '🌾',
+    icon: <Wheat size={24} />,
     tag: 'Crop AI',
     name: 'Crop Recommendation Agent',
     desc: 'Matches soil profiles, climate patterns, and market trends to suggest the most profitable crops with seasonal rotation strategies.',
@@ -67,7 +71,7 @@ const agentCards = [
     delay: '0.1s',
     img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80',
     imgAlt: 'Yield Prediction',
-    icon: '🌽',
+    icon: <BarChart3 size={24} />,
     tag: 'Yield AI',
     name: 'Yield Prediction Agent',
     desc: 'LSTM models trained on 10+ years of satellite imagery and climate data forecast per-acre yield 8 weeks ahead with 91% accuracy.',
@@ -82,7 +86,7 @@ const agentCards = [
     delay: '0.2s',
     img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80',
     imgAlt: 'Market Forecast',
-    icon: '📈',
+    icon: <TrendingUp size={24} />,
     tag: 'Market',
     name: 'Market Price Forecast Agent',
     desc: 'Real-time commodity price tracking with transformer-based forecasting models analyzing 40+ market signals for optimal sell-timing decisions.',
@@ -97,7 +101,7 @@ const agentCards = [
     delay: '0.3s',
     img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80',
     imgAlt: 'Growth Monitor',
-    icon: '📡',
+    icon: <Satellite size={24} />,
     tag: 'Monitoring',
     name: 'Growth Monitoring Agent',
     desc: 'Satellite NDVI analysis and drone imagery track canopy growth, stress zones, and field uniformity weekly to guide variable-rate applications.',
@@ -112,7 +116,7 @@ const agentCards = [
     delay: '0.4s',
     img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
     imgAlt: 'Voice Assistant',
-    icon: '🎙️',
+    icon: <Mic size={24} />,
     tag: 'Voice AI',
     name: 'Voice Farming Assistant',
     desc: 'Multilingual voice AI trained on agricultural terminology lets farmers query all agents hands-free in the field — supports 12 regional languages.',

@@ -64,3 +64,33 @@ nav {
   background: rgba(74, 222, 128, 0.08) !important;
   box-shadow: 0 0 24px rgba(74, 222, 128, 0.2) !important;
 }
+
+/* ── Navbar Mobile ── */
+@media (max-width: 768px) {
+  nav {
+    padding: 14px 20px;
+    cursor: auto;
+  }
+
+  .nav-logo {
+    font-size: 1.15rem;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .nav-cta {
+    cursor: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  nav {
+    padding: 12px 16px;
+  }
+
+  .nav-logo {
+    font-size: 1rem;
+  }
+}

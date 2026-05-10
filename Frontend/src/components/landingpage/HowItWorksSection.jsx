@@ -1,28 +1,30 @@
+import { Radio, Microscope, Handshake, CheckCircle2 } from 'lucide-react';
+
 const steps = [
   {
     num: '01',
-    icon: '📡',
+    icon: <Radio size={18} />,
     title: 'Data Ingestion',
     desc: 'IoT sensors, drones, satellite feeds, and weather APIs stream live data to the FarmXpert edge gateway continuously.',
     delay: '',
   },
   {
     num: '02',
-    icon: '🔬',
+    icon: <Microscope size={18} />,
     title: 'Agent Analysis',
     desc: 'Specialized AI agents process relevant data streams in parallel using CNN, LSTM, and transformer models optimized for agriculture.',
     delay: '0.1s',
   },
   {
     num: '03',
-    icon: '🤝',
+    icon: <Handshake size={18} />,
     title: 'Multi-Agent Fusion',
     desc: 'Orchestration layer combines insights from all agents, resolves conflicts, and weights recommendations by confidence scores.',
     delay: '0.2s',
   },
   {
     num: '04',
-    icon: '✅',
+    icon: <CheckCircle2 size={18} />,
     title: 'Smart Action',
     desc: 'Recommendations delivered via app, voice, or direct actuator control — automated irrigation, alerts, task assignments, and reports.',
     delay: '0.3s',
