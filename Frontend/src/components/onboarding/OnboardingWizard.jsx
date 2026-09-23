@@ -17,7 +17,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import {
   ArrowLeft, ArrowRight, Check, CheckCircle2, Cpu, Droplets, FlaskConical, Loader2, LocateFixed,
   MapPin, Minus, Plus, Sprout, Tractor, User, Wifi,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 import { useRouter } from '@/i18n/navigation';
 import { ApiError, api } from '@/lib/api';
@@ -90,6 +90,7 @@ export default function OnboardingWizard() {
   // Restore the draft, then the choices the backend understands.
   useEffect(() => {
     const draft = readDraft();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage is only readable after mount
     setData((d) => ({
       ...(draft?.data || d),
       profile: { ...(draft?.data?.profile || d.profile), name: draft?.data?.profile?.name || user?.name || '',
@@ -216,7 +217,7 @@ export default function OnboardingWizard() {
   return (
     <div className="min-h-dvh">
       {/* top bar */}
-      <header className="sticky top-0 z-30 border-b border-line bg-canvas/85 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-line bg-canvas">
         <div className="container-app flex h-16 items-center justify-between">
           <Logo href="/" />
           <div className="flex items-center gap-3">
@@ -245,9 +246,9 @@ export default function OnboardingWizard() {
                   <li key={s.id}>
                     <button type="button" onClick={() => (i < step ? setStep(i) : null)} disabled={i > step}
                       className={cn('flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm transition-colors',
-                        active ? 'bg-white/12 text-white' : done ? 'text-white/80 hover:bg-white/6' : 'text-white/40')}>
+                        active ? 'bg-panel-raised text-white' : done ? 'text-white/80 hover:bg-panel-raised' : 'text-white/40')}>
                       <span className={cn('grid size-8 shrink-0 place-items-center rounded-full border',
-                        done ? 'border-gold bg-gold text-forest-deep' : active ? 'border-gold text-gold' : 'border-white/20')}>
+                        done ? 'border-gold bg-gold text-forest-deep' : active ? 'border-gold text-gold' : 'border-panel-line')}>
                         {done ? <Check className="size-4" /> : <s.icon className="size-4" />}
                       </span>
                       {t(`steps.${s.id}.short`)}
@@ -382,7 +383,7 @@ function StepFarm({ data, set, errors, t, opt, options, acres }) {
       <TextField label={t('fields.farmName')} placeholder={t('fields.farmNamePlaceholder')} value={f.name}
         onChange={(e) => set('farm', 'name', e.target.value)} error={err(errors, 'farm.name')} />
 
-      <div className="rounded-2xl border border-line bg-canvas/60 p-5">
+      <div className="rounded-2xl border border-line bg-canvas p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-medium">{t('fields.location')}</p>
@@ -621,6 +622,13 @@ function StepResources({ data, set, t, opt, options }) {
 
 // ── step 6: Blynk device ────────────────────────────────────────────────────
 
+// The probe's nine channels (Blynk V0-V8), in pin order, with display units.
+const SENSOR_PINS = [
+  ['air_temperature', '°C'], ['air_humidity', '%'], ['soil_moisture', '%'],
+  ['soil_temperature', '°C'], ['electrical_conductivity', 'dS/m'], ['soil_ph', ''],
+  ['nitrogen', 'mg/kg'], ['phosphorus', 'mg/kg'], ['potassium', 'mg/kg'],
+];
+
 function StepDevice({ data, set, errors, t }) {
   const d = data.device;
   const [test, setTest] = useState(null);     // null | 'testing' | {ok, reading} | {error}
@@ -649,16 +657,24 @@ function StepDevice({ data, set, errors, t }) {
           <Button variant="outline" size="sm" onClick={check} loading={test === 'testing'}>{t('fields.testDevice')}</Button>
           {test && test !== 'testing' && (test.error
             ? <span className="text-sm text-danger">{test.error}</span>
-            : (
-              <span className="flex flex-wrap items-center gap-2 text-sm text-leaf">
-                <CheckCircle2 className="size-4" aria-hidden />{t('fields.deviceOk')}
-                {Object.entries(test.reading || {}).slice(0, 4).map(([k, v]) => (
-                  <span key={k} className="rounded-full bg-sage px-2.5 py-0.5 text-xs text-ink">{t.has(`soilFields.${k}`) ? t(`soilFields.${k}`) : k}: {v}</span>
-                ))}
-              </span>
-            ))}
+            : <span className="flex items-center gap-2 text-sm font-medium text-leaf"><CheckCircle2 className="size-4" aria-hidden />{t('fields.deviceOk')}</span>)}
           {test === 'testing' && <Loader2 className="size-4 animate-spin text-faint" aria-hidden />}
         </div>
+      )}
+      {test?.reading && (
+        <dl className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+          {SENSOR_PINS.map(([key, unit]) => {
+            const value = test.reading[key];
+            return (
+              <div key={key} className="rounded-2xl border border-line bg-surface px-4 py-3 shadow-card">
+                <dt className="text-xs text-muted">{t.has(`soilFields.${key}`) ? t(`soilFields.${key}`) : key}</dt>
+                <dd className="mt-1 font-serif text-xl text-ink tabular-nums">
+                  {value ?? '—'}{value != null && unit && <span className="ml-1 font-sans text-xs text-faint">{unit}</span>}
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
       )}
     </div>
   );

@@ -91,8 +91,12 @@ export default function AuthMeshArt() {
           poly.setAttribute('fill', facetColor(cx, cy, W, H));
           poly.classList.add('facet-poly-auth');
           if (!reduceMotion) poly.style.animationDelay = `${(rand() * 0.5).toFixed(2)}s`;
+          // Drop the entrance animation once it has played: a live animation
+          // would restart when the facet is re-appended on hover (the old
+          // first-hover stutter) and would pin its transform.
+          poly.addEventListener('animationend', () => { poly.style.animation = 'none'; }, { once: true });
           poly.addEventListener('mouseenter', () => {
-            svg.appendChild(poly);          // lift above its neighbours
+            if (svg.lastChild !== poly) svg.appendChild(poly);   // lift above its neighbours
             poly.classList.add('poly-hovered-auth');
           });
           poly.addEventListener('mouseleave', () => poly.classList.remove('poly-hovered-auth'));

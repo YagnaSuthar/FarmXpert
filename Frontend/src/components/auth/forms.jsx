@@ -10,7 +10,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from '@/components/ui/icons';
 
 import { Link, useRouter } from '@/i18n/navigation';
 import { ApiError, api } from '@/lib/api';
@@ -244,7 +244,7 @@ export function VerifyEmailForm() {
 
   // Arrived from a login with an unverified address: send a fresh code once.
   useEffect(() => {
-    if (search.get('resend') === '1' && email) resend();
+    if (search.get('resend') === '1' && email) Promise.resolve().then(resend);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const submit = async (value = code) => {

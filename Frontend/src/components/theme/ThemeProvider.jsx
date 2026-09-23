@@ -3,22 +3,21 @@
 // ============================================================
 // FILE: src/components/theme/ThemeProvider.jsx
 //
-// Light / dark / system for the app. The choice is a cookie the
-// server reads when rendering, so the first paint is already in the
-// right theme - no flash, no inline script. "system" is resolved by
-// CSS (prefers-color-scheme), so it follows the phone live.
+// Light or dark for the app (light by default). The choice is a
+// cookie the server reads when rendering, so the first paint is
+// already in the right theme - no flash, no inline script.
 // ============================================================
 
 import { createContext, useCallback, useContext, useState } from 'react';
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from '@/components/ui/icons';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/cn';
 
 export const THEME_COOKIE = 'fx_theme';
-const ThemeContext = createContext(null);
+const ThemeContext = globalThis.__fxThemeContext ??= createContext(null);   // one instance (see AuthContext)
 
-export function ThemeProvider({ initial = 'system', children, className }) {
+export function ThemeProvider({ initial = 'light', children, className }) {
   const [mode, setModeState] = useState(initial);
 
   const setMode = useCallback((next) => {
@@ -40,16 +39,15 @@ export function useTheme() {
 const MODES = [
   { value: 'light', icon: Sun },
   { value: 'dark', icon: Moon },
-  { value: 'system', icon: Monitor },
 ];
 
-/** Three-way segmented switch. `compact` shows a single cycling button. */
+/** Two-way segmented switch. `compact` shows a single cycling button. */
 export function ThemeToggle({ compact = false, className }) {
   const { mode, setMode } = useTheme();
   const t = useTranslations('app.theme');
   if (compact) {
     const index = MODES.findIndex((m) => m.value === mode);
-    const current = MODES[index] || MODES[2];
+    const current = MODES[index] || MODES[0];
     const next = MODES[(index + 1) % MODES.length];
     return (
       <button type="button" onClick={() => setMode(next.value)}

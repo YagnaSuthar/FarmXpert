@@ -6,11 +6,10 @@
 // ============================================================
 
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from '@/components/ui/icons';
 
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
-import Botanical from '@/components/ui/Botanical';
 import { Skeleton } from '@/components/ui/primitives';
 
 export function PageHeader({ eyebrow, title, script, lead, action }) {
@@ -30,7 +29,7 @@ export function PageHeader({ eyebrow, title, script, lead, action }) {
 
 export function Section({ title, subtitle, href, linkLabel, children, className, bodyClass }) {
   return (
-    <section className={cn('rounded-[1.75rem] border border-line bg-surface shadow-card', className)}>
+    <section className={cn('relative rounded-[4px] border border-line bg-surface', className)}>
       {(title || href) && (
         <header className="flex items-start justify-between gap-4 px-6 pt-5 pb-1 sm:px-7">
           <div>
@@ -56,10 +55,10 @@ export function Stat({ icon: Icon, label, value, unit, note, tone = 'leaf', load
     danger: 'bg-danger/10 text-danger',
   };
   return (
-    <div className="group relative overflow-hidden rounded-[1.5rem] border border-line bg-surface p-5 shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:shadow-soft">
+    <div className="group relative overflow-hidden rounded-[4px] border border-line bg-surface p-5 transition-colors hover:border-faint/40">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted">{label}</p>
-        <span className={cn('grid size-9 place-items-center rounded-full', tones[tone])}><Icon className="size-4.5" aria-hidden /></span>
+        <span className={cn('grid size-9 place-items-center rounded-[3px]', tones[tone])}><Icon className="size-4.5" aria-hidden /></span>
       </div>
       {loading ? <Skeleton className="mt-4 h-9 w-24" /> : (
         <p className="mt-3 font-serif text-[2.1rem] leading-none text-forest dark:text-ink">
@@ -73,9 +72,8 @@ export function Stat({ icon: Icon, label, value, unit, note, tone = 'leaf', load
 
 export function Empty({ icon: Icon, title, text, action }) {
   return (
-    <div className="relative overflow-hidden rounded-[1.5rem] border border-dashed border-line bg-canvas/60 px-6 py-10 text-center">
-      <Botanical name="leafLight" className="-top-4 -right-4 w-20 rotate-45 opacity-30" />
-      <span className="mx-auto grid size-12 place-items-center rounded-full bg-sage"><Icon className="size-5 text-leaf" aria-hidden /></span>
+    <div className="relative overflow-hidden rounded-[2px] border border-dashed border-line bg-canvas px-6 py-10 text-center">
+      <span className="mx-auto grid size-12 place-items-center rounded-[3px] bg-sage"><Icon className="size-5 text-leaf" aria-hidden /></span>
       <p className="mt-4 font-serif text-lg text-ink">{title}</p>
       {text && <p className="mx-auto mt-1 max-w-sm text-sm text-muted">{text}</p>}
       {action && <div className="mt-5 flex justify-center">{action}</div>}

@@ -10,7 +10,8 @@
     "features": "Features",
     "howItWorks": "How It Works",
     "technology": "Technology",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "theme": "Switch light / dark"
   },
   "languageSwitcher": {
     "label": "Language",
@@ -649,7 +650,14 @@
       "farm": "Your farm",
       "switchFarm": "Switch farm",
       "menu": "Main menu",
-      "logout": "Log out"
+      "logout": "Log out",
+      "askCta": "Ask FarmXpert",
+      "groups": {
+        "daily": "Daily",
+        "field": "Field",
+        "business": "Business",
+        "account": "Account"
+      }
     },
     "time": {
       "today": "Today",
@@ -745,7 +753,8 @@
           "pest": "Leaves are yellowing - why?",
           "sell": "Sell now or wait?"
         }
-      }
+      },
+      "planUpdated": "Updated {time}"
     },
     "assistant": {
       "eyebrow": "Your farm advisor",
@@ -790,7 +799,69 @@
         "unavailable": "The advisory service is busy. Try again shortly.",
         "validation_failed": "Please check your question.",
         "rate_limited": "Too many questions at once. Wait a moment."
-      }
+      },
+      "answeredBy": "Answered by",
+      "agents": {
+        "weather_watcher": "Weather Watcher",
+        "soil_health": "Soil Health",
+        "irrigation_planner": "Irrigation Planner",
+        "crop_predictor": "Crop Advisor",
+        "task_scheduler": "Task Planner",
+        "market_intelligence": "Market Intelligence",
+        "retrieval_agent": "Farm Knowledge"
+      },
+      "thinkingSteps": {
+        "reading": "Understanding your question",
+        "weather": "Checking the sky over your farm",
+        "soil": "Reading your soil report",
+        "water": "Working out how much water the field needs",
+        "crop": "Looking at your crop stage",
+        "market": "Scanning today's mandi prices",
+        "history": "Recalling what we discussed",
+        "compare": "Weighing the options",
+        "doses": "Double-checking doses and numbers",
+        "season": "Matching advice to the season",
+        "checking": "Asking the expert agents",
+        "writing": "Writing your answer"
+      },
+      "suggestShort": {
+        "water": "Water today?",
+        "fertiliser": "Urea dose?",
+        "weather": "Rain this week?",
+        "pest": "White spots on leaves?"
+      },
+      "picker": {
+        "label": "Who should answer",
+        "auto": {
+          "name": "FarmXpert",
+          "about": "All experts, auto-picked"
+        },
+        "weather_watcher": {
+          "name": "Weather Watcher",
+          "about": "Forecast, rain, heat and storm alerts"
+        },
+        "soil_health": {
+          "name": "Soil Health",
+          "about": "pH, nutrients, fertiliser and lime"
+        },
+        "irrigation_planner": {
+          "name": "Irrigation Planner",
+          "about": "When to water, and how much"
+        },
+        "crop_predictor": {
+          "name": "Crop Advisor",
+          "about": "What to sow next, and expected yield"
+        },
+        "task_scheduler": {
+          "name": "Task Planner",
+          "about": "The day's farm work, in order"
+        },
+        "market_intelligence": {
+          "name": "Market Intelligence",
+          "about": "Mandi prices, and when to sell"
+        }
+      },
+      "voiceMode": "Voice mode"
     },
     "tasks": {
       "eyebrow": "Work plan",
@@ -922,7 +993,71 @@
       "danger": "Delete account",
       "deleteText": "Deletes your account, farms, readings, plans and conversations. This cannot be undone.",
       "deleteConfirm": "Delete your FarmXpert account and all farm data? This cannot be undone.",
-      "delete": "Delete my account"
+      "delete": "Delete my account",
+      "noDevice": "No sensor connected yet.",
+      "probe": "Soil probe",
+      "lastSeen": "Last reading {when}",
+      "neverSeen": "No reading yet",
+      "showToken": "Show token",
+      "hideToken": "Hide token",
+      "copy": "Copy",
+      "copied": "Copied",
+      "connectedOn": "Connected on {date}",
+      "details": {
+        "title": "Farm details",
+        "farm": "Farm",
+        "field": "Field and crop",
+        "name": "Farm name",
+        "area": "Area",
+        "areaValue": "{acres} acres ({ha} ha)",
+        "state": "State",
+        "district": "District",
+        "address": "Address",
+        "location": "Location (lat, long)",
+        "water": "Water source",
+        "irrigationAvailable": "Irrigation available",
+        "labour": "Workers available",
+        "budget": "Budget",
+        "hours": "Working hours",
+        "equipment": "Equipment",
+        "since": "Added on",
+        "yes": "Yes",
+        "no": "No",
+        "fieldName": "Field",
+        "fieldArea": "Field area",
+        "crop": "Crop",
+        "stage": "Crop stage",
+        "soil": "Soil type",
+        "irrigation": "Irrigation method",
+        "sown": "Sowing date",
+        "harvest": "Expected harvest",
+        "noField": "No field added yet."
+      }
+    },
+    "intro": {
+      "label": "Welcome to FarmXpert",
+      "kicker": "Your farm is ready",
+      "welcome": "Welcome to FarmXpert",
+      "welcomeName": "Welcome, {name}",
+      "line": "Every answer from here on is about your own land.",
+      "skip": "Skip"
+    },
+    "voice": {
+      "title": "Voice mode",
+      "eyebrow": "Voice mode",
+      "handsFreeOn": "Hands-free on",
+      "handsFreeOff": "Hands-free off",
+      "tapToTalk": "Tap to talk",
+      "sendNow": "Send now",
+      "stop": "Stop",
+      "close": "Close voice mode",
+      "noSpeech": "I didn't hear anything. Tap and speak.",
+      "phase": {
+        "idle": "Tap the orb and speak",
+        "listening": "Listening…",
+        "thinking": "Thinking…",
+        "speaking": "Speaking…"
+      }
     }
   }
 }

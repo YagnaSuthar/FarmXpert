@@ -13,6 +13,7 @@
     "dev": "node --watch --env-file-if-exists=.env src/server.js",
     "migrate": "node --env-file-if-exists=.env src/db/migrate.js",
     "migrate:status": "node --env-file-if-exists=.env src/db/migrate.js --status",
+    "seed:demo": "node --env-file-if-exists=.env src/db/seedDemo.js",
     "lifecycle": "node --env-file-if-exists=.env src/jobs/storageLifecycle.js",
     "test": "node --test --test-reporter=spec \"test/**/*.test.js\"",
     "test:integration": "node --env-file-if-exists=.env --test --test-concurrency=1 --test-reporter=spec \"test/integration/*.test.js\""

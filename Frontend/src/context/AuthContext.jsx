@@ -15,7 +15,9 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 
 import { api, onSessionEnd, refreshSession, setAccessToken } from '@/lib/api';
 
-const AuthContext = createContext(null);
+// One instance per page, even if hot reload or chunking evaluates this module
+// twice - otherwise the provider and its consumers hold different contexts.
+const AuthContext = globalThis.__fxAuthContext ??= createContext(null);
 
 // One restore per page load, even under React's double-invoked effects.
 let restoring = null;

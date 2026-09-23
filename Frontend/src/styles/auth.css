@@ -42,63 +42,32 @@
 }
 
 .fx-app[data-mode='dark'] {
-  --auth-page-bg: #050e09;
-  --auth-card-bg: #0e1f16;
-  --auth-card-border: rgba(212, 174, 92, 0.16);
+  --auth-page-bg: #0e100f;
+  --auth-card-bg: #171a18;
+  --auth-card-border: rgba(227, 185, 81, 0.14);
   --auth-card-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.75);
-  --auth-input-bg: #0a1811;
-  --auth-input-border: rgba(164, 179, 167, 0.18);
-  --auth-input-border-hover: rgba(111, 192, 131, 0.4);
-  --auth-input-border-focus: #6fc083;
-  --auth-input-focus-ring: rgba(111, 192, 131, 0.18);
-  --auth-accent: #6fc083;
-  --auth-accent-soft: rgba(111, 192, 131, 0.1);
-  --auth-gold: #d4ae5c;
-  --auth-text: #efe9dc;
-  --auth-text-2: #a4b3a7;
-  --auth-text-3: rgba(164, 179, 167, 0.55);
-  --auth-btn-gradient-start: #0c3a24;
-  --auth-btn-gradient-mid: #1d6b44;
-  --auth-btn-gradient-end: #3c8f58;
+  --auth-input-bg: #121513;
+  --auth-input-border: rgba(167, 173, 166, 0.16);
+  --auth-input-border-hover: rgba(127, 207, 147, 0.4);
+  --auth-input-border-focus: #7fcf93;
+  --auth-input-focus-ring: rgba(127, 207, 147, 0.16);
+  --auth-accent: #7fcf93;
+  --auth-accent-soft: rgba(127, 207, 147, 0.1);
+  --auth-gold: #e3b951;
+  --auth-text: #ecebe4;
+  --auth-text-2: #a7ada6;
+  --auth-text-3: rgba(167, 173, 166, 0.55);
+  --auth-btn-gradient-start: #1d5536;
+  --auth-btn-gradient-mid: #2e7d4f;
+  --auth-btn-gradient-end: #3f9a62;
   --auth-btn-shadow: 0 10px 26px -8px rgba(0, 0, 0, 0.7);
-  --auth-art-bg-start: #020d07;
-  --auth-art-bg-mid: #0a3521;
-  --auth-art-bg-end: #1d6b44;
+  --auth-art-bg-start: #0b0d0c;
+  --auth-art-bg-mid: #1a2a20;
+  --auth-art-bg-end: #2e7d4f;
   --auth-art-shade-1: rgba(0, 0, 0, 0.6);
-  --auth-divider-line: rgba(164, 179, 167, 0.12);
+  --auth-divider-line: rgba(167, 173, 166, 0.12);
   --auth-danger: #f0717b;
-  --auth-success: #6fc083;
-}
-
-@media (prefers-color-scheme: dark) {
-  .fx-app[data-mode='system'] {
-    --auth-page-bg: #050e09;
-    --auth-card-bg: #0e1f16;
-    --auth-card-border: rgba(212, 174, 92, 0.16);
-    --auth-card-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.75);
-    --auth-input-bg: #0a1811;
-    --auth-input-border: rgba(164, 179, 167, 0.18);
-    --auth-input-border-hover: rgba(111, 192, 131, 0.4);
-    --auth-input-border-focus: #6fc083;
-    --auth-input-focus-ring: rgba(111, 192, 131, 0.18);
-    --auth-accent: #6fc083;
-    --auth-accent-soft: rgba(111, 192, 131, 0.1);
-    --auth-gold: #d4ae5c;
-    --auth-text: #efe9dc;
-    --auth-text-2: #a4b3a7;
-    --auth-text-3: rgba(164, 179, 167, 0.55);
-    --auth-btn-gradient-start: #0c3a24;
-    --auth-btn-gradient-mid: #1d6b44;
-    --auth-btn-gradient-end: #3c8f58;
-    --auth-btn-shadow: 0 10px 26px -8px rgba(0, 0, 0, 0.7);
-    --auth-art-bg-start: #020d07;
-    --auth-art-bg-mid: #0a3521;
-    --auth-art-bg-end: #1d6b44;
-    --auth-art-shade-1: rgba(0, 0, 0, 0.6);
-    --auth-divider-line: rgba(164, 179, 167, 0.12);
-    --auth-danger: #f0717b;
-    --auth-success: #6fc083;
-  }
+  --auth-success: #7fcf93;
 }
 
 /* Viewport wrapper */
@@ -118,6 +87,27 @@
   font-family: 'Sora', var(--font-indic), sans-serif;
   color: var(--auth-text);
 }
+
+/* Aaurawell botanicals in the page margins */
+.leaves-auth { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.page-auth, .topbar-auth { z-index: 1; }
+.leaf-auth { position: absolute; height: auto; opacity: 0.9; }
+.leaf-tl-auth { width: clamp(200px, 19vw, 340px); left: -2%; top: -4%; transform: scaleY(-1); animation: sway-tl-auth 11s ease-in-out infinite; }
+.leaf-bl-auth { width: clamp(220px, 21vw, 380px); left: -1.5%; bottom: -5%; animation: sway-auth 9s ease-in-out infinite; }
+.leaf-tr-auth { width: clamp(180px, 16vw, 300px); right: -1.5%; top: -4%; transform: scale(-1, -1); animation: sway-tr-auth 12s ease-in-out infinite; }
+.leaf-br-auth { width: clamp(220px, 21vw, 380px); right: -1.5%; bottom: -4%; transform: scaleX(-1); animation: sway-br-auth 10s ease-in-out infinite; }
+.leaf-float-auth { width: 46px; opacity: 0.7; animation: drift-auth 14s ease-in-out infinite; }
+.leaf-f1-auth { left: 14%; top: 18%; }
+.leaf-f2-auth { right: 13%; bottom: 16%; width: 38px; animation-delay: -5s; animation-duration: 17s; }
+.leaf-f3-auth { left: 18%; bottom: 12%; width: 30px; animation-delay: -9s; opacity: 0.5; }
+.fx-app[data-mode='dark'] .leaf-auth { opacity: 0.38; filter: saturate(0.8) brightness(0.85); }
+.fx-app[data-mode='dark'] .leaf-float-auth { opacity: 0.3; }
+@keyframes sway-auth { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(3deg); } }
+@keyframes sway-tl-auth { 0%, 100% { transform: scaleY(-1) rotate(0deg); } 50% { transform: scaleY(-1) rotate(-2.5deg); } }
+@keyframes sway-tr-auth { 0%, 100% { transform: scale(-1, -1) rotate(0deg); } 50% { transform: scale(-1, -1) rotate(-3deg); } }
+@keyframes sway-br-auth { 0%, 100% { transform: scaleX(-1) rotate(0deg); } 50% { transform: scaleX(-1) rotate(2.5deg); } }
+@keyframes drift-auth { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 33% { transform: translate(14px, -18px) rotate(18deg); } 66% { transform: translate(-10px, 8px) rotate(-12deg); } }
+@media (max-width: 900px) { .leaf-float-auth, .leaf-tr-auth { display: none; } .leaf-auth { opacity: 0.45; } }
 
 /* Top-right: language and theme */
 .topbar-auth {
@@ -403,13 +393,16 @@
 .art-mesh-auth { position: absolute; inset: -6%; animation: meshIn-auth 1.1s var(--ease-auth) 0.12s both; }
 .art-mesh-auth svg { width: 100%; height: 100%; display: block; will-change: transform; transition: transform 0.35s var(--ease-auth); }
 .facet-poly-auth {
-  animation: facetIn-auth 0.6s var(--ease-auth) both;
+  animation: facetIn-auth 0.6s var(--ease-auth) backwards;
   cursor: pointer;
   transform-origin: center;
   transform-box: fill-box;
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s;
 }
-.facet-poly-auth.poly-hovered-auth { transform: scale(1.25) translateY(-6px); filter: brightness(1.18) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35)); }
+/* brightness only: an SVG drop-shadow re-rasterises the whole mesh and stutters */
+.facet-poly-auth.poly-hovered-auth { transform: scale(1.22) translateY(-5px); filter: brightness(1.2); }
+/* The mesh layer gets its own compositor layer up front, so the first hover is as smooth as the rest. */
+.art-mesh-auth { transform: translateZ(0); }
 .art-shade-auth {
   position: absolute;
   inset: 0;
@@ -603,8 +596,7 @@
   padding: 0 0.8rem;
   border-radius: 999px;
   border: 1px solid var(--auth-card-border);
-  background: color-mix(in srgb, var(--auth-card-bg) 80%, transparent);
-  backdrop-filter: blur(8px);
+  background: var(--auth-card-bg);
   color: var(--auth-text-2);
   font-size: 0.68rem;
 }
@@ -652,8 +644,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .form-wrap-auth, .art-copy-auth, .art-mesh-auth, .facet-poly-auth { animation: none !important; }
+  .form-wrap-auth, .art-copy-auth, .art-mesh-auth, .facet-poly-auth, .leaf-auth { animation: none !important; }
   .art-mesh-auth svg { transition: none !important; }
 }
 
 }
+.fx-app[data-mode='dark'] .art-mesh-auth svg { filter: brightness(0.74) saturate(0.85); }

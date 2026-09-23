@@ -15,6 +15,7 @@
 //      and OS-level font fallback all pick the correct language.
 // ============================================================
 
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
@@ -88,13 +89,13 @@ export default async function LocaleLayout({ children, params }) {
   // hand them to the client provider.
   const messages = await getMessages();
 
-  // `data-theme="dark"` set statically below so the first paint is on-brand.
-  // If a runtime theme toggle is added later, persist the choice in a cookie
-  // (readable here via `cookies()`) so we can set the attribute server-side
-  // without an inline script — that path avoids React 19's strict warning
-  // about <script> tags inside components.
+  // The landing theme comes from the same `fx_theme` cookie the app uses, read
+  // here so the first paint is already right (no flash, no inline script).
+  // No choice yet: dark, the landing page's original look.
+  const saved = (await cookies()).get('fx_theme')?.value;
+  const theme = saved === 'light' ? 'light' : 'dark';
   return (
-    <html lang={locale} data-theme="dark" suppressHydrationWarning>
+    <html lang={locale} data-theme={theme} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

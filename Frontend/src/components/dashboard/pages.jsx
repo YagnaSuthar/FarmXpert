@@ -6,11 +6,11 @@
 // ============================================================
 
 import { useMemo, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 import {
-  CalendarClock, CheckCircle2, Circle, Cpu, Droplets, FlaskConical, KeyRound, LogOut, RefreshCw, Search, Sprout, Store,
+  CalendarClock, CheckCircle2, Circle, Cpu, Droplets, Eye, EyeOff, FlaskConical, KeyRound, LogOut, RefreshCw, Search, Sprout, Store,
   Trash2, User, Wifi,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 import { useRouter } from '@/i18n/navigation';
 import { ApiError, api } from '@/lib/api';
@@ -418,12 +418,125 @@ export function UsagePage() {
 
 // ── settings ────────────────────────────────────────────────────────────────
 
+/** One labelled value in a details grid; empty values show a quiet dash. */
+function Detail({ label, children, wide = false }) {
+  const empty = children === null || children === undefined || children === '' || (Array.isArray(children) && !children.length);
+  return (
+    <div className={cn('min-w-0 border-b border-line/70 py-3', wide && 'sm:col-span-2')}>
+      <dt className="text-[0.7rem] font-medium tracking-[0.12em] text-faint uppercase">{label}</dt>
+      <dd className={cn('mt-1 text-sm break-words', empty ? 'text-faint' : 'text-ink')}>{empty ? '—' : children}</dd>
+    </div>
+  );
+}
+
+/** Everything saved about the farm and its field, read-only. */
+function FarmDetails({ farm, field }) {
+  const t = useTranslations('dashboard.settings.details');
+  const o = useTranslations('options');
+  const f = useFormatter();
+  const opt = (group, v) => (v && o.has(`${group}.${v}`) ? o(`${group}.${v}`) : v);
+  const r = farm.resources || {};
+  const date = (d) => (d ? f.dateTime(new Date(d), { day: 'numeric', month: 'short', year: 'numeric' }) : null);
+  const coords = farm.latitude != null && farm.longitude != null
+    ? `${Number(farm.latitude).toFixed(5)}, ${Number(farm.longitude).toFixed(5)}` : null;
+  return (
+    <div className="grid gap-8 lg:grid-cols-2">
+      <div>
+        <p className="mb-1 text-xs font-semibold text-leaf">{t('farm')}</p>
+        <dl className="grid gap-x-6 sm:grid-cols-2">
+          <Detail label={t('name')}>{farm.name}</Detail>
+          <Detail label={t('area')}>{farm.area_acres != null && t('areaValue', { acres: farm.area_acres, ha: farm.area_hectares })}</Detail>
+          <Detail label={t('state')}>{farm.state}</Detail>
+          <Detail label={t('district')}>{farm.district}</Detail>
+          <Detail label={t('address')} wide>{farm.address}</Detail>
+          <Detail label={t('location')}>
+            {coords && (
+              <a className="text-leaf underline-offset-2 hover:underline" target="_blank" rel="noreferrer"
+                href={`https://www.google.com/maps?q=${farm.latitude},${farm.longitude}`}>{coords}</a>
+            )}
+          </Detail>
+          <Detail label={t('water')}>{opt('water', farm.water_source)}</Detail>
+          <Detail label={t('irrigationAvailable')}>{r.irrigation_available == null ? null : r.irrigation_available ? t('yes') : t('no')}</Detail>
+          <Detail label={t('labour')}>{r.labor_units_available}</Detail>
+          <Detail label={t('budget')}>{r.budget_available != null && f.number(r.budget_available, { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</Detail>
+          <Detail label={t('hours')}>{r.working_hours_start && `${r.working_hours_start} – ${r.working_hours_end || ''}`}</Detail>
+          <Detail label={t('equipment')} wide>{(r.equipment_available || []).map((e) => opt('equipment', e)).join(', ')}</Detail>
+          <Detail label={t('since')}>{date(farm.created_at)}</Detail>
+        </dl>
+      </div>
+      <div>
+        <p className="mb-1 text-xs font-semibold text-leaf">{t('field')}</p>
+        {field ? (
+          <dl className="grid gap-x-6 sm:grid-cols-2">
+            <Detail label={t('fieldName')}>{field.name}</Detail>
+            <Detail label={t('fieldArea')}>{field.area_acres != null && t('areaValue', { acres: field.area_acres, ha: field.area_hectares })}</Detail>
+            <Detail label={t('crop')}>{opt('crops', field.crop_name)}</Detail>
+            <Detail label={t('stage')}>{opt('stages', field.growth_stage)}</Detail>
+            <Detail label={t('soil')}>{opt('soils', field.soil_type)}</Detail>
+            <Detail label={t('irrigation')}>{opt('irrigation', field.irrigation_method)}</Detail>
+            <Detail label={t('sown')}>{date(field.sown_on)}</Detail>
+            <Detail label={t('harvest')}>{date(field.expected_harvest_on)}</Detail>
+          </dl>
+        ) : <p className="py-3 text-sm text-faint">{t('noField')}</p>}
+      </div>
+    </div>
+  );
+}
+
+/** The connected probe: label, masked token with reveal and copy, last reading time. */
+function SavedDevice({ device }) {
+  const t = useTranslations('dashboard.settings');
+  const f = useFormatter();
+  const [shown, setShown] = useState(false);
+  const [copied, setCopied] = useState(false);
+  if (!device) return <p className="rounded-xl border border-dashed border-line px-4 py-3 text-sm text-faint">{t('noDevice')}</p>;
+  const token = device.token || '';
+  const masked = token ? `${'•'.repeat(Math.max(0, token.length - 4))}${token.slice(-4)}` : `••••${device.token_hint || ''}`;
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(token); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch { /* clipboard blocked */ }
+  };
+  return (
+    <div className="rounded-xl border border-line bg-canvas p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="relative flex size-2">
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-leaf/60" />
+            <span className="relative inline-flex size-2 rounded-full bg-leaf" />
+          </span>
+          <p className="text-sm font-medium text-ink">{device.label || t('probe')}</p>
+        </div>
+        <p className="text-xs text-faint">
+          {device.last_seen_at ? t('lastSeen', { when: f.relativeTime(new Date(device.last_seen_at), new Date()) }) : t('neverSeen')}
+        </p>
+      </div>
+      <div className="mt-3 flex items-center gap-2 rounded-lg border border-line bg-surface py-1.5 pr-1.5 pl-3">
+        <code className="min-w-0 flex-1 truncate font-mono text-[0.8rem] tracking-wide text-ink">{shown ? token : masked}</code>
+        {token && (
+          <>
+            <button type="button" onClick={() => setShown((v) => !v)} aria-label={shown ? t('hideToken') : t('showToken')}
+              className="grid size-8 place-items-center rounded-md text-faint transition-colors hover:bg-canvas hover:text-ink">
+              {shown ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            </button>
+            <button type="button" onClick={copy}
+              className="rounded-md px-2.5 py-1.5 text-xs font-medium text-leaf transition-colors hover:bg-sage">
+              {copied ? t('copied') : t('copy')}
+            </button>
+          </>
+        )}
+      </div>
+      <p className="mt-2 text-xs text-faint">{t('connectedOn', { date: f.dateTime(new Date(device.created_at), { day: 'numeric', month: 'short', year: 'numeric' }) })}</p>
+    </div>
+  );
+}
+
 function SettingsView() {
   const t = useTranslations('dashboard.settings');
   const { user, setUser, logout } = useAuth();
-  const { farm, reload } = useFarm();
+  const { farm, field, reload } = useFarm();
   const router = useRouter();
   const err = useErr();
+  const devices = useApi(farm ? `/farms/${farm.id}/devices` : null);
+  const device = devices.data?.items?.find((d) => d.is_active) || null;
   const [profile, setProfile] = useState({ name: user?.name || '', phone: user?.phone || '' });
   const [farmForm, setFarmForm] = useState({ name: farm?.name || '', district: farm?.district || '' });
   const [pw, setPw] = useState({ current_password: '', password: '' });
@@ -483,12 +596,20 @@ function SettingsView() {
             <form id="device" className="space-y-4" onSubmit={(e) => { e.preventDefault(); act('device', async () => {
               await api.post(`/farms/${farm.id}/devices`, { token: token.trim(), label: 'Soil probe' });
               setToken('');
+              devices.reload();
             }, t('deviceSaved')); }}>
               <Alert tone={msg.device?.tone}>{msg.device?.text}</Alert>
+              <SavedDevice device={device} />
               <TextField label={t('token')} icon={Cpu} value={token} autoComplete="off" spellCheck={false}
                 onChange={(e) => setToken(e.target.value.trim())} hint={t('tokenHint')} />
               <div className="flex justify-end"><Button type="submit" disabled={token.length < 8} loading={busy === 'device'}>{t('connect')}</Button></div>
             </form>
+          </Section>
+        )}
+
+        {farm && (
+          <Section title={t('details.title')} className="xl:col-span-2">
+            <FarmDetails farm={farm} field={field} />
           </Section>
         )}
 

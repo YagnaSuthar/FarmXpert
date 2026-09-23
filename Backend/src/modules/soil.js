@@ -4,7 +4,7 @@
 
 import { Router } from 'express';
 
-import { readPins } from '../clients/blynk.js';
+import { cleanToken, readPins } from '../clients/blynk.js';
 import { one, query, transaction } from '../db/pool.js';
 import { HttpError, conflict, notFound } from '../lib/errors.js';
 import { decodeCursor, toPage } from '../lib/paging.js';
@@ -65,11 +65,15 @@ export async function insertReading(farmId, reading, db = { query }) {
   return rows[0] ?? null;
 }
 
-/** The newest reading for a farm, or one field: what the chat path sends to the AI. */
+/**
+ * The newest reading for a farm, or one field: what the chat path sends to the AI.
+ * A field also sees farm-wide readings (field_id NULL) - that is where a Blynk
+ * probe's readings land, since a probe belongs to the farm, not one field.
+ */
 export async function latestReading(farmId, fieldId = null) {
   return one(
     `SELECT ${READING_COLUMNS} FROM soil_data
-      WHERE farm_id = $1 AND ($2::uuid IS NULL OR field_id = $2)
+      WHERE farm_id = $1 AND ($2::uuid IS NULL OR field_id = $2 OR field_id IS NULL)
       ORDER BY recorded_at DESC LIMIT 1`,
     [farmId, fieldId],
   );
@@ -128,9 +132,10 @@ soilRoutes.get(
 
 // ── devices ─────────────────────────────────────────────────────────────────
 
-// Never returns the token itself: only its last four characters.
+// The token goes back only to the farm's owner (every route below is behind
+// requireFarm / requireOwned), so they can check or copy what is connected.
 const DEVICE_COLUMNS = `id, farm_id, label, is_active, revoked_at, last_seen_at, created_at,
-  right(token, 4) AS token_hint`;
+  right(token, 4) AS token_hint, token`;
 
 soilRoutes.post(
   '/farms/:id/devices',
@@ -140,7 +145,7 @@ soilRoutes.post(
     body: {
       type: 'object',
       properties: {
-        token: { type: 'string', minLength: 8, maxLength: 100 },
+        token: { type: 'string', minLength: 8, maxLength: 300 },   // cleaned by cleanToken
         label: { type: 'string', maxLength: 80 },
       },
       required: ['token'],
@@ -149,6 +154,17 @@ soilRoutes.post(
   requireFarm(),
   async (req, res) => {
     await farmExists(req.params.id);
+    req.body.token = cleanToken(req.body.token);
+    // Check the token with Blynk first: a mistyped token must never replace
+    // a working one. Unreachable Blynk is reported, not guessed around.
+    try {
+      await readPins(req.body.token);
+    } catch (err) {
+      if (err.code === 'invalid_token') {
+        throw new HttpError(422, 'invalid_device_token', 'Blynk did not accept this token. Please check it.');
+      }
+      throw new HttpError(502, 'device_unreachable', 'Could not reach the device service. Try again shortly.');
+    }
     // Rotate: revoke the active token and register the new one atomically,
     // so the one-active-token index never sees two.
     const device = await transaction(async (client) => {
@@ -219,3 +235,21 @@ soilRoutes.post('/farms/:id/devices/sync', authenticate, validate({ params: idPa
   await farmExists(req.params.id);
   res.json(await syncDevice(req.params.id));
 });
+
+/**
+ * Read every farm's active probe (the scheduled job). One slow or broken
+ * device never stops the rest; each outcome is counted, never thrown.
+ */
+export async function syncAllDevices() {
+  const { rows } = await query('SELECT farm_id FROM blynk_tokens WHERE is_active');
+  const result = { devices: rows.length, stored: 0, failed: 0 };
+  for (const { farm_id: farmId } of rows) {
+    try {
+      const out = await syncDevice(farmId);
+      if (out.reading) result.stored += 1;
+    } catch {
+      result.failed += 1;
+    }
+  }
+  return result;
+}

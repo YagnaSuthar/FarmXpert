@@ -396,7 +396,17 @@ Absolute rules:
 - If the facts contain a conflict or a refusal, tell the farmer about it plainly.
 
 Style: speak to the farmer directly, in short sentences.
-Lead with what to do today. Keep it under 180 words. No headings, no markdown."""
+Lead with what to do today."""
+
+# Typed answers are rendered as Markdown in the app, so structure helps the
+# farmer scan them on a phone.
+_TEXT_RULES = """This answer is READ in the app, which renders Markdown.
+- Open with one bold line: the single most important action today.
+- Then short bullet points; **bold** the key numbers (doses, mm, dates, prices).
+- When comparing 3+ items (days of a forecast, crops, markets), use a small
+  Markdown table of at most 4 columns.
+- Use a `###` heading only to separate two clearly different topics.
+- Keep it under 220 words. No emoji, no code blocks."""
 
 # Voice answers are read aloud by text-to-speech: no symbols it would spell
 # out, units said in words, and short enough to listen to in one go.
@@ -460,8 +470,7 @@ def answer_prompt(query: Optional[str], results: Dict[str, Any], *,
                                    ensure_ascii=False)
 
     system = f"{_ANSWER_RULES}\n\n{_FORMAT_NOTE[fact_format]}"
-    if mode == "voice":
-        system += "\n\n" + _VOICE_RULES
+    system += "\n\n" + (_VOICE_RULES if mode == "voice" else _TEXT_RULES)
     earlier = ""
     if history:
         # The last few turns only: enough to resolve "and tomorrow?", while the
@@ -475,7 +484,7 @@ def answer_prompt(query: Optional[str], results: Dict[str, Any], *,
 
 
 def answer_budget(mode: str) -> int:
-    return 260 if mode == "voice" else 500
+    return 260 if mode == "voice" else 700
 
 
 async def answer(query: Optional[str], results: Dict[str, Any], *,

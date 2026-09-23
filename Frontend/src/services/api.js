@@ -63,7 +63,7 @@ async function stream(path, init, onEvent) {
 }
 
 /** A typed question, answered as a stream. */
-export function askText({ query, farmId, fieldId, conversationId, language }, onEvent, signal) {
+export function askText({ query, farmId, fieldId, conversationId, language, intents, agents }, onEvent, signal) {
   return stream('/chat/ask', {
     method: 'POST',
     signal,
@@ -74,6 +74,8 @@ export function askText({ query, farmId, fieldId, conversationId, language }, on
       ...(fieldId && { field_id: fieldId }),
       ...(conversationId && { conversation_id: conversationId }),
       ...(language && { language }),
+      ...(intents?.length && { intents }),
+      ...(agents?.length && { agents }),
     },
   }, onEvent);
 }

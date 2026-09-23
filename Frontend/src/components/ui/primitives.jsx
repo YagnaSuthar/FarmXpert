@@ -7,7 +7,7 @@
 // ============================================================
 
 import { forwardRef, useId, useState } from 'react';
-import { AlertCircle, CheckCircle2, Eye, EyeOff, Info, Loader2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Info, Loader2 } from '@/components/ui/icons';
 
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
@@ -160,20 +160,39 @@ export function ChoiceChips({ options, value, values, onChange, multiple = false
 
 // ── feedback ────────────────────────────────────────────────────────────────
 
+// Each tone: accent (bar + icon), a soft badge behind the icon, a hairline border.
 const ALERT = {
-  error: { icon: AlertCircle, cls: 'border-danger/25 bg-danger/8 text-danger' },
-  success: { icon: CheckCircle2, cls: 'border-leaf/30 bg-sage text-leaf' },
-  info: { icon: Info, cls: 'border-gold/30 bg-gold-soft/60 text-ink' },
+  error: { icon: AlertCircle, accent: 'bg-danger', badge: 'bg-danger/10 text-danger', border: 'border-danger/20' },
+  success: { icon: CheckCircle2, accent: 'bg-leaf', badge: 'bg-leaf/12 text-leaf', border: 'border-leaf/25' },
+  info: { icon: Info, accent: 'bg-gold', badge: 'bg-gold/12 text-gold', border: 'border-gold/25' },
 };
 
-export function Alert({ tone = 'error', children, className }) {
-  if (!children) return null;
-  const { icon: Icon, cls } = ALERT[tone];
+/**
+ * A notice card: surface background, a coloured accent bar on the left,
+ * the icon in a tinted badge, readable ink text, optional title and dismiss.
+ */
+export function Alert({ tone = 'error', title, children, onDismiss, className }) {
+  const [hidden, setHidden] = useState(false);
+  if (!children || hidden) return null;
+  const { icon: Icon, accent, badge, border } = ALERT[tone] || ALERT.error;
   return (
     <div role={tone === 'error' ? 'alert' : 'status'}
-      className={cn('flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm animate-rise', cls, className)}>
-      <Icon className="mt-0.5 size-4 shrink-0" aria-hidden />
-      <div className="leading-relaxed">{children}</div>
+      className={cn('relative flex items-start gap-3 overflow-hidden rounded-xl border bg-surface py-3 pr-3 pl-4 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-16px_rgb(0_0_0/0.25)] animate-rise',
+        border, className)}>
+      <span className={cn('absolute inset-y-0 left-0 w-[3px]', accent)} aria-hidden />
+      <span className={cn('grid size-8 shrink-0 place-items-center rounded-lg', badge)}>
+        <Icon className="size-[1.05rem]" aria-hidden />
+      </span>
+      <div className="min-w-0 flex-1 pt-[0.3rem] text-[0.85rem] leading-relaxed text-ink">
+        {title && <p className="font-medium">{title}</p>}
+        <div className={cn(title && 'mt-0.5 text-muted')}>{children}</div>
+      </div>
+      <button type="button" aria-label="Dismiss" onClick={() => { setHidden(true); onDismiss?.(); }}
+        className="grid size-7 shrink-0 place-items-center rounded-md text-faint transition-colors hover:bg-canvas hover:text-ink">
+        <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      </button>
     </div>
   );
 }

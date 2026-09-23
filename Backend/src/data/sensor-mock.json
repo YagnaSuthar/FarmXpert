@@ -1,0 +1,12 @@
+{
+  "_comment": "Static probe readings used while BLYNK_MOCK=true (hardware under construction). Same shape as Blynk's /external/api/get response: V0-V8, see PIN_MAP in src/clients/blynk.js.",
+  "V0": 31.2,
+  "V1": 58,
+  "V2": 34.5,
+  "V3": 27.8,
+  "V4": 0.62,
+  "V5": 7.6,
+  "V6": 182,
+  "V7": 21,
+  "V8": 245
+}

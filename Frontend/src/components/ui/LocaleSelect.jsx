@@ -1,7 +1,7 @@
 'use client';
 
 import { useTransition } from 'react';
-import { Languages } from 'lucide-react';
+import { Languages } from '@/components/ui/icons';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 

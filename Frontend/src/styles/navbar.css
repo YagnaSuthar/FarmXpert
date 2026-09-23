@@ -2,7 +2,7 @@
    this file's global resets; the landing page itself renders exactly as before. */
 @layer landing {
 /* ============ NAVBAR ============ */
-nav {
+nav:not(.fx-app nav) {
   position: fixed;
   top: 0;
   left: 0;
@@ -139,7 +139,7 @@ nav {
 
 /* ── Navbar Mobile ── */
 @media (max-width: 768px) {
-  nav {
+  nav:not(.fx-app nav) {
     padding: 14px 20px;
     cursor: auto;
   }
@@ -169,7 +169,7 @@ nav {
 }
 
 @media (max-width: 480px) {
-  nav {
+  nav:not(.fx-app nav) {
     padding: 12px 16px;
   }
 

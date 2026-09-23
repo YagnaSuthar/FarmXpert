@@ -12,32 +12,16 @@
 // ============================================================
 
 import { Suspense, useTransition } from 'react';
-import { Languages, Monitor, Moon, Sun } from 'lucide-react';
+import { Languages, Moon, Sun } from '@/components/ui/icons';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { locales } from '@/i18n/routing';
 import { useTheme } from '@/components/theme/ThemeProvider';
+import Botanical from '@/components/ui/Botanical';
+import { LogoMark, Wordmark } from '@/components/ui/Logo';
 import AuthMeshArt from './AuthMeshArt';
-
-function BrandMark() {
-  return (
-    <svg className="brand-mark-auth" viewBox="0 0 32 32" aria-hidden="true">
-      <polygon points="16,2 30,11 30,23 16,30 2,23 2,11" fill="none" stroke="url(#fxBrandAuth)" strokeWidth="2" />
-      <polygon points="16,2 30,11 16,16" fill="url(#fxBrandAuth)" opacity="0.9" />
-      <polygon points="16,16 30,11 30,23 16,30" fill="url(#fxBrandAuth)" opacity="0.55" />
-      <polygon points="16,16 2,11 2,23 16,30" fill="url(#fxBrandAuth)" opacity="0.3" />
-      <defs>
-        <linearGradient id="fxBrandAuth" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#0f4a2e" />
-          <stop offset="60%" stopColor="#2f7a3e" />
-          <stop offset="100%" stopColor="#b8913a" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
 
 function LocaleChip() {
   const t = useTranslations('languageSwitcher');
@@ -63,9 +47,8 @@ function LocaleChip() {
 function ThemeChip() {
   const { mode, setMode } = useTheme();
   const t = useTranslations('app.theme');
-  const order = ['light', 'dark', 'system'];
-  const next = order[(order.indexOf(mode) + 1) % order.length];
-  const Icon = mode === 'light' ? Sun : mode === 'dark' ? Moon : Monitor;
+  const next = mode === 'dark' ? 'light' : 'dark';
+  const Icon = mode === 'dark' ? Moon : Sun;
   return (
     <button type="button" className="chip-auth icon-auth" onClick={() => setMode(next)}
       aria-label={t('switchTo', { mode: t(next) })} title={t(mode)}>
@@ -78,6 +61,16 @@ export default function AuthShell({ art = 'login', wide = false, children }) {
   const t = useTranslations('auth.art');
   return (
     <main className="auth-viewport-auth">
+      {/* Aaurawell botanicals framing the card, swaying gently in the margins */}
+      <div className="leaves-auth" aria-hidden="true">
+        <Botanical name="tropical" priority className="leaf-auth leaf-tl-auth" />
+        <Botanical name="fern" className="leaf-auth leaf-bl-auth" />
+        <Botanical name="eucalyptus" className="leaf-auth leaf-tr-auth" />
+        <Botanical name="corner" className="leaf-auth leaf-br-auth" />
+        <Botanical name="leaf" className="leaf-auth leaf-float-auth leaf-f1-auth" />
+        <Botanical name="leafLight" className="leaf-auth leaf-float-auth leaf-f2-auth" />
+        <Botanical name="leaf" className="leaf-auth leaf-float-auth leaf-f3-auth" />
+      </div>
       <div className="topbar-auth">
         <Suspense><LocaleChip /></Suspense>
         <ThemeChip />
@@ -87,8 +80,8 @@ export default function AuthShell({ art = 'login', wide = false, children }) {
         <section className="panel-form-auth">
           <div className={`form-wrap-auth${wide ? ' wide-auth' : ''}`}>
             <Link href="/" className="brand-auth" aria-label="FarmXpert">
-              <BrandMark />
-              <span className="brand-name-auth">FARM<b>X</b>PERT</span>
+              <LogoMark className="h-9" />
+              <Wordmark className="h-5" />
             </Link>
             {children}
           </div>

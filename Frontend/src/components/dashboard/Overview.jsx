@@ -5,13 +5,13 @@
 // The morning screen: what to do today, at a glance.
 // ============================================================
 
-import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import {
   ArrowRight, CalendarDays, CheckCircle2, Circle, CloudSun, Droplets, FlaskConical, Gauge, MapPin, MessageCircle,
   Sparkles, Sprout, Store,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 import { Link } from '@/i18n/navigation';
 import { ApiError, api } from '@/lib/api';
@@ -19,9 +19,11 @@ import { cn } from '@/lib/cn';
 import { useAuth } from '@/context/AuthContext';
 import { useFarm } from '@/context/FarmContext';
 import { useApi } from '@/hooks/useApi';
-import Botanical from '@/components/ui/Botanical';
+import { askText } from '@/services/api';
 import { Alert, Button, Skeleton } from '@/components/ui/primitives';
 import { Empty, Pill, Section, Sparkline, Stat, daysSince, useFormat } from './widgets';
+import { ThinkingLabel } from './AnswerParts';
+import Markdown from './Markdown';
 
 const PRIORITY_TONE = { critical: 'danger', high: 'warn', medium: 'gold', low: 'muted', deferred: 'muted' };
 
@@ -34,6 +36,7 @@ export default function Overview() {
   const t = useTranslations('dashboard.overview');
   const o = useTranslations('options');
   const e = useTranslations('dashboard.errors');
+  const locale = useLocale();
   const search = useSearchParams();
   const { user } = useAuth();
   const { farm, field, loading } = useFarm();
@@ -47,25 +50,50 @@ export default function Overview() {
   const crop = field?.crop_name;
   const market = useApi(crop ? `/market/prices?commodity=${encodeURIComponent(crop)}&days=30&limit=60` : null);
 
+  const planKey = fid ? `fx_plan_${fid}_${new Date().toISOString().slice(0, 10)}` : null;
   const [planning, setPlanning] = useState(false);
-  const [plan, setPlan] = useState(null);
+  const [streaming, setStreaming] = useState(false);
+  // today's plan is kept on this device, so coming back to Today shows it instantly
+  const [plan, setPlan] = useState(() => {
+    try { return planKey ? JSON.parse(localStorage.getItem(planKey)) : null; } catch { return null; }
+  });
   const [planError, setPlanError] = useState(null);
+  const abort = useRef(null);
+  useEffect(() => () => abort.current?.abort(), []);
 
   const makePlan = async () => {
     setPlanning(true);
+    setStreaming(false);
     setPlanError(null);
+    setPlan(null);
+    abort.current?.abort();
+    abort.current = new AbortController();
+    let text = '';
     try {
-      const res = await api.post('/chat/ask', {
-        query: t('planQuery'), farm_id: fid, ...(field && { field_id: field.id }), intents: ['daily_plan'], explain: true,
-      });
-      setPlan(res.answer || res.summary);
+      await askText({ query: t('planQuery'), farmId: fid, fieldId: field?.id, intents: ['daily_plan'], language: locale },
+        (event, data) => {
+          if (event === 'delta') {
+            text += data.text;
+            setStreaming(true);
+            setPlan({ text, at: null });
+          } else if (event === 'done') {
+            const done = { text: data.answer || text || data.summary || '', at: new Date().toISOString() };
+            setPlan(done);
+            try { localStorage.setItem(planKey, JSON.stringify(done)); } catch { /* storage full or blocked */ }
+          } else if (event === 'error') {
+            const code = data?.code || 'generic';
+            setPlanError(e.has(code) ? e(code) : e('generic'));
+          }
+        }, abort.current.signal);
       tasks.reload();
       irrigation.reload();
     } catch (err) {
+      if (err?.name === 'AbortError') return;
       const code = err instanceof ApiError ? err.code : 'network';
       setPlanError(e.has(code) ? e(code) : e('generic'));
     } finally {
       setPlanning(false);
+      setStreaming(false);
     }
   };
 
@@ -86,10 +114,7 @@ export default function Overview() {
       {search.get('welcome') && <Alert tone="success">{t('welcome')}</Alert>}
 
       {/* ── hero ─────────────────────────────────────────────── */}
-      <section className="panel-forest rounded-[2rem] p-7 shadow-lift sm:p-9">
-        <div className="pointer-events-none absolute inset-3 rounded-[1.6rem] border border-gold/20" aria-hidden />
-        <Botanical name="corner" className="-top-10 -right-10 w-64 -scale-x-100 opacity-[0.14]" priority />
-        <Botanical name="fern" className="-bottom-28 left-[40%] hidden w-52 rotate-12 opacity-[0.08] md:block" />
+      <section className="panel-forest rounded-2xl p-7 sm:p-9">
         <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-end">
           <div>
             <p className="eyebrow text-gold/90">{f.date(new Date(), { weekday: 'long', day: 'numeric', month: 'long' })}</p>
@@ -109,11 +134,21 @@ export default function Overview() {
               )}
             </div>
           </div>
-          <div className="rounded-[1.4rem] border border-white/12 bg-white/7 p-5 backdrop-blur-sm">
-            {plan ? (
+          <div className="rounded-[1.4rem] border border-panel-line bg-panel-raised p-5 shadow-raised">
+            {planning && !streaming ? (
               <>
                 <p className="flex items-center gap-2 text-xs font-medium tracking-wide text-gold uppercase"><Sparkles className="size-3.5" />{t('todaysPlan')}</p>
-                <p className="mt-2 line-clamp-5 text-sm leading-relaxed whitespace-pre-line text-white/90">{plan}</p>
+                <div className="mt-3 [&_.fx-thinking-text]:[--fx-muted:rgb(255_255_255/0.55)] [&_.fx-thinking-text]:[--fx-ink:#fff]"><ThinkingLabel /></div>
+              </>
+            ) : plan?.text ? (
+              <>
+                <p className="flex items-center justify-between gap-2 text-xs font-medium tracking-wide text-gold uppercase">
+                  <span className="flex items-center gap-2"><Sparkles className="size-3.5" />{t('todaysPlan')}</span>
+                  {plan.at && <span className="font-normal tracking-normal text-white/45 normal-case">{t('planUpdated', { time: f.date(plan.at, { hour: 'numeric', minute: '2-digit' }) })}</span>}
+                </p>
+                <div className="fx-plan mt-2 max-h-56 overflow-y-auto pr-1 text-sm no-scrollbar">
+                  <Markdown text={plan.text} caret={streaming} />
+                </div>
               </>
             ) : (
               <>
@@ -126,7 +161,7 @@ export default function Overview() {
               <Button variant="gold" size="sm" onClick={makePlan} loading={planning}>
                 <Sparkles className="size-4" aria-hidden />{plan ? t('planAgain') : t('planButton')}
               </Button>
-              <Button href="/dashboard/assistant" variant="light" size="sm" className="bg-white/10 text-white hover:bg-white/20">
+              <Button href="/dashboard/assistant" variant="light" size="sm" className="border border-panel-line bg-transparent text-white hover:bg-panel-line">
                 <MessageCircle className="size-4" aria-hidden />{t('ask')}
               </Button>
             </div>
@@ -201,7 +236,7 @@ export default function Overview() {
         <div className="flex flex-wrap gap-2">
           {['water', 'fertiliser', 'weather', 'pest', 'sell'].map((q) => (
             <Link key={q} href={`/dashboard/assistant?q=${encodeURIComponent(t(`quick.q.${q}`))}`}
-              className="inline-flex items-center gap-2 rounded-full border border-line bg-canvas px-4 py-2 text-sm text-ink transition-all hover:-translate-y-0.5 hover:border-leaf/50 hover:shadow-card">
+              className="inline-flex items-center gap-2 rounded-[3px] border border-line bg-canvas px-4 py-2 text-sm text-ink transition-all hover:-translate-y-0.5 hover:border-leaf/50 hover:shadow-card">
               {{ water: <Droplets className="size-4 text-sky" />, fertiliser: <FlaskConical className="size-4 text-gold" />,
                 weather: <CloudSun className="size-4 text-warn" />, pest: <Sprout className="size-4 text-leaf" />,
                 sell: <Store className="size-4 text-forest dark:text-leaf" /> }[q]}
@@ -273,8 +308,8 @@ function OverviewSkeleton() {
   return (
     <div className="space-y-6">
       <Skeleton className="h-52 rounded-[2rem]" />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-32 rounded-[1.5rem]" />)}</div>
-      <Skeleton className="h-72 rounded-[1.75rem]" />
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-32 rounded-[4px]" />)}</div>
+      <Skeleton className="h-72 rounded-[4px]" />
     </div>
   );
 }

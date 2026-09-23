@@ -74,3 +74,4 @@ tmp/
 temp/
 *.tmp
 .cache/
+.claude/

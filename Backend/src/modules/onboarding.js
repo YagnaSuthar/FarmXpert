@@ -17,7 +17,8 @@
 
 import { Router } from 'express';
 
-import { readPins } from '../clients/blynk.js';
+import { cleanToken, readPins } from '../clients/blynk.js';
+import { syncDevice } from './soil.js';
 import { one, transaction } from '../db/pool.js';
 import { HttpError, conflict } from '../lib/errors.js';
 import { latitude, longitude, validate } from '../lib/validate.js';
@@ -50,7 +51,7 @@ onboardingRoutes.get('/onboarding', authenticate, async (req, res) => {
   res.json({ onboarded: Boolean(req.user.onboarded_at), farm, options: OPTIONS });
 });
 
-const token = { type: 'string', minLength: 8, maxLength: 100, pattern: '^[A-Za-z0-9_-]+$' };
+const token = { type: 'string', minLength: 8, maxLength: 300 };   // cleaned by cleanToken (a pasted link is fine)
 
 // Lets the farmer see their probe is connected before finishing the form.
 onboardingRoutes.post(
@@ -59,7 +60,7 @@ onboardingRoutes.post(
   validate({ body: { type: 'object', properties: { token }, required: ['token'] } }),
   async (req, res) => {
     try {
-      const { reading, dropped } = await readPins(req.body.token);
+      const { reading, dropped } = await readPins(cleanToken(req.body.token));
       res.json({ ok: Object.keys(reading).length > 0, reading, dropped_channels: dropped });
     } catch (err) {
       if (err.code === 'invalid_token') {
@@ -182,6 +183,7 @@ onboardingRoutes.post('/onboarding', authenticate, validate({ body: onboardingBo
     }
     let createdDevice = null;
     if (device?.token) {
+      device.token = cleanToken(device.token);
       const { rows } = await db.query(
         `INSERT INTO blynk_tokens (farm_id, token, label) VALUES ($1, $2, $3)
          RETURNING id, label, is_active, right(token, 4) AS token_hint`,
@@ -201,5 +203,10 @@ onboardingRoutes.post('/onboarding', authenticate, validate({ body: onboardingBo
     throw err;
   });
 
+  // First live reading straight away, so the dashboard opens with real
+  // numbers instead of waiting for the next scheduled sync. Best effort.
+  if (result.device) {
+    result.sensor = await syncDevice(result.farm.id).catch(() => null);
+  }
   res.status(201).json(result);
 });

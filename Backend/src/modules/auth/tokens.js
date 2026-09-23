@@ -85,8 +85,8 @@ export async function rotateRefreshToken(raw, { userAgent, ip }) {
     // FOR UPDATE: two tabs refreshing at once must not both rotate one token.
     const { rows } = await db.query(
       `SELECT t.id, t.family_id, t.expires_at, t.revoked_at, t.persistent,
-              u.id AS user_id, u.name, u.email, u.role, u.token_version, u.email_verified,
-              u.language, u.onboarded_at, u.deleted_at
+              u.id AS user_id, u.name, u.email, u.phone, u.role, u.token_version, u.email_verified,
+              u.language, u.onboarded_at, u.deleted_at, u.created_at AS user_created_at
          FROM refresh_tokens t JOIN users u ON u.id = t.user_id
         WHERE t.token_hash = $1
           FOR UPDATE OF t`,
@@ -110,9 +110,9 @@ export async function rotateRefreshToken(raw, { userAgent, ip }) {
     if (row.deleted_at || !row.email_verified) return { error: 'account' };
 
     const user = {
-      id: row.user_id, name: row.name, email: row.email, role: row.role,
+      id: row.user_id, name: row.name, email: row.email, phone: row.phone, role: row.role,
       token_version: row.token_version, email_verified: row.email_verified,
-      language: row.language, onboarded_at: row.onboarded_at,
+      language: row.language, onboarded_at: row.onboarded_at, created_at: row.user_created_at,
     };
     const next = newOpaqueToken();
     const maxAgeMs = refreshLifetimeMs(user, row.persistent);

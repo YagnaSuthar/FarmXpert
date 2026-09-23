@@ -2,7 +2,7 @@
    this file's global resets; the landing page itself renders exactly as before. */
 @layer landing {
 /* ============ FOOTER ============ */
-footer {
+footer:not(.fx-app footer) {
   background: var(--bg-base);
   border-top: 1px solid var(--border-subtle);
   padding: 40px 48px;
@@ -45,7 +45,7 @@ footer {
 
 /* ── Footer Mobile ── */
 @media (max-width: 768px) {
-  footer {
+  footer:not(.fx-app footer) {
     flex-direction: column;
     gap: 20px;
     padding: 32px 20px;
@@ -60,7 +60,7 @@ footer {
 }
 
 @media (max-width: 480px) {
-  footer {
+  footer:not(.fx-app footer) {
     padding: 28px 16px;
     gap: 16px;
   }

@@ -16,6 +16,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import LandingThemeToggle from '@/components/LandingThemeToggle';
 import '@/styles/navbar.css';
 
 export default function Navbar() {
@@ -35,6 +36,7 @@ export default function Navbar() {
       </div>
 
       <div className="nav-actions">
+        <LandingThemeToggle label={t('theme')} />
         <LanguageSwitcher />
         <Link href="/auth/register" className="nav-cta">
           {t('getStarted')}

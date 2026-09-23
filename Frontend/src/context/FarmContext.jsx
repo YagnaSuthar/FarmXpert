@@ -11,7 +11,7 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 
 import { useApi } from '@/hooks/useApi';
 
-const FarmContext = createContext(null);
+const FarmContext = globalThis.__fxFarmContext ??= createContext(null);   // one instance (see AuthContext)
 const KEY = 'fx.farm';
 
 function remembered() {

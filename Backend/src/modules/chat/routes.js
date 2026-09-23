@@ -33,6 +33,9 @@ export const chatRoutes = Router();
 
 const HISTORY_TURNS = 6;
 // Mirrors AI_Backend/orchestration/planner.py Intent.
+// The expert agents a farmer can address directly (the AI backend's registry names).
+export const CHAT_AGENTS = ['weather_watcher', 'soil_health', 'irrigation_planner', 'crop_predictor',
+  'task_scheduler', 'market_intelligence'];
 const INTENTS = ['daily_plan', 'irrigation', 'crop_choice', 'soil', 'weather', 'market', 'ask', 'full_scan'];
 
 // Recording runs after the response; shutdown waits for these to finish.
@@ -59,6 +62,8 @@ const askBody = {
     ...askProperties,
     query: { type: 'string', minLength: 1, maxLength: 2000 },
     intents: { type: 'array', items: { type: 'string', maxLength: 32 }, maxItems: 8 },
+    // Talk to specific expert agents; empty = the orchestrator picks.
+    agents: { type: 'array', items: { enum: CHAT_AGENTS }, maxItems: 6, uniqueItems: true },
     explain: { type: 'boolean', default: true },
     stream: { type: 'boolean', default: false },
     // What the farmer states in this turn overrides what is stored.
@@ -308,6 +313,7 @@ export function buildAiRequest({ body, requestId, farm, field, soil, history }) 
   };
   if (farm) request.farm_id = farm.id;
   if (body.intents?.length) request.intents = body.intents;
+  if (body.agents?.length) request.agents = body.agents;
   if (farm && farm.latitude !== null && farm.longitude !== null) {
     request.location = { lat: farm.latitude, lon: farm.longitude };
   }

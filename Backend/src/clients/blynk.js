@@ -5,20 +5,26 @@
  * Blynk's API, so the URL is never logged.
  */
 
+import { readFile } from 'node:fs/promises';
+
 import { config } from '../config/env.js';
 
-// Virtual pin to soil_data column, as the probe firmware publishes them (the
-// same map the old Python extractor used). One place to change it.
+// While the probe hardware is being built, BLYNK_MOCK=true serves static readings
+// from this file instead of calling Blynk (same V0-V8 shape as the real API).
+const MOCK_FILE = new URL('../data/sensor-mock.json', import.meta.url);
+
+// Virtual pin to soil_data column, as the FarmXpert probe firmware publishes
+// them (V0-V8). One place to change it.
 export const PIN_MAP = Object.freeze({
-  V0: 'soil_moisture',
-  V1: 'soil_temperature',
-  V2: 'soil_ph',
-  V3: 'nitrogen',
-  V4: 'phosphorus',
-  V5: 'potassium',
-  V6: 'electrical_conductivity',
-  V7: 'air_temperature',
-  V8: 'air_humidity',
+  V0: 'air_temperature',          // deg C
+  V1: 'air_humidity',             // %
+  V2: 'soil_moisture',            // %
+  V3: 'soil_temperature',         // deg C
+  V4: 'electrical_conductivity',  // dS/m
+  V5: 'soil_ph',
+  V6: 'nitrogen',                 // mg/kg
+  V7: 'phosphorus',               // mg/kg
+  V8: 'potassium',                // mg/kg
 });
 
 // Values outside these are a broken channel: dropped, not stored, matching
@@ -26,7 +32,7 @@ export const PIN_MAP = Object.freeze({
 const RANGES = {
   soil_moisture: [0, 100],
   soil_temperature: [-20, 80],
-  soil_ph: [0, 14],
+  soil_ph: [0.5, 14],             // 0 = electrode not connected
   electrical_conductivity: [0, 30],
   nitrogen: [0, 2000],
   phosphorus: [0, 2000],
@@ -35,7 +41,22 @@ const RANGES = {
   air_humidity: [0, 100],
 };
 
+/**
+ * The bare token from whatever was pasted: the token itself, a Blynk API link
+ * (".../get?token=XYZ&V0"), or a token with a pin stuck on ("XYZ&V8").
+ */
+export function cleanToken(input) {
+  const text = String(input ?? '').trim();
+  const fromLink = text.match(/[?&]token=([A-Za-z0-9_-]+)/);
+  if (fromLink) return fromLink[1];
+  return text.split(/[&?\s]/)[0];
+}
+
 export async function readPins(token, { timeoutMs = 8000 } = {}) {
+  if (config.blynk.mock) {
+    const pins = JSON.parse(await readFile(MOCK_FILE, 'utf8'));
+    return toReading(pins);
+  }
   const url = new URL(config.blynk.baseUrl);
   url.searchParams.set('token', token);
   for (const pin of Object.keys(PIN_MAP)) url.searchParams.append(pin, '');

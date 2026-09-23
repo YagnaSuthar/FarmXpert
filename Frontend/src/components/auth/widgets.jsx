@@ -9,7 +9,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { AlertCircle, Check, CheckCircle2, Loader2, RefreshCw } from 'lucide-react';
+import { AlertCircle, Check, CheckCircle2, Loader2, RefreshCw } from '@/components/ui/icons';
 
 import { api } from '@/lib/api';
 
@@ -208,7 +208,7 @@ export function Captcha({ onChange, reloadKey = 0, error }) {
     }
   }, [onChange]);
 
-  useEffect(() => { load(); }, [load, reloadKey]);
+  useEffect(() => { Promise.resolve().then(load); }, [load, reloadKey]);
 
   return (
     <div className="captcha-container-auth">

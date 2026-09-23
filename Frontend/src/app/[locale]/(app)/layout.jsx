@@ -36,7 +36,7 @@ export default async function AppLayout({ children, params }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const saved = (await cookies()).get(THEME_COOKIE)?.value;
-  const initial = ['light', 'dark', 'system'].includes(saved) ? saved : 'system';
+  const initial = saved === 'dark' ? 'dark' : 'light';
   return (
     <ThemeProvider initial={initial}
       className={`${playfair.variable} ${poppins.variable} ${gujarati.variable} ${allura.variable}`}>

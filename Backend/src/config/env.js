@@ -68,7 +68,11 @@ export const config = Object.freeze({
   }),
 
   blynk: Object.freeze({
-    baseUrl: (env.BLYNK_BASE_URL || 'https://blynk.cloud/external/api/get').replace(/\/+$/, ''),
+    // Regional server: a token only works on the region its device lives in.
+    baseUrl: (env.BLYNK_BASE_URL || 'https://blr1.blynk.cloud/external/api/get').replace(/\/+$/, ''),
+    syncCron: env.SENSOR_SYNC_CRON || '*/15 * * * *',
+    // Static readings from src/data/sensor-mock.json instead of the real probe.
+    mock: env.BLYNK_MOCK === 'true',
   }),
 
   lifecycle: Object.freeze({

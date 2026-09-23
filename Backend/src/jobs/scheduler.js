@@ -13,9 +13,10 @@ import { mandiConfigured } from '../clients/mandi.js';
 import { databaseConfigured, getPool } from '../db/pool.js';
 import { logger } from '../lib/logger.js';
 import { ingestMandiPrices } from '../modules/market.js';
+import { syncAllDevices } from '../modules/soil.js';
 import { runLifecycle } from './storageLifecycle.js';
 
-const LOCKS = { mandi: 7261442911, lifecycle: 7261442912 };
+const LOCKS = { mandi: 7261442911, lifecycle: 7261442912, sensors: 7261442913 };
 
 /** Run `work` only if this instance wins the job's lock. Returns null if another holds it. */
 export async function withJobLock(name, work) {
@@ -36,6 +37,7 @@ export async function withJobLock(name, work) {
 export const jobs = {
   mandi: () => ingestMandiPrices(config.mandi.commodities),
   lifecycle: () => runLifecycle(),
+  sensors: () => syncAllDevices(),
 };
 
 const tasks = [];
@@ -55,6 +57,7 @@ export function startScheduler() {
   if (mandiConfigured()) schedule('mandi', config.mandi.cron);
   else logger.warn('DATA_GOV_API_KEY is not set; mandi ingestion is off');
   schedule('lifecycle', config.lifecycle.cron);
+  schedule('sensors', config.blynk.syncCron);
 }
 
 export function stopScheduler() {
