@@ -1,176 +1,111 @@
-# Irrigation Planner - plans irrigation based on weather soil conditions and best for best crop 
-import json
-import asyncio
-from datetime import datetime
+"""
+IrrigationAgent — FAO-56 irrigation planning for one field.
+
+Accepts:
+  • an `IrrigationRequest` or equivalent dict (router, direct calls)
+  • orchestrator state: `lat`/`lon`, raw readings under `soil_data`, and
+    optionally `weather_data` / `soil_health_data` from agents that already ran
+  • a `farm` block carrying location / crop / growth stage
+
+`run()` returns the plan and raises ValueError for unusable input (the router
+maps it to 422). As a LangGraph node (`__call__`) it never raises: the plan -
+or an error block - is written to `irrigation_advice`, the key FarmState
+declares. LangGraph silently drops any key a node returns that is not in the
+state schema.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from pydantic import ValidationError
+
 from AI_Backend.agents.base.base_agent import BaseAgent
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.service import IrrigationService
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.schemas import IrrigationPlannerResponse
-from AI_Backend.services.soil_repository import SoilRepository
+from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+    AGENT_ID,
+    AGENT_VERSION,
+)
+from AI_Backend.agents.crop_planning_growth.irrigation_planner.schemas import (
+    IrrigationPlannerResponse,
+    IrrigationRequest,
+)
+from AI_Backend.agents.crop_planning_growth.irrigation_planner.service import (
+    IrrigationService,
+)
+
+# Inputs that are not part of the request model but pass through to the service.
+_PASS_THROUGH = ("weather_data", "soil_health_data", "field_capacity", "wilting_point")
+
 
 class IrrigationAgent(BaseAgent):
-    """
-    Irrigation planner agent - generates optimized irrigation schedules based on 
-    weather, soil conditions, and crop requirements
-    """
-    def __init__(self):
+    AGENT_ID = AGENT_ID
+    AGENT_VERSION = AGENT_VERSION
+
+    def __init__(self) -> None:
         super().__init__("Irrigation_Planner")
         self.service = IrrigationService(logger=self.logger)
 
-    async def run(self, input_data: dict) -> IrrigationPlannerResponse:
-        """
-        Main Recommendation Logic
-        
-        Args:
-            input_data (dict): Input payload containing location, soil_data, etc.
-            
-        Returns:
-            IrrigationPlannerResponse: Structured response with irrigation plan
-        """
+    async def __call__(self, state: Any) -> dict:
+        """LangGraph node: never raises, writes to `irrigation_advice`."""
         try:
-            self.logger.info("Starting Irrigation Planning Agent")
-            
-            # Validate input
-            self._validate_input(input_data)
-            
-            # Prepare and normalize payload
-            normalized_data = self._prepare_payload(input_data)
-            
-            # Prepare payload
-            data = self.preprocess(normalized_data)
-            
-            # Calculate irrigation schedule
-            result = await self.service.calculate_irrigation_schedule(input_data=data)
-            
-            # Build structured response
-            response = self._build_response(result)
-            
-            # Add timestamp
-            response = self.postprocess(response)
-            
-            self.logger.info("Irrigation plan generated successfully")
-            return response
-            
-        except ValueError as e:
-            self.logger.error(f"Validation error: {str(e)}")
-            raise
-        except Exception as e:
-            self.logger.error(f"Error in irrigation planning: {str(e)}", exc_info=True)
-            raise
-    
-    def _validate_input(self, input_data: dict):
-        """Validate input data"""
-        # Check if we have location dict or root-level lat/lon
-        has_location_dict = input_data.get("location") and isinstance(input_data.get("location"), dict)
-        has_root_coords = input_data.get("lat") is not None and input_data.get("lon") is not None
-        
-        if not (has_location_dict or has_root_coords):
-            raise ValueError("'location' dict or root-level 'lat' and 'lon' is required")
-        
-        # Validate location dict if provided
-        if has_location_dict:
-            location = input_data["location"]
-            if "lat" not in location or "lon" not in location:
-                raise ValueError("'location' must contain 'lat' and 'lon' keys")
-            
-            lat, lon = location["lat"], location["lon"]
-            if not (-90 <= lat <= 90):
-                raise ValueError(f"Invalid latitude: {lat}. Must be between -90 and 90")
-            if not (-180 <= lon <= 180):
-                raise ValueError(f"Invalid longitude: {lon}. Must be between -180 and 180")
-            self.logger.info(f"Input validation passed for location: {location}")
-        
-        # Validate root-level lat/lon if provided
-        if has_root_coords:
-            lat, lon = input_data["lat"], input_data["lon"]
-            if not (-90 <= lat <= 90):
-                raise ValueError(f"Invalid latitude: {lat}. Must be between -90 and 90")
-            if not (-180 <= lon <= 180):
-                raise ValueError(f"Invalid longitude: {lon}. Must be between -180 and 180")
-            self.logger.info(f"Input validation passed for coordinates: lat={lat}, lon={lon}")
-    
-    def _prepare_payload(self, input_data: dict) -> dict:
-        """Prepare and normalize payload"""
-        payload = dict(input_data)
-        
-        # Normalize location: if root-level lat/lon exist but no location dict, create it
-        if payload.get("location") is None and payload.get("lat") is not None and payload.get("lon") is not None:
-            payload["location"] = {
-                "lat": payload["lat"],
-                "lon": payload["lon"]
-            }
-        
+            plan = await self.run(state)
+            return {"irrigation_advice": plan}
+        except ValueError as exc:
+            self.logger.warning("Irrigation input unusable: %s", exc)
+            return {"irrigation_advice": {"status": "invalid_input", "error": str(exc)}}
+        except Exception as exc:  # noqa: BLE001
+            self.logger.exception("Irrigation planning failed: %s", exc)
+            return {"irrigation_advice": {"status": "error", "error": str(exc)}}
+
+    async def run(self, input_data: Any) -> dict:
+        payload = self._normalise_input(input_data)
+        raw = await self.service.calculate_irrigation_schedule(input_data=payload)
+        try:
+            plan = IrrigationPlannerResponse.model_validate(raw).model_dump()
+        except ValidationError as exc:
+            # Output drift is a bug in this agent, not the caller's input.
+            self.logger.error("Plan failed its own schema: %s", exc)
+            raise RuntimeError("Irrigation plan failed schema validation.") from exc
+        self.logger.info(
+            "Plan ready | crop=%s stage=%s soil=%s irrigation_days=%d status=%s",
+            plan["crop_profile"]["crop"], plan["crop_profile"]["growth_stage"],
+            plan["crop_profile"]["soil_type"], plan["summary"]["irrigation_days"],
+            plan["status"])
+        return self.postprocess(plan)
+
+    # ─────────────────────────────────────────────────────────────────────
+
+    @staticmethod
+    def _normalise_input(input_data: Any) -> dict:
+        """Coerce every accepted shape into a validated flat payload."""
+        if input_data is None:
+            raise ValueError("Irrigation planning needs input: at least a location or weather data.")
+        if hasattr(input_data, "model_dump"):
+            input_data = input_data.model_dump()
+        if not isinstance(input_data, dict):
+            raise ValueError(f"Expected a dict or model, got {type(input_data).__name__}.")
+
+        data = dict(input_data)
+        if data.get("location") is None and data.get("lat") is not None \
+                and data.get("lon") is not None:
+            data["location"] = {"lat": data["lat"], "lon": data["lon"]}
+        farm = data.get("farm")
+        if isinstance(farm, dict):
+            data.setdefault("location", farm.get("location"))
+            data.setdefault("crop", farm.get("current_crop") or farm.get("crop"))
+            data.setdefault("growth_stage", farm.get("growth_stage"))
+
+        if not data.get("location") and not data.get("weather_data"):
+            raise ValueError("A location (lat/lon) is required to fetch the weather forecast.")
+
+        known = set(IrrigationRequest.model_fields)
+        try:
+            request = IrrigationRequest.model_validate({k: v for k, v in data.items() if k in known})
+        except ValidationError as exc:
+            details = "; ".join(f"{'.'.join(str(p) for p in e['loc'])}: {e['msg']}"
+                                for e in exc.errors())
+            raise ValueError(details) from None
+
+        payload = request.model_dump(exclude_none=True)
+        payload.update({k: data[k] for k in _PASS_THROUGH if data.get(k) is not None})
         return payload
-    
-    def _build_response(self, result: dict) -> IrrigationPlannerResponse:
-        """
-        Build structured response from service result
-        
-        Args:
-            result (dict): Raw result from service
-            
-        Returns:
-            IrrigationPlannerResponse: Properly structured response
-        """
-        try:
-            # Extract and format schedule items
-            schedule_items = []
-            for item in result.get("irrigation_schedule", []):
-                try:
-                    # Convert dict to DailyScheduleItem with proper formatting
-                    schedule_items.append({
-                        "date": item.get("date"),
-                        "irrigation_required": item.get("irrigation_required", False),
-                        "water_depth_mm": item.get("water_depth_mm"),
-                        "duration_hours": item.get("duration_hours"),
-                        "timing": item.get("timing"),
-                        "reason": item.get("reason", ""),
-                        "soil_conditions": item.get("soil_conditions"),
-                    })
-                except Exception as e:
-                    self.logger.warning(f"Error formatting schedule item: {e}")
-                    continue
-            
-            # Extract water savings data
-            water_savings = result.get("water_savings", {})
-            
-            # Extract weather insights
-            weather_insights = result.get("weather_insights", {})
-            
-            # Extract soil health data
-            soil_health = result.get("soil_health_insights", {})
-            
-            # Format alerts
-            alerts = []
-            for alert in result.get("alerts", []):
-                try:
-                    alerts.append({
-                        "type": alert.get("type", "info"),
-                        "severity": alert.get("severity"),
-                        "message": alert.get("message", ""),
-                        "date": alert.get("date"),
-                        "recommendation": alert.get("recommendation"),
-                    })
-                except Exception as e:
-                    self.logger.warning(f"Error formatting alert: {e}")
-                    continue
-            
-            # Build response
-            response = IrrigationPlannerResponse(
-                irrigation_schedule=schedule_items,
-                water_savings=water_savings,
-                weather_insights=weather_insights,
-                soil_health_insights=soil_health,
-                alerts=alerts,
-                processed_at=datetime.utcnow().isoformat(),
-                summary=result.get("summary")
-            )
-            
-            # Convert to dict for JSON serialization
-            response_dict = response.model_dump()
-            
-            self.logger.info(f"Response built with {len(schedule_items)} schedule items and {len(alerts)} alerts")
-            return response_dict
-            
-        except Exception as e:
-            self.logger.error(f"Error building response: {str(e)}", exc_info=True)
-            raise

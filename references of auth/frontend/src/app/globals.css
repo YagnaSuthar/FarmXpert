@@ -1,0 +1,378 @@
+/* ============ GLOBAL CSS — SINGLE SOURCE OF TRUTH FOR ALL COLORS ============ */
+/* Frozen Lake Palette: #FFFAFA · #000080 · #ADD8E6 · #6D8196               */
+
+:root {
+  /* ── Core palette ── */
+  --color-primary: #c2c8cd;
+  --color-secondary: #000080;
+  --color-tertiary: #c0ccd6;
+  --color-quaternary: #6D8196;
+
+
+  /* ── Backgrounds ── */
+  --bg-base: #F3F5F7;
+  --bg-surface: #F3F5F7;
+  --bg-raised: #FFFFFF;
+  --bg-card: #FFFFFF;
+
+
+  /* ── Neumorphic shadows ── */
+  --nm-shadow-dark: rgba(0, 0, 80, 0.08);
+  --nm-shadow-light: rgba(255, 255, 255, 0.9);
+  --nm-inset-dark: rgba(0, 0, 80, 0.06);
+  --nm-inset-light: rgba(255, 255, 255, 0.7);
+
+
+  /* ── Accent ── */
+  --accent-primary: #000080;
+  --accent-light: #ADD8E6;
+  --accent-muted: #6D8196;
+
+
+  /* ── Text ── */
+  --text-primary: rgba(0, 0, 40, 0.92);
+  --text-secondary: #6D8196;
+  --text-muted: rgba(109, 129, 150, 0.5);
+
+
+  /* ── Borders ── */
+  --border-subtle: rgba(0, 0, 128, 0.08);
+  --border-medium: rgba(0, 0, 128, 0.15);
+
+
+  /* ── Glows & shadows ── */
+  --glow-primary: rgba(0, 0, 128, 0.15);
+  --glow-strong: rgba(0, 0, 128, 0.3);
+  --shadow-card: rgba(0, 0, 80, 0.06);
+
+
+  /* ── Navbar ── */
+  --nav-bg: rgba(243, 245, 247, 0.92);
+  --nav-border: rgba(0, 0, 128, 0.06);
+  --nav-option-bg: #F3F5F7;
+  --nav-chevron-color: #000080;
+
+
+  /* ── Hero ── */
+  --hero-bg: #F3F5F7;
+  --hero-grid-line: rgba(0, 0, 128, 0.05);
+  --hero-watermark: rgba(0, 0, 128, 0.14);
+  --hero-watermark-color: rgba(0, 0, 128, 0.093);
+  --hero-gradient-base: rgba(243, 245, 247, 1);
+  --hero-gradient-transparent: rgba(243, 245, 247, 0);
+
+
+  /* ── Sensor nodes ── */
+  --snode-bg: #ededed;
+  --snode-border: rgba(0, 0, 128, 0.15);
+  --snode-border-hover: rgba(0, 0, 128, 0.4);
+  --snode-shadow-hover-glow: rgba(0, 0, 128, 0.12);
+  --snode-shadow-dark: rgba(0, 0, 80, 0.08);
+  --snode-shadow-light: rgba(255, 255, 255, 0.9);
+  --snode-val-color: rgba(0, 0, 40, 0.85);
+  --snode-sym-color: #000080;
+  --snode-lbl-color: #6D8196;
+  --snode-dot-color: #ADD8E6;
+
+
+  /* ── Stat cards ── */
+  --stat-num-color: #000080;
+
+
+  /* ── Agent roster ── */
+  --agent-border: rgba(0, 0, 128, 0.12);
+  --agent-border-hover: rgba(0, 0, 128, 0.4);
+  --agent-domain-color: #000080;
+
+
+  /* ── Feature items ── */
+  --fi-icon-bg: #E9EDF1;
+  --fi-icon-shadow-dark: rgba(0, 0, 80, 0.08);
+  --fi-icon-shadow-light: rgba(255, 255, 255, 0.9);
+  --feature-hover-inset-dark: rgba(0, 0, 80, 0.04);
+  --feature-hover-inset-light: rgba(255, 255, 255, 0.5);
+
+
+  /* ── How-it-works ── */
+  --how-circle-border: rgba(0, 0, 128, 0.12);
+  --how-circle-glow: rgba(0, 0, 128, 0.06);
+  --how-line: rgba(0, 0, 128, 0.2);
+
+
+  /* ── Tech chips ── */
+  --tech-chip-hover-border: rgba(0, 0, 128, 0.2);
+  --tech-chip-hover-glow: rgba(0, 0, 128, 0.08);
+  --tech-chip-inset-dark: rgba(0, 0, 80, 0.04);
+  --tech-chip-inset-light: rgba(255, 255, 255, 0.5);
+  --tc-dot-color: rgba(0, 0, 128, 0.4);
+
+
+  /* ── CTA ── */
+  --cta-border: rgba(0, 0, 128, 0.1);
+  --cta-radial: rgba(0, 0, 128, 0.04);
+
+
+  /* ── Section transitions ── */
+  --transition-glow: rgba(0, 0, 128, 0.02);
+  --transition-base-60: rgba(243, 245, 247, 0.6);
+  --transition-surface-60: rgba(233, 237, 241, 0.6);
+
+
+  /* ── Chip scene ── */
+  --chip-scene-bg: #F3F5F7;
+  --chip-grid-line: rgba(173, 216, 230, 0.3);
+  --chip-eyebrow-color: #000080;
+  --chip-title-color: rgba(0, 0, 40, 0.9);
+  --chip-sub-color: #6D8196;
+  --chip-wrap-bg: transparent;
+
+  --chip-body-start: #E8EEF4;
+  --chip-body-mid1: #DEE6EE;
+  --chip-body-mid2: #D4DEE8;
+  --chip-body-mid3: #CCD6E0;
+  --chip-body-end: #C4CED8;
+
+  --chip-sheen-edge: rgba(173, 216, 230, 0);
+  --chip-sheen-mid: rgba(173, 216, 230, 0.4);
+
+  --chip-border: rgba(0, 0, 128, 0.12);
+  --chip-inner-border: rgba(0, 0, 128, 0.06);
+
+  --chip-trace-color: #ADD8E6;
+  --chip-pin-active: #C8D6E0;
+  --chip-pin-inactive: #E0E8EE;
+  --chip-pin-stroke: rgba(0, 0, 128, 0.08);
+  --chip-pin-pulse-mid: #B0C4D4;
+
+  --chip-led-color: #000080;
+  --chip-powered-text: #6D8196;
+  --chip-brand-text: rgba(0, 0, 40, 0.85);
+  --chip-brand-accent: #000080;
+  --chip-tagline-text: #6D8196;
+  --chip-label-text: #6D8196;
+
+  --chip-corner-stroke: rgba(0, 0, 128, 0.2);
+  --chip-detail-fill: #E9EDF1;
+  --chip-detail-stroke: rgba(0, 0, 128, 0.08);
+  --chip-detail-line: rgba(0, 0, 128, 0.04);
+
+  --chip-shine-color: rgba(255, 255, 255, 0.15);
+
+  --chip-left-glow-start: rgba(173, 216, 230, 0.05);
+  --chip-left-glow-mid: rgba(173, 216, 230, 0.12);
+  --chip-left-glow-end: rgba(173, 216, 230, 0);
+
+  --chip-aura-center: rgba(243, 245, 247, 0.5);
+  --chip-aura-edge: rgba(243, 245, 247, 0);
+
+  --chip-grid-stroke: rgba(0, 0, 128, 0.04);
+  --chip-grid-fill: rgba(233, 237, 241, 0.8);
+
+
+  /* ── Cursor ── */
+  --cursor-color: #000080;
+  --cursor-glow: rgba(0, 0, 128, 0.4);
+  --cursor-ring-color: rgba(0, 0, 128, 0.4);
+
+
+  /* ── Canvas (hero root animation) — RGB channels for JS use ── */
+  --canvas-branch-r: 0;
+  --canvas-branch-g: 0;
+  --canvas-branch-b: 128;
+
+  --canvas-soil-r: 173;
+  --canvas-soil-g: 216;
+  --canvas-soil-b: 230;
+
+  --canvas-seed-r: 0;
+  --canvas-seed-g: 0;
+  --canvas-seed-b: 128;
+
+  --canvas-pulse-r: 0;
+  --canvas-pulse-g: 0;
+  --canvas-pulse-b: 128;
+
+
+  /* ── Noise overlay ── */
+  --noise-opacity: 0.08;
+
+
+  /* ── Button ── */
+  --btn-primary-bg: #000080;
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-shadow: rgba(0, 0, 128, 0.25);
+  --btn-primary-hover-shadow: rgba(0, 0, 128, 0.4);
+
+  --btn-secondary-bg: #E9EDF1;
+  --btn-secondary-text: #6D8196;
+
+
+  /* ── Surface line (hero) ── */
+  --surface-line-color: rgba(0, 0, 128, 0.15);
+  --surface-line-mid: rgba(0, 0, 128, 0.3);
+  --surface-lbl-color: rgba(0, 0, 128, 0.3);
+
+  /* ── Auth Module (derived from Frozen Lake palette) ── */
+  --auth-page-bg: #EAEFF4;
+  --auth-card-bg: #FFFFFF;
+  --auth-card-border: rgba(0, 0, 128, 0.10);
+  --auth-card-shadow: 0 30px 60px -20px rgba(0, 0, 80, 0.22);
+  --auth-input-bg: #F3F5F7;
+  --auth-input-border: rgba(0, 0, 128, 0.12);
+  --auth-input-border-hover: rgba(0, 0, 128, 0.28);
+  --auth-input-border-focus: #000080;
+  --auth-input-focus-ring: rgba(0, 0, 128, 0.12);
+  --auth-btn-gradient-start: #000080;
+  --auth-btn-gradient-mid: #152A6E;
+  --auth-btn-gradient-end: #274D8E;
+  --auth-btn-shadow: 0 10px 24px -8px rgba(0, 0, 128, 0.45);
+  --auth-btn-hover-shadow: 0 14px 30px -8px rgba(0, 0, 128, 0.55);
+  --auth-btn-active-shadow: 0 6px 14px -6px rgba(0, 0, 128, 0.4);
+  --auth-art-bg-start: #000038;
+  --auth-art-bg-mid: #000080;
+  --auth-art-bg-end: #3D649A;
+  --auth-art-shade-1: rgba(0, 0, 60, 0.55);
+  --auth-art-shade-2: rgba(173, 216, 230, 0.28);
+  --auth-social-bg: #FFFFFF;
+  --auth-social-border: rgba(0, 0, 128, 0.12);
+  --auth-social-hover-bg: #F3F5F7;
+  --auth-divider-line: rgba(0, 0, 128, 0.10);
+
+  /* ── Dashboard Shell (derived from Frozen Lake palette) ── */
+  --dash-board-bg: #FFFFFF;
+  --dash-panel-bg: #f0f0f0;
+  --dash-card-bg: #FFFFFF;
+  --dash-card-border: rgba(0, 0, 128, 0.08);
+  --dash-card-shadow-1: rgba(0, 0, 80, 0.04);
+  --dash-card-shadow-2: rgba(0, 0, 80, 0.05);
+  --dash-divider: rgba(0, 0, 128, 0.05);
+  --dash-scroll-thumb: rgba(0, 0, 128, 0.16);
+  --dash-scroll-thumb-hover: rgba(0, 0, 128, 0.28);
+
+  /* Sidebar / navigation */
+  --dash-nav-text: rgb(3, 3, 3);
+  --dash-nav-label: rgba(0, 0, 40, 0.45);
+  --dash-nav-hover-bg: rgba(0, 0, 128, 0.045);
+  --dash-nav-active-bg: rgba(0, 0, 128, 0.08);
+  --dash-nav-active-text: #000080;
+  --dash-nav-rail: #000080;
+  --dash-badge-bg: rgba(0, 0, 128, 0.10);
+  --dash-badge-text: #000080;
+  --dash-nav-active-solid-bg: #000080;
+  --dash-nav-active-solid-text: #FFFFFF;
+  --dash-nav-active-badge-bg: rgba(255, 255, 255, 0.22);
+  --dash-nav-active-shadow: rgba(0, 0, 128, 0.32);
+  /* ── Page transition loader ──
+     These values were already hardwired into TransitionLoader.jsx; they
+     are lifted here unchanged so the transition keeps its exact look
+     while the component stops carrying literal colors. */
+  --tr-deep: #000038;
+  --tr-core: #000080;
+  --tr-mid: #1e40af;
+  --tr-slate: #3d649a;
+  --tr-cyan: #22c3e0;
+  --tr-ice: #ADD8E6;
+  --tr-white: #FFFFFF;
+  --tr-tick: rgba(34, 195, 224, 0.45);
+  --tr-track: rgba(173, 216, 230, 0.14);
+
+  --skeleton-base: rgba(0, 0, 128, 0.07);
+  --skeleton-sheen: rgba(255, 255, 255, 0.62);
+  --dash-tip-bg: #000B2E;
+  --dash-tip-text: #FFFFFF;
+  --dash-brand-mark-bg: #E9EDF1;
+  --dash-brand-mark-border: rgba(0, 0, 128, 0.14);
+
+  /* Topbar */
+  --dash-icon-btn-bg: #FFFFFF;
+  --dash-icon-btn-border: rgba(0, 0, 128, 0.10);
+  --dash-icon-btn-hover-bg: #E9EDF1;
+  --dash-icon-btn-text: #6D8196;
+  --dash-kbd-bg: #E9EDF1;
+  --dash-dot: #000080;
+  --dash-dot-ring: #FFFFFF;
+
+  /* Deep surfaces — highlight stat, promo panel, time tracker */
+  --dash-deep-1: #00164F;
+  --dash-deep-2: #000B2E;
+  --dash-deep-3: #000516;
+  --dash-on-deep: #FFFFFF;
+  --dash-on-deep-soft: rgba(255, 255, 255, 0.74);
+  --dash-on-deep-accent: #ADD8E6;
+  --dash-on-deep-chip: rgba(255, 255, 255, 0.16);
+  --dash-on-deep-border: rgba(255, 255, 255, 0.14);
+  --dash-deep-shadow: rgba(0, 0, 60, 0.30);
+
+  /* State accents — Frozen Lake family only */
+  --dash-state-strong: #000080;
+  --dash-state-strong-bg: rgba(0, 0, 128, 0.10);
+  --dash-state-mid: #3D649A;
+  --dash-state-mid-bg: rgba(61, 100, 154, 0.12);
+  --dash-state-soft: #6D8196;
+  --dash-state-soft-bg: rgba(109, 129, 150, 0.14);
+  --dash-trend-up: #000080;
+  --dash-trend-down: #6D8196;
+  --dash-trend-up-deep: #ADD8E6;
+
+  /* Control surfaces reused by dashboard buttons / inputs */
+  --dash-ghost-bg: #FFFFFF;
+  --dash-ghost-border: rgba(0, 0, 128, 0.16);
+  --dash-ghost-hover-bg: #E9EDF1;
+  --dash-danger-text: #3D649A;
+  --dash-danger-hover-bg: rgba(61, 100, 154, 0.10);
+
+
+  /* ── Graphs — Frozen Lake series ramp ── */
+  --graph-series-1: #000080;
+  --graph-series-2: #152A6E;
+  --graph-series-3: #274D8E;
+  --graph-series-4: #3D649A;
+  --graph-series-5: #6D8196;
+  --graph-series-6: #92A7BA;
+  --graph-series-7: #ADD8E6;
+  --graph-series-8: #c0ccd6;
+
+  --graph-grid-line: rgba(0, 0, 128, 0.06);
+  --graph-axis-line: rgba(0, 0, 128, 0.12);
+  --graph-axis-text: #6D8196;
+  --graph-label-text: rgba(0, 0, 40, 0.92);
+  --graph-track: rgba(0, 0, 128, 0.07);
+  --graph-track-strong: rgba(0, 0, 128, 0.12);
+  --graph-hatch-a: #E4E9EE;
+  --graph-hatch-b: #F3F5F7;
+  --graph-hatch-border: rgba(0, 0, 128, 0.07);
+  --graph-point-fill: #FFFFFF;
+  --graph-area-top: rgba(0, 0, 128, 0.20);
+  --graph-area-bottom: rgba(0, 0, 128, 0);
+  --graph-tooltip-bg: #000B2E;
+  --graph-tooltip-text: #FFFFFF;
+  --graph-tooltip-muted: rgba(255, 255, 255, 0.68);
+  --graph-crosshair: rgba(0, 0, 128, 0.26);
+  --graph-median: #FFFFFF;
+  --graph-whisker: #3D649A;
+  --graph-empty-text: rgba(109, 129, 150, 0.7);
+  --graph-gradient-sheen: rgba(255, 255, 255, 0.30);
+  --graph-gradient-shade: rgba(0, 0, 80, 0.20);
+
+
+  /* ── Dashboard canvas texture — RGB channels for JS use ── */
+  --tex-line-r: 173;
+  --tex-line-g: 216;
+  --tex-line-b: 230;
+
+  --tex-accent-r: 226;
+  --tex-accent-g: 242;
+  --tex-accent-b: 250;
+
+  --tex-glow-r: 61;
+  --tex-glow-g: 100;
+  --tex-glow-b: 154;
+
+  --tex-core-r: 0;
+  --tex-core-g: 0;
+  --tex-core-b: 128;
+
+  --tex-deep-r: 0;
+  --tex-deep-g: 5;
+  --tex-deep-b: 22;
+}

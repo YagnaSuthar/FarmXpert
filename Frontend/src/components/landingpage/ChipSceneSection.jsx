@@ -1,4 +1,6 @@
+'use client';
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from 'next-intl';
 
 const VW = 1400;
 const VH = 500;
@@ -128,6 +130,9 @@ function chipOcclusion(x, y) {
 }
 
 export default function ChipSceneSection() {
+    const t = useTranslations('chipScene');
+    const tTitle = useTranslations('chipScene.titleParts');
+
     const canvasRef = useRef(null);
     const svgRef = useRef(null);
     const rafRef = useRef(null);
@@ -355,15 +360,14 @@ export default function ChipSceneSection() {
             <section ref={sectionRef} className={`chip-scene-section-chipsection chip-scene-fade-in ${isVisible ? 'visible' : ''}`} id="poweredby">
                 <div className="chip-scene-container-chipsection">
                     <div className="chip-scene-header-chipsection">
-                        <div className="section-eyebrow-chipsection">Core Architecture</div>
+                        <div className="section-eyebrow-chipsection">{t('eyebrow')}</div>
                         <h2 className="section-title-chipsection">
-                            The <span className="text-green-chipsection">Neural Core</span>
-                            <br />Driving Every Decision
+                            {tTitle('before')}{' '}
+                            <span className="text-green-chipsection">{tTitle('accent')}</span>
+                            <br />
+                            {tTitle('after')}
                         </h2>
-                        <p className="section-sub-chipsection">
-                            FarmXpert's multi-agent processor — sixteen specialized AI modules on a single
-                            intelligent substrate, routing real-time farm intelligence at sub-200ms latency.
-                        </p>
+                        <p className="section-sub-chipsection">{t('intro')}</p>
                     </div>
 
 
@@ -561,10 +565,11 @@ export default function ChipSceneSection() {
                                     <animate attributeName="opacity" values="0.02;0.1;0.02" dur="2.4s" repeatCount="indefinite" />
                                 </circle>
 
-                                {/* Chip text */}
+                                {/* Chip text — "POWERED BY" / tagline are localizable;
+                                    the brand wordmark (FarmXpert) is not. */}
                                 <text x="700" y="204" textAnchor="middle"
                                     fontFamily="'Orbitron',monospace" fontSize="10" fontWeight="600"
-                                    fill="#3a3a3a" letterSpacing="5">POWERED BY</text>
+                                    fill="#3a3a3a" letterSpacing="5">{t('poweredBy')}</text>
                                 <text x="700" y="236" textAnchor="middle"
                                     fontFamily="'Orbitron',monospace" fontSize="22" fontWeight="900"
                                     fill="#cccccc" letterSpacing="1">
@@ -572,7 +577,7 @@ export default function ChipSceneSection() {
                                 </text>
                                 <text x="700" y="258" textAnchor="middle"
                                     fontFamily="'Sora',sans-serif" fontSize="8" fontWeight="300"
-                                    fill="#363636" letterSpacing="6">MULTI-AGENT AI CORE</text>
+                                    fill="#363636" letterSpacing="6">{t('tagline')}</text>
 
                                 {/* Module labels */}
                                 <g fontFamily="'Orbitron',monospace" fontSize="12" fill="#525252" letterSpacing="1">

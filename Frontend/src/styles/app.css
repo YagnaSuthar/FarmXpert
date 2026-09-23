@@ -1,0 +1,232 @@
+/* ============================================================
+   FILE: src/styles/app.css
+   Tailwind v4 for the signed-in app (auth, onboarding, dashboard).
+
+   Only Tailwind's theme and utilities are loaded - not its preflight
+   reset - so the landing page, which has its own CSS, is untouched.
+   The app's base styles are scoped under .fx-app instead.
+
+   Palette: Aaurawell (forest, leaf, gold on cream), with a dark mode
+   that keeps the same character: deep forest night, ivory text, gold.
+   Every colour is a variable, so both themes are one set of classes.
+   ============================================================ */
+
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* dark: an explicit dark choice, or "system" on a phone set to dark. */
+@custom-variant dark {
+  &:where([data-mode='dark'], [data-mode='dark'] *) { @slot; }
+  @media (prefers-color-scheme: dark) {
+    &:where([data-mode='system'], [data-mode='system'] *) { @slot; }
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--fx-canvas);
+  --color-surface: var(--fx-surface);
+  --color-raised: var(--fx-raised);
+  --color-ink: var(--fx-ink);
+  --color-muted: var(--fx-muted);
+  --color-faint: var(--fx-faint);
+  --color-line: var(--fx-line);
+  --color-forest: var(--fx-forest);
+  --color-forest-deep: var(--fx-forest-deep);
+  --color-leaf: var(--fx-leaf);
+  --color-sage: var(--fx-sage);
+  --color-gold: var(--fx-gold);
+  --color-gold-soft: var(--fx-gold-soft);
+  --color-on-forest: var(--fx-on-forest);
+  --color-danger: var(--fx-danger);
+  --color-warn: var(--fx-warn);
+  --color-sky: var(--fx-sky);
+
+  --font-serif: var(--font-playfair), Georgia, 'Times New Roman', serif;
+  --font-sans: var(--font-poppins), var(--font-indic), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-script: var(--font-allura), 'Brush Script MT', cursive;
+
+  --shadow-soft: 0 18px 40px -22px var(--fx-shadow);
+  --shadow-card: 0 6px 24px -14px var(--fx-shadow);
+  --shadow-lift: 0 26px 60px -28px var(--fx-shadow);
+}
+
+.fx-app {
+  /* Light: Aaurawell cream */
+  --fx-canvas: #fbf7f1;
+  --fx-surface: #fffdf9;
+  --fx-raised: #ffffff;
+  --fx-ink: #1d2b22;
+  --fx-muted: #5f6b62;
+  --fx-faint: #8c968e;
+  --fx-line: #e9e1d4;
+  --fx-forest: #0f4a2e;
+  --fx-forest-deep: #0a3521;
+  --fx-leaf: #2f7a3e;
+  --fx-sage: #e8f1e1;
+  --fx-gold: #b8913a;
+  --fx-gold-soft: #f3e7c9;
+  --fx-on-forest: #ffffff;
+  --fx-danger: #c8202f;
+  --fx-warn: #c46a12;
+  --fx-sky: #2d6f9e;
+  --fx-shadow: rgb(29 43 34 / 0.28);
+  color-scheme: light;
+}
+
+.fx-app[data-mode='dark'] {
+  /* Dark: forest at night - never neutral grey */
+  --fx-canvas: #08140e;
+  --fx-surface: #0e1f16;
+  --fx-raised: #13291d;
+  --fx-ink: #efe9dc;
+  --fx-muted: #a4b3a7;
+  --fx-faint: #6f8174;
+  --fx-line: #1f3a2a;
+  --fx-forest: #1d6b44;
+  --fx-forest-deep: #0c3a24;
+  --fx-leaf: #6fc083;
+  --fx-sage: #15301f;
+  --fx-gold: #d4ae5c;
+  --fx-gold-soft: #3a2f16;
+  --fx-on-forest: #ffffff;
+  --fx-danger: #f0717b;
+  --fx-warn: #f0a55a;
+  --fx-sky: #7cb8e0;
+  --fx-shadow: rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}
+
+/* "system": follow the phone's own setting, with no script and no flash. */
+@media (prefers-color-scheme: dark) {
+  .fx-app[data-mode='system'] {
+    /* Dark: forest at night - never neutral grey */
+    --fx-canvas: #08140e;
+    --fx-surface: #0e1f16;
+    --fx-raised: #13291d;
+    --fx-ink: #efe9dc;
+    --fx-muted: #a4b3a7;
+    --fx-faint: #6f8174;
+    --fx-line: #1f3a2a;
+    --fx-forest: #1d6b44;
+    --fx-forest-deep: #0c3a24;
+    --fx-leaf: #6fc083;
+    --fx-sage: #15301f;
+    --fx-gold: #d4ae5c;
+    --fx-gold-soft: #3a2f16;
+    --fx-on-forest: #ffffff;
+    --fx-danger: #f0717b;
+    --fx-warn: #f0a55a;
+    --fx-sky: #7cb8e0;
+    --fx-shadow: rgb(0 0 0 / 0.6);
+    color-scheme: dark;
+  }
+}
+
+@layer base {
+  /* The landing page draws its own cursor; the app uses the system one. */
+  body:has(.fx-app) {
+    cursor: auto;
+  }
+  .fx-app {
+    position: relative;
+    z-index: 1;               /* above the landing page's noise overlay */
+    min-height: 100dvh;
+    background: var(--fx-canvas);
+    color: var(--fx-ink);
+    /* Real font variables: @theme inline tokens are not emitted as CSS variables. */
+    font-family: var(--font-poppins), var(--font-indic), system-ui, -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.35s ease, color 0.35s ease;
+  }
+  .fx-app h1, .fx-app h2, .fx-app h3 {
+    font-family: var(--font-playfair), var(--font-indic), Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .fx-app :focus-visible {
+    outline: 2px solid var(--fx-leaf);
+    outline-offset: 2px;
+    border-radius: 10px;
+  }
+  .fx-app ::selection {
+    background: var(--fx-gold-soft);
+  }
+  /* The slice of a reset the app needs (Tailwind's preflight is not loaded). */
+  .fx-app *, .fx-app ::before, .fx-app ::after {
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--fx-line);
+  }
+  .fx-app input, .fx-app select, .fx-app textarea, .fx-app button {
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    letter-spacing: inherit;
+  }
+  .fx-app button, .fx-app [role='button'], .fx-app label[for], .fx-app select { cursor: pointer; }
+  .fx-app button:disabled { cursor: default; }
+  .fx-app a { color: inherit; text-decoration: inherit; }
+  .fx-app ol, .fx-app ul { list-style: none; }
+  .fx-app img, .fx-app svg { display: block; }
+  .fx-app input::placeholder { opacity: 1; }
+}
+
+@utility container-app {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 80rem;
+  padding-inline: 1rem;
+  @media (width >= 40rem) { padding-inline: 1.5rem; }
+  @media (width >= 64rem) { padding-inline: 2rem; }
+}
+
+/* The Aaurawell forest panel: deep green gradient with a gold hairline frame. */
+@utility panel-forest {
+  position: relative;
+  overflow: hidden;
+  color: var(--fx-on-forest);
+  background:
+    radial-gradient(120% 90% at 85% 0%, rgb(255 255 255 / 0.07), transparent 55%),
+    linear-gradient(160deg, var(--fx-forest) 0%, var(--fx-forest-deep) 100%);
+}
+
+@utility eyebrow {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+@keyframes fx-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fx-sway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2.5deg); }
+}
+@keyframes fx-shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+@utility animate-rise { animation: fx-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@utility animate-sway { animation: fx-sway 7s ease-in-out infinite; transform-origin: bottom left; }
+@utility skeleton {
+  background: linear-gradient(90deg, var(--fx-line) 0%, var(--fx-raised) 50%, var(--fx-line) 100%);
+  background-size: 200% 100%;
+  animation: fx-shimmer 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-app *, .fx-app *::before, .fx-app *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

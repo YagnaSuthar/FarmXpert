@@ -1,19 +1,21 @@
-# ── MARKET INTELLIGENCE — AGENT ENTRY POINT ───────────────
-# Thin coordination layer.
-# Contains NO business logic — delegates entirely to service.py.
-# Called by the router (routers/market_intelligence.py).
+# ── MARKET INTELLIGENCE — AGENT ENTRY POINT (v3.0) ────────
+# Thin coordination layer. Delegates entirely to service.generate_insights.
 
 from __future__ import annotations
 
 import logging
 from typing import Optional
 
-from agents.supplychain_market_access.market_intelligence.schemas import (
+from AI_Backend.agents.supplychain_market_access.market_intelligence.schemas import (
+    MarketInsights,
     MarketQueryInput,
-    MarketRecommendation,
 )
 from AI_Backend.agents.supplychain_market_access.market_intelligence.service import (
-    generate_recommendation,
+    generate_insights,
+)
+from AI_Backend.agents.supplychain_market_access.market_intelligence.config import (
+    AGENT_ID,
+    AGENT_VERSION,
 )
 
 logger = logging.getLogger(__name__)
@@ -21,62 +23,54 @@ logger = logging.getLogger(__name__)
 
 async def run_market_agent(
     input_data: MarketQueryInput,
-) -> Optional[MarketRecommendation]:
+) -> Optional[MarketInsights]:
     """
-    Market Intelligence Agent — public entry point.
+    Market Intelligence Agent — public entry point (v3.0).
 
-    Accepts a validated MarketQueryInput and returns a full
-    MarketRecommendation with:
-        • recommended action  (SELL_NOW / SELL_IN_OTHER_MANDI / HOLD)
-        • best market & net profit
-        • top 3 markets ranked by profit
-        • human-readable reason
-        • historical trend + LSTM forecast
-        • multi-factor confidence score
+    Returns commodity price insights ONLY:
+        • Per-market price table
+        • Aggregated price summary
+        • Historical trend
+        • Forecast prediction (LSTM / WMA / fallback)
+        • Confidence + data-quality signals
 
-    The agent is stateless — every call is self-contained.
-    No DB access, no session state, no side effects.
+    No SELL/HOLD action, no transport / profit, no storage suggestions.
+    The orchestrator turns these structured insights into farmer prose.
 
     Args:
         input_data: MarketQueryInput validated by the router.
 
     Returns:
-        MarketRecommendation, or None if insufficient mandi data.
+        MarketInsights, or None if there's no usable price data.
     """
     logger.info(
-        "▶ Market Intelligence Agent | commodity='%s' | "
-        "market='%s' | district='%s' | state='%s'",
+        "Market Intelligence v%s | commodity='%s' | state='%s' | district='%s'",
+        AGENT_VERSION,
         input_data.commodity,
-        input_data.local_market or "—",
-        input_data.district     or "—",
-        input_data.state        or "—",
+        input_data.state or "—",
+        input_data.district or "—",
     )
 
-    recommendation = await generate_recommendation(
+    insights = await generate_insights(
         commodity=input_data.commodity,
-        local_market=input_data.local_market,
-        local_district=input_data.district,
-        local_state=input_data.state,
+        state=input_data.state,
+        district=input_data.district,
+        forecast_horizon_days=input_data.forecast_horizon_days,
     )
 
-    if recommendation is None:
+    if insights is None:
         logger.warning(
-            "◀ Market Intelligence Agent | commodity='%s' → NO RECOMMENDATION "
-            "(insufficient mandi data).",
+            "Market Intelligence | commodity='%s' → NO INSIGHTS (insufficient data).",
             input_data.commodity,
         )
         return None
 
     logger.info(
-        "◀ Market Intelligence Agent | commodity='%s' → %s at '%s' | "
-        "profit=₹%.2f | confidence=%.0f%% | trend=%s | forecast=%s",
+        "Market Intelligence | commodity='%s' | markets=%d | hist=%s | pred=%s | conf=%.0f%%",
         input_data.commodity,
-        recommendation.recommended_action,
-        recommendation.best_market,
-        recommendation.best_profit,
-        recommendation.confidence * 100,
-        recommendation.trend         or "N/A",
-        recommendation.predicted_trend or "N/A",
+        insights.price_summary.sampled_markets,
+        insights.price_trend.direction,
+        insights.forecast.predicted_trend,
+        insights.confidence * 100,
     )
-
-    return recommendation
+    return insights

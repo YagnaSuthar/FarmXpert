@@ -1,0 +1,117 @@
+# Crop Prediction Agent - POST /crop-prediction/predict
+
+# Input - every parameter
+{
+    "ph": 8.0,                              # 3-10 accepted; 5.1-9.0 is model-supported
+    "ec_us_cm": 580,                        # EC: send EXACTLY ONE of ec_us_cm / ec_ds_m
+    "ec_ds_m": 0.58,                        # (580 uS/cm == 0.58 dS/m)
+    "moisture_percent": 51.2,               # 0-100
+    "soil_type": "Black Cotton",            # Sandy | Sandy Loam | Red Laterite | Loam | Silty Loam |
+                                            # Alluvial | Clay Loam | Black Cotton | Clay | Saline-Alkaline
+    "month": "June",                        # sowing month, full English name
+
+    "forecast_temp_mean_c": 30.7,           # mean temperature, C
+    "forecast_humidity_mean_percent": 55.0, # mean relative humidity, %
+    "forecast_rain_mm": 620,                # TOTAL rain over the window, not one day
+
+    "air_temp_c": 31.5,                     # current air temperature, C
+    "air_humidity_percent": 58.0,           # current air humidity, %
+
+    "organic_carbon_percent": 0.6,          # default 0.55 (dataset median) if omitted
+
+    "n_kg_ha": 280,                         # soil-test available N, P, K in kg/ha.
+    "p_kg_ha": 18,                          # Not part of the score; compared with each
+    "k_kg_ha": 210,                         # recommended crop's soil nutrient range.
+
+    "previous_crops": ["cotton"],           # rotation advice (never changes the ranking)
+    "irrigation_available": false,          # sharpens water-security advice
+
+    "location": {"lat": 23.02, "lon": 72.57}, # enables 10-year season climate + water security
+    "region": "Gujarat",                    # default Gujarat; unknown -> 422; "All India" = no filter
+    "top_n": 3,                             # 1-5
+    "farm_id": "farm-sunrise-001",          # echoed back
+    "request_id": "trace-abc-123"           # echoed back and used in the logs
+}
+
+# Minimal valid input
+{"ph": 8.0, "ec_us_cm": 580, "moisture_percent": 51.2, "soil_type": "Black Cotton", "month": "June"}
+
+
+# Output (status "ok")
+{
+    "status": "ok",
+    "farm_id": "farm-sunrise-001",
+    "recommendations": [
+        {
+            "rank": 1,
+            "crop": "Cotton",
+            "suitability_score": 91.0,     # Layer 1, 0-100 - show this one
+            "ml_probability": 0.79,        # Layer 2
+            "confidence": 0.81,            # blended, ranking only
+            "top_varieties": [
+                {"variety": "LHH 144", "score": 91.0, "expected_yield_tha": 2.5}
+            ],
+            "reasons": [
+                {"check": "moisture", "score": 0.0, "weight": 10,
+                 "detail": "moisture 51.2% vs typical 17-41%",
+                 "is_problem": true, "is_disqualifying": false},
+                {"check": "pH", "score": 1.0, "weight": 20,
+                 "detail": "pH 8.0 vs tolerated 6.2-8.3",
+                 "is_problem": false, "is_disqualifying": false}
+            ],
+            "problems": ["moisture 51.2% vs typical 17-41%"]
+        }
+    ],
+    "closest": null,
+    "summary": "1. Cotton  -  suitability 91/100, model confidence 79% ...",
+    "narration": null,
+    "warnings": ["Organic carbon not supplied; the dataset median (0.55%) was used."],
+    "model_info": {
+        "agent_id": "crop_prediction",
+        "agent_version": "1.1.0",
+        "region": "Gujarat",
+        "top1_accuracy": 0.806,
+        "top3_accuracy": 0.99,
+        "suitability_floor": 55.0,
+        "ml_weight": 0.35
+    },
+    "disclaimer": "Shortlisting tool built from a crop suitability reference table ...",
+    "request_id": "trace-abc-123",
+    "cached": false,                 # true when an identical field was scored recently
+    "latency_ms": 14.8,
+    "processed_at": "2026-09-21 06:12:03.411"
+}
+
+# Response headers: X-Request-ID, X-Cache: HIT|MISS
+
+
+# Output (status "no_suitable_crop") - handling this is not optional
+{
+    "status": "no_suitable_crop",
+    "message": "No crop in the database is suitable for this field. The closest is Guar at 17/100.",
+    "recommendations": [],
+    "closest": {"rank": 0, "crop": "Guar", "suitability_score": 17.0, "...": "..."},
+    "summary": "No crop in the database is suitable for this field. ...",
+    "warnings": [],
+    "model_info": {"...": "..."},
+    "disclaimer": "..."
+}
+
+# `closest` is diagnostic only. It scored below the floor. Showing it as a
+# recommendation removes the single safety property this system has: the
+# classifier cannot refuse, because it was trained only on crops that
+# succeeded, so the rule layer's veto is the only thing that can say "no".
+
+
+# Rules for any caller (UI, orchestrator, LLM)
+# 1. Branch on `status` first.
+# 2. Show three crops, not one. Top-1 is 80.6%, top-3 is 99.0%.
+# 3. Narrate `reasons` - the reason list, not the crop name, is the value here.
+# 4. Never re-rank or override the scores with LLM reasoning.
+# 5. Never present the output as agronomic advice; carry `disclaimer` through.
+
+
+# Error responses
+# 422  bad reading, EC sent without a named unit, or an unknown region
+# 503  model artifacts unavailable (also returned by GET /health while loading)
+# 504  scoring exceeded CROP_PREDICTION_TIMEOUT

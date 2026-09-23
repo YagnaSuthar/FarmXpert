@@ -1,33 +1,29 @@
-import { Brain, Zap, Satellite, BarChart3 } from 'lucide-react';
+'use client';
 
-const featureItems = [
-  {
-    icon: <Brain size={20} />,
-    title: 'Multi-Agent Collaboration',
-    desc: 'Agents communicate asynchronously to produce compound recommendations — for example, irrigation schedules that factor in pest stress and forecasted rain simultaneously.',
-    delay: '',
-  },
-  {
-    icon: <Zap size={20} />,
-    title: 'Real-Time Edge Analytics',
-    desc: 'Sub-200ms latency analytics via edge-deployed TensorFlow Lite models, even in low-connectivity rural areas with intermittent internet.',
-    delay: '0.1s',
-  },
-  {
-    icon: <Satellite size={20} />,
-    title: 'Satellite + IoT Fusion',
-    desc: 'Sentinel-2 satellite bands fused with on-field sensor telemetry for ground-truth accuracy at every spatial scale from 10m² to 1000 hectares.',
-    delay: '0.2s',
-  },
-  {
-    icon: <BarChart3 size={20} />,
-    title: 'Adaptive Learning Loop',
-    desc: "Models retrain monthly on your farm's actual outcomes — yield data, treatment results, weather events — continuously improving recommendation precision.",
-    delay: '0.3s',
-  },
+// ============================================================
+// FILE: src/components/landingpage/FeaturesSection.jsx
+//
+// Feature list is driven by a fixed key array — same pattern as
+// AgentsSection. Icons and order live in code, copy lives in
+// messages.features.items.<key>.{title,description}.
+// ============================================================
+
+import { Brain, Zap, Satellite, BarChart3 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+const FEATURE_KEYS = [
+  { key: 'multiAgent',      icon: <Brain size={20} />,     delay: '' },
+  { key: 'edgeAnalytics',   icon: <Zap size={20} />,       delay: '0.1s' },
+  { key: 'satelliteFusion', icon: <Satellite size={20} />, delay: '0.2s' },
+  { key: 'adaptiveLoop',    icon: <BarChart3 size={20} />, delay: '0.3s' },
 ];
 
 export default function FeaturesSection() {
+  const t = useTranslations('features');
+  const tTitle = useTranslations('features.titleParts');
+  const tBadge = useTranslations('features.badge');
+  const tItems = useTranslations('features.items');
+
   return (
     <section className="features-section" id="features">
       <div className="section-container">
@@ -35,40 +31,40 @@ export default function FeaturesSection() {
           <img
             className="feature-main-img"
             src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=700&q=80"
-            alt="Smart Farm"
+            alt={t('eyebrow')}
           />
           <img
             className="feature-secondary-img"
             src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&q=80"
-            alt="Farm Analytics"
+            alt={t('eyebrow')}
           />
           <div className="feature-badge-card">
             <div className="fbc-icon"><Brain size={28} /></div>
-            <span className="fbc-val">8 Agents</span>
-            <span className="fbc-label">Always Active</span>
+            <span className="fbc-val">{tBadge('value')}</span>
+            <span className="fbc-label">{tBadge('label')}</span>
           </div>
         </div>
 
         <div>
-          <div className="section-eyebrow">Platform Capabilities</div>
+          <div className="section-eyebrow">{t('eyebrow')}</div>
           <h2 className="section-title">
-            Intelligence at Every <span className="text-green">Layer</span>
+            {tTitle('before')}{' '}
+            <span className="text-green">{tTitle('accent')}</span>{' '}
+            {tTitle('after')}
           </h2>
-          <p className="section-sub">
-            From root to revenue — FarmXpert's layered AI architecture monitors everything that
-            affects your yield and profitability.
-          </p>
+          <p className="section-sub">{t('intro')}</p>
+
           <div className="feature-list">
-            {featureItems.map((item, i) => (
+            {FEATURE_KEYS.map((item) => (
               <div
-                key={i}
+                key={item.key}
                 className="feature-item reveal"
-                style={item.delay ? { transitionDelay: item.delay } : {}}
+                style={item.delay ? { transitionDelay: item.delay } : undefined}
               >
                 <div className="fi-icon">{item.icon}</div>
                 <div>
-                  <div className="fi-title">{item.title}</div>
-                  <div className="fi-desc">{item.desc}</div>
+                  <div className="fi-title">{tItems(`${item.key}.title`)}</div>
+                  <div className="fi-desc">{tItems(`${item.key}.description`)}</div>
                 </div>
               </div>
             ))}

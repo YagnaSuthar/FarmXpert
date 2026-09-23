@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -50 430 530" fill="none">
+<defs>
+  <linearGradient id="deep" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#174D2C"/><stop offset=".5" stop-color="#2F7A42"/><stop offset="1" stop-color="#76B062"/></linearGradient>
+  <linearGradient id="fresh" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2C6E3C"/><stop offset=".6" stop-color="#5FA35A"/><stop offset="1" stop-color="#B2D796"/></linearGradient>
+  <linearGradient id="euca" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#4F7F6C"/><stop offset=".55" stop-color="#7FA898"/><stop offset="1" stop-color="#C5DBCF"/></linearGradient>
+  <linearGradient id="olive" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#4A5E2E"/><stop offset=".6" stop-color="#7C8F4E"/><stop offset="1" stop-color="#B7C48E"/></linearGradient>
+  <linearGradient id="silver" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#8FA38A"/><stop offset="1" stop-color="#DCE5D3"/></linearGradient>
+  <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0B3A22" stop-opacity=".4"/><stop offset="1" stop-color="#0B3A22" stop-opacity="0"/></linearGradient>
+  <linearGradient id="stem" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#40592F"/><stop offset="1" stop-color="#86A060"/></linearGradient>
+  <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0F3D25" flood-opacity=".16"/></filter>
+<g id="coin"><path d="M0 0 C 30 -2, 34 -54, 0 -60 C -34 -54, -30 -2, 0 0Z" fill="url(#euca)"/>
+<path d="M0 0 C -30 -2, -34 -54, 0 -60 C -14 -46, -12 -10, 0 0Z" fill="url(#shade)" opacity=".6"/>
+<path d="M0 -3 C 1 -22, 1 -40, 0 -56" stroke="#EEF5EF" stroke-opacity=".5" stroke-width="1"/>
+<ellipse cx="8" cy="-36" rx="6" ry="12" fill="#fff" opacity=".12"/></g>
+</defs>
+<g filter="url(#soft)">
+<path d="M0 480 Q 170 260 260 60" stroke="#6B7F63" stroke-width="3" stroke-linecap="round"/>
+<use href="#coin" transform="translate(64.8 392.8) rotate(-33.6) scale(1.13)"/>
+<use href="#coin" transform="translate(88.9 358.4) rotate(105.7) scale(1.08)"/>
+<use href="#coin" transform="translate(112.0 324.2) rotate(-44.9) scale(1.03)"/>
+<use href="#coin" transform="translate(134.1 290.3) rotate(101.9) scale(0.99)"/>
+<use href="#coin" transform="translate(155.2 256.6) rotate(-38.7) scale(0.94)"/>
+<use href="#coin" transform="translate(175.2 223.2) rotate(102.1) scale(0.89)"/>
+<use href="#coin" transform="translate(194.2 190.0) rotate(-34.4) scale(0.84)"/>
+<use href="#coin" transform="translate(212.2 157.2) rotate(98.3) scale(0.79)"/>
+<use href="#coin" transform="translate(229.2 124.5) rotate(-45.8) scale(0.75)"/>
+<use href="#coin" transform="translate(245.1 92.1) rotate(101.4) scale(0.70)"/>
+<use href="#coin" transform="translate(260.0 60.0) rotate(-37.7) scale(0.65)"/>
+<use href="#coin" transform="translate(260 60) rotate(55) scale(.6)"/>
+</g>
+</svg>

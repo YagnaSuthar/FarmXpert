@@ -1,0 +1,624 @@
+================================================================================
+TASK SCHEDULER AGENT  v3.0.0                          agent id: task_scheduler_agent
+================================================================================
+The farmer's daily work plan.
+
+The other agents each answer one question - what is the weather, how much
+water, which crop, is the soil healthy. This agent answers the question the
+farmer actually asks: "what should I do today?"
+
+It takes every specialist agent's output, puts each suggested job on a real
+day at a real time, and attaches what to do, what not to do, why it matters
+now, and what it costs to wait. It refuses jobs that are unsafe, moves jobs
+the weather blocks, and drops jobs the rain has already done for you.
+
+  Stateless   no database, no network, no calls to other agents
+  Pure        same input always gives the same plan
+  Fast        a full plan takes a few milliseconds; nothing to warm up
+  No ML       scheduling is rules, constraints and ordering. A farmer must
+              be able to see exactly why a job is on a given day, and a
+              model that cannot explain itself would not survive one
+              disagreement in the field.
+
+
+================================================================================
+1. HOW IT CONNECTS
+================================================================================
+
+   Weather Watcher ──┐
+   Irrigation Planner┤
+   Soil Health ──────┼─► orchestrator adapters ─► TASK SCHEDULER ─► TaskPlan
+   Crop Prediction ──┤        (translate each             │
+   Pest / Disease ───┤         agent's own output         ▼
+   Market Intel ─────┘         into a block below)   daily work screen
+                                                     push alerts
+                                                     LLM's spoken answer
+
+Two ways to call it:
+
+  A. API / direct     you build the blocks yourself (section 3)
+                      POST /api/task-scheduler/plan
+
+  B. Orchestrator     you pass each agent's RAW output under its own key and
+                      the adapters convert it (section 6). A failure in one
+                      adapter loses that one agent's contribution, never the
+                      whole plan.
+
+Endpoints
+  POST /api/task-scheduler/plan      build the plan          -> TaskPlan
+  GET  /api/task-scheduler/options   categories, crops, limits
+  GET  /api/task-scheduler/health    liveness
+
+Code map
+  agent.py      thin wrapper. run() / plan(); as a LangGraph node it never raises
+  service.py    the engine - 9 stages, section 7
+  playbook.py   what to do / what not to do, by category, crop and situation
+  config.py     every threshold, each with its source
+  inputs.py     accepts the API shape or raw orchestrator state
+  schemas.py    validated input and output
+
+Tests
+  python -m AI_Backend.tests.test_task_scheduler
+  166 checks, including a sweep of 6,120 farm situations
+  (crop x growth stage x weather x resources x days-to-harvest)
+
+
+================================================================================
+2. INPUT - THE TOP LEVEL
+================================================================================
+
+POST /api/task-scheduler/plan
+
+FIELD                  TYPE     DEFAULT    MEANING
+--------------------------------------------------------------------------------
+request_id             str      required   Your id for this request; echoed back.
+farm                   object   required   Section 2.1
+resources              object   {}         Section 2.2
+planning_horizon_days  int      3          1-14. Values outside are clamped,
+                                           not rejected.
+weather_agent              object  null    Section 3.1
+irrigation_agent           object  null    Section 3.2
+soil_health_agent          object  null    Section 3.3
+crop_selector_agent        object  null    Section 3.4
+pest_disease_agent         object  null    Section 3.5
+market_intelligence_agent  object  null    Section 3.6
+
+At least one agent block is required - otherwise there is nothing to plan,
+and the request is rejected with 422 and that reason. Any subset is fine: a
+plan built from the weather alone is still worth showing a farmer.
+
+
+--------------------------------------------------------------------------------
+2.1  farm  (FarmIdentity)                                            REQUIRED
+--------------------------------------------------------------------------------
+FIELD                TYPE      DEFAULT   WHAT IT CHANGES
+--------------------------------------------------------------------------------
+farm_id              str       required  Carried onto every task.
+field_id             str       required  Carried onto every task.
+farm_name            str       null      Display only.
+current_timestamp    datetime  required  The planning anchor - "now" on the
+                                         farm. Nothing is ever scheduled
+                                         before it. Send it with a timezone;
+                                         a naive value is read as UTC.
+current_crop         str       null      Picks the crop-specific do / do-not
+                                         advice (15 crops, section 5.2). An
+                                         unknown crop is safe: general advice
+                                         is used and nothing is invented.
+growth_stage         str       null      flowering / fruiting / pegging /
+                                         grain_filling / tuber_bulking raise
+                                         irrigation urgency to critical -
+                                         water stress there cannot be made up.
+days_to_harvest      int       null      ENFORCES PRE-HARVEST INTERVALS. With
+                                         this set, a spray whose PHI is longer
+                                         than the days remaining is refused.
+                                         Leave it out and no PHI can be checked.
+in_flower            bool      false     true refuses bee-toxic sprays.
+total_area_hectares  float     null      Converts irrigation mm into litres
+                                         (1 ha x 1 mm = 10,000 L) so the water
+                                         budget can be checked.
+soil_type            str       null      Carried for downstream use.
+location             {lat,lon} null      Carried for downstream use.
+timezone             str       "UTC"     Display only; times are computed in
+                                         the timezone of current_timestamp.
+
+--------------------------------------------------------------------------------
+2.2  resources  (ResourceAvailability)                               OPTIONAL
+--------------------------------------------------------------------------------
+FIELD                  TYPE       DEFAULT   WHAT IT CHANGES
+--------------------------------------------------------------------------------
+labor_units_available  int        2         People available. A job needing
+                                            more is delayed - unless it is
+                                            critical or high, which is warned
+                                            about instead of dropped.
+water_available_liters float      0.0       0 disables the water check. When
+                                            set, irrigation is delayed once
+                                            the budget runs out; a critical
+                                            irrigation warns instead, advising
+                                            the most sensitive part of the
+                                            field first.
+equipment_available    [str]      []        EMPTY MEANS "NOT ASKED", NOT "NONE".
+                                            The check is skipped entirely when
+                                            the list is empty, so an unanswered
+                                            form never blocks a farmer's work.
+working_hours_start    "HH:MM"    "06:00"   No task starts before this.
+working_hours_end      "HH:MM"    "18:00"   No task runs past this.
+budget_available       float      null      Carried; not yet used to decide.
+
+
+================================================================================
+3. INPUT - THE AGENT BLOCKS
+================================================================================
+Every block is optional. Only the fields that change a decision are marked;
+the rest are carried into the task's `metadata` untouched.
+
+--------------------------------------------------------------------------------
+3.1  weather_agent        from: Weather Watcher
+--------------------------------------------------------------------------------
+Without this block no weather rule can run: every job stays on the day its
+own agent asked for. Send it whenever you have it.
+
+current:                                (optional, display only)
+  temperature_c            float  required
+  humidity_percent         float  required   0-100
+  wind_speed_kmh           float  required
+  rainfall_today_mm        float  0.0
+  conditions               str    null       "Clear", "Rain", …
+
+forecast[]:                             ← the part that moves work
+  date                     date   required
+  temp_min_c               float  required   below 5 C all day: no spray uptake
+  temp_max_c               float  required   <=2 C: ground frozen
+                                             >=38 C: hard field work ends 11:00
+                                             >=42 C: dangerous, day blocked
+  rainfall_mm              float  0.0        THE deciding value - see 4.1
+  rain_probability_percent float  0.0        below 50 %, the amount is ignored
+  wind_speed_kmh           float  0.0        >15 spray drifts; >=62 unsafe
+  humidity_percent         float  null
+  storm_warning            bool   false      blocks all but critical work
+  frost_risk               bool   false      blocks planting / irrigation /
+                                             fertilizer / pruning
+  heat_stress_risk         bool   false      same effect as tmax >= 38
+  spray_windows            [str]  []         "HH:MM-HH:MM". WHEN PRESENT THESE
+                                             WIN: the Weather Watcher already
+                                             checked wind, Delta-T, temperature
+                                             and rainfastness hour by hour, so
+                                             the scheduler does not re-decide
+                                             from daily min/max.
+
+alerts[]:                               ← become "prepare for …" jobs
+  type                     str    required   heatwave | heavy_rainfall | frost …
+  severity                 str    "medium"   critical | high | medium | low
+                                             low and info are dropped: an
+                                             advisory is not a job.
+  message                  str    required   shown as the task description
+  date                     date   null       defaults to today
+  recommendations          [str]  []         carried into metadata
+
+--------------------------------------------------------------------------------
+3.2  irrigation_agent     from: Irrigation Planner
+--------------------------------------------------------------------------------
+schedule[]:
+  date                     date   required
+  irrigation_required      bool   required   false produces no task at all
+  water_depth_mm           float  null       drives the rain comparison (4.1)
+                                             and the litres needed
+  duration_hours           float  null       default 1.5 h
+  water_volume_liters      float  null       computed from mm x area if absent
+  timing                   str    null       morning | afternoon | evening
+  method                   str    "drip"     drip | sprinkler | flood; becomes
+                                             the equipment name
+  reason                   str    null       shown as the task description
+
+soil_moisture_current_percent  float null    < 25 makes it critical (9/10)
+                                             25-40 raises it (7.5/10)
+                                             > 90 flags waterlogging advice
+water_savings_percent          float null    carried
+alerts[]                       [obj] []      carried
+
+--------------------------------------------------------------------------------
+3.3  soil_health_agent    from: Soil Health
+--------------------------------------------------------------------------------
+fertilizers[]:                          ← each becomes one fertilizer job
+  fertilizer               str    required   config key, e.g. "urea"
+  display_name             str    required   used in the task title
+  dosage                   str    required   used in the task title
+  timing                   str    required   shown in the description
+  method                   str    required   "soil…" -> spreader, else sprayer
+  triggered_by             str    null       matched to the alert below to set
+                                             urgency: critical 9, high 7.5,
+                                             medium 5.5, low 3.5
+  cautions                 [str]  []         carried into metadata
+
+alerts[]:
+  type                     str    required   salinity / conductivity in the
+                                             name adds salt-management advice;
+                                             acid / ph_low adds lime advice
+  message                  str    required
+  severity                 str    "medium"   high or critical with NO matching
+                                             fertilizer becomes an inspection
+                                             job, so a serious reading is never
+                                             silently lost
+
+soil_health_score   float null   |  soil_health_status str null
+summary             str   null   |  critical_factors   [str] []   (all carried)
+
+--------------------------------------------------------------------------------
+3.4  crop_selector_agent  from: Crop Prediction
+--------------------------------------------------------------------------------
+Name kept for compatibility - the Crop Prediction agent fills this block
+through its adapter.
+
+recommended_crops[]:                    ← only the top crop becomes work
+  crop_name                str    required
+  suitability_score        float  required  0-10, shown in the description
+  variety                  str    null
+  duration_days            int    null
+  water_requirement        str    null
+  expected_yield           str    null
+
+planting_window_start      date   null      Inside the window, or when the
+planting_window_end        date   null      field has no current crop, two
+                                            jobs are created: prepare the
+                                            field, then sow it the next day.
+                                            7 days or less left in the window
+                                            raises urgency to 7.5 and says so.
+days_to_harvest            int    null      0-5 creates a "get ready to
+                                            harvest" job. Also read from
+                                            farm.days_to_harvest.
+current_growth_stage       str    null      carried
+days_since_planting        int    null      carried
+
+--------------------------------------------------------------------------------
+3.5  pest_disease_agent   from: Pest / Disease Diagnostic
+--------------------------------------------------------------------------------
+threat_detected            bool   false     false produces no task
+threat_type                str    null      used in the title
+severity                   float  0.0       0-10; drives urgency directly, so
+                                            8+ is critical
+affected_area_percent      float  0.0       0-100; raises impact and is quoted
+                                            back to the farmer
+treatment_type             str    null      pesticide | fungicide | biocontrol
+chemical_name              str    null      used in the title
+application_rate_ml_per_liter float null    carried into metadata
+pre_harvest_interval_days  int    null      SAFETY. Compared with
+                                            farm.days_to_harvest. If the crop
+                                            is harvested sooner than this, the
+                                            spray is REFUSED. Missing means a
+                                            conservative 7 days is assumed -
+                                            never "no limit".
+re_entry_interval_hours    float  null      SAFETY. Printed on the task.
+                                            Missing assumes 12 h.
+bee_toxic                  bool   false     true + farm.in_flower -> REFUSED
+requires_dry_conditions    bool   true      false skips the rainfastness rule
+
+--------------------------------------------------------------------------------
+3.6  market_intelligence_agent   from: Market Intelligence
+--------------------------------------------------------------------------------
+Informational by default. No task is created unless you pass an explicit
+action - price context belongs in the spoken answer, not the work calendar.
+
+commodity                       str   required
+recommended_action              str   null   SELL_NOW | SELL_IN_OTHER_MANDI |
+                                             HOLD. Absent or HOLD -> no task.
+current_modal_price_per_quintal float null   quoted in the description
+predicted_price_per_quintal     float null   carried
+predicted_trend                 str   null   increasing | decreasing | stable
+historical_trend                str   null   carried
+confidence                      float null   0-1, carried
+reason                          str   null   shown in the description
+
+
+================================================================================
+4. HOW IT DECIDES
+================================================================================
+
+4.1  RAIN IS JUDGED BY AMOUNT, NEVER BY PROBABILITY ALONE
+     A 70 % chance of 2 mm replaces nothing. Below 50 % confidence the amount
+     is ignored entirely.
+       >= 2 mm    washes a fresh spray off the leaf
+       >= 10 mm   field too wet for machinery (tillage, sowing, harvest)
+       >= 25 mm   leaches fertilizer below the root zone
+       Irrigation is cancelled only when the rain covers at least 80 % of the
+       planned depth. 40 mm cancels a 30 mm irrigation; 6 mm does not.
+
+4.2  HEAT IS A LIMIT ON THE PERSON, NOT THE CROP
+     A 36 C afternoon does not waste the 26 C morning: heat-sensitive work is
+     simply booked to finish by 11:00. Only dangerous heat (>= 42 C) blocks a
+     day outright.
+
+4.3  PRIORITY
+       score = urgency x 0.40 + risk x 0.35 + impact x 0.25   (each 0-10)
+       then multiplied by how much the source is trusted:
+         weather 1.20 (measured, not modelled)   pest 1.10 (spreads fast)
+         irrigation / soil / growth 1.00          crop / market 0.90
+       >= 8.0 critical | >= 6.0 high | >= 4.0 medium | >= 2.0 low | else deferred
+
+4.4  ORDER BETWEEN JOBS - hours that must pass, so one job does not undo another
+       spray      -> irrigate     24 h   deposits must dry
+       irrigate   -> spray        12 h   wet canopy dilutes, wet soil compacts
+       fertilize  -> irrigate      6 h   water it in, but let it sit first
+       irrigate   -> fertilize    12 h   a saturated surface just runs off
+       prepare    -> sow          24 h   let the seedbed settle
+       sow        -> irrigate      2 h   germination water
+       prune      -> irrigate     24 h   let the wounds close first
+     When a job slides for this reason, the farmer is told which job it is
+     waiting on.
+
+4.5  DELAY HAS A PRICE - stated on the task, per category per day
+       pest 25 % | irrigation 20 % | harvest 15 % | planting 10 %
+       market 10 % | fertilizer 8 % | weeding 6 % | tillage 4 % | pruning 3 %
+     Past 30 % of value lost, the task says "do this first as soon as
+     conditions allow".
+
+4.6  DAY CAPACITY
+     At most 8 jobs and 10 working hours per day - a limit on the farmer's
+     attention, not on the field. Start times round to the quarter hour and
+     never fall before current_timestamp.
+
+4.7  THE TWO RULES IT REFUSES TO BEND
+     Everything else is a delay. These are refusals: the job is not placed at
+     all and is NOT quietly moved to tomorrow. It appears in refused_tasks
+     with the rule, the reason and an alternative.
+       * Pre-harvest interval - residue above the legal limit. The produce can
+         be rejected at the mandi and is not safe to eat.
+       * A bee-toxic spray on a flowering crop - it kills the pollinators that
+         set the fruit you are spraying to protect.
+
+
+================================================================================
+5. TASK TYPES AND ADVICE
+================================================================================
+
+5.1  The 11 categories and their defaults
+
+CATEGORY           TIME   PEOPLE  EQUIPMENT      DRY AFTER  SPRAY  HEAT-LIMITED
+--------------------------------------------------------------------------------
+irrigation          90m     1     irrigation_set     -        -        -
+fertilization       60m     1     spreader          6 h       -        -
+pest_control        60m     2     sprayer           4 h      yes      yes
+soil_preparation   150m     2     tractor            -        -       yes
+planting           120m     2     seed_drill         -        -       yes
+harvesting         240m     4     harvester          -        -       yes
+monitoring          30m     1     -                  -        -        -
+pruning            120m     2     secateurs          -        -       yes
+weeding            180m     3     -                  -        -       yes
+market_action      180m     1     -                  -        -        -
+other               60m     1     -                  -        -        -
+
+The source agent's own numbers always win; these are used only when it is
+silent.
+
+5.2  Guidance is built in three layers, merged, most specific first
+       1. category   true for that work on any farm
+       2. crop       what this crop specifically punishes you for
+       3. situation   what today's weather, soil or stage adds
+
+     Crops with specific advice (15):
+       banana, cabbage, chickpea, cotton, groundnut, maize, mango, mustard,
+       onion, potato, rice, soybean, sugarcane, tomato, wheat
+     Any other crop gets the general advice; nothing is invented.
+
+     Situations recognised: dangerous heat, hot day, frost tonight, frozen
+     ground, gale, wet field, rain coming, saline soil, acid soil, critical
+     growth stage, near harvest, low moisture, waterlogged.
+
+     EVERY "do not" carries its reason - a rule a farmer understands is a
+     rule they follow. The test suite enforces this.
+
+
+================================================================================
+6. ORCHESTRATOR / LANGGRAPH USE
+================================================================================
+
+As a node:   TaskSchedulerAgent()(state)  ->  {"task_plan": {...}}
+             Unusable input returns {} and logs a warning - the graph never
+             stops because one agent upstream failed.
+Directly:    await TaskSchedulerAgent().run(payload)  -> dict
+             TaskSchedulerAgent().plan(payload)       -> TaskPlan object
+
+State shape it accepts (farm fields may sit at the top level, and each
+agent's RAW output under its own key - the adapters convert them):
+
+  {
+    "farm_id": "F1", "field_id": "P1", "current_crop": "groundnut",
+    "growth_stage": "flowering", "days_to_harvest": 40,
+    "total_area_hectares": 2.0, "current_timestamp": "2026-06-15T05:30:00+05:30",
+    "resources": { … },
+
+    "weather_data":        <Weather Watcher output>,
+    "soil_data":           <Soil Health output>,
+    "irrigation_advice":   <Irrigation Planner output>,
+    "crop_recommendation": <Crop Prediction output>,
+    "market_insights":     <Market Intelligence output>,
+    "pest_disease":        <Pest agent output>
+  }
+
+Anything missing gets a safe default rather than an error: no request_id is
+generated for you, an unreadable timestamp falls back to now, and an absurd
+horizon is clamped.
+
+
+================================================================================
+7. WHAT HAPPENS INSIDE (9 stages)
+================================================================================
+  1 collect     each agent's output becomes candidate jobs
+  2 score       urgency / risk / impact -> one priority          (4.3)
+  3 refuse      food-safety and human-safety rules                (4.7)
+  4 weather     move each job to a day it can actually be done    (4.1, 4.2)
+  5 resources   water, people, equipment the farm really has      (2.2)
+  6 conflicts   only genuinely identical jobs are merged - two different
+                fertilizers in one day is normal farming, not a conflict
+  7 slots       a real start time, honouring the gaps in 4.4
+  8 guidance    do / do not / why now / cost of delay             (5.2)
+  9 plan        the day, with one headline and one first job
+
+
+================================================================================
+8. OUTPUT
+================================================================================
+
+--------------------------------------------------------------------------------
+8.1  TaskPlan - the top level
+--------------------------------------------------------------------------------
+FIELD                  TYPE       MEANING
+--------------------------------------------------------------------------------
+plan_id                str        This plan.
+request_id             str        Echoed from the request.
+farm_id, field_id      str        Echoed from the farm block.
+generated_at           datetime   The planning anchor used.
+planning_horizon_days  int        After clamping.
+headline               str        ONE line for the top of the farmer's day.
+                                  Names the real cause when nothing can be
+                                  done - a water shortage is never blamed on
+                                  the weather.
+do_first               str|null   Title of the single most important job.
+summary                str        Counts in one sentence.
+total_tasks_scheduled  int        }
+total_tasks_delayed    int        } every task is counted exactly once
+total_tasks_skipped    int        }
+daily_plans            [DailyPlan]  Section 8.3 - what the day screen renders.
+all_tasks              [Task]     Every task, whatever its status.
+critical_tasks         [Task]     The critical ones, repeated for convenience.
+refused_tasks          [Refused]  Section 8.4 - the safety refusals.
+conflicts_detected     [Conflict] Duplicates that were merged.
+warnings               [str]      Things a person must decide, e.g. not enough
+                                  water for a critical irrigation.
+agent_version          str        "3.0.0"
+
+--------------------------------------------------------------------------------
+8.2  ScheduledTask - one job
+--------------------------------------------------------------------------------
+task_id                str        This task.
+source_agent           enum       which agent asked for it
+title                  str        short, with the dose or depth in it
+description            str        the source agent's own wording
+category               enum       one of the 11 in 5.1
+status                 enum       scheduled | delayed | skipped
+priority               enum       critical | high | medium | low | deferred
+priority_score         float      0-10, the number behind the band
+scheduled_date         date|null  the day it lands on
+scheduled_start_time   "HH:MM"    farm local time, on a quarter hour
+scheduled_end_time     "HH:MM"
+duration_minutes       int
+decision               str        execute_now | delay | skip
+reason                 str        one line: why now, plus why it moved
+delay_until_date       date|null  set when delayed
+skip_reason            str|null   set when skipped, in plain words
+resources_required     object     labor_units, water_liters, equipment[]
+
+  ── the farmer-facing part ──
+why_now                str        why this job matters on this day
+do                     [str]      what to do - crop advice first
+do_not                 [str]      what not to do, each with its reason
+safety                 [str]      protecting the person doing the work,
+                                  including re-entry interval and PHI on sprays
+cost_of_delay          str|null   what waiting costs; present only when the
+                                  job actually moved
+blocked_by             [str]      plain-language reasons it could not be done
+                                  sooner ("about 40 mm of rain is expected,
+                                  which covers this irrigation")
+
+  ── provenance ──
+weather_constraint_applied   bool
+resource_constraint_applied  bool
+metadata               object     the source agent's own numbers, unchanged -
+                                  the scheduler never rewrites another agent's
+                                  figures
+instructions, precautions, kpis   kept for older dashboard code; instructions
+                                  mirrors `do` and precautions mirrors `do_not`
+
+--------------------------------------------------------------------------------
+8.3  DailyPlan - one day
+--------------------------------------------------------------------------------
+plan_date, weather_note ("34 C high, 26 C low; about 2 mm of rain; wind 8 km/h."),
+tasks[], total_tasks, critical_tasks, total_labor_units, total_water_liters,
+estimated_total_duration_minutes, notes[]
+
+--------------------------------------------------------------------------------
+8.4  RefusedTask - what it will not do
+--------------------------------------------------------------------------------
+title, category, rule, explanation, what_to_do_instead
+
+--------------------------------------------------------------------------------
+8.5  ConflictRecord
+--------------------------------------------------------------------------------
+conflict_id, conflicting_task_ids[], conflict_type, description,
+resolution (reschedule | skip | merge | override), resolution_reason
+
+
+================================================================================
+9. WORKED EXAMPLE
+================================================================================
+REQUEST - groundnut at flowering, dry soil, leaf spot on 30 % of the field,
+heavy rain tomorrow, harvest 40 days away.
+
+{
+  "request_id": "req-001",
+  "planning_horizon_days": 3,
+  "farm": { "farm_id": "RJK-1", "field_id": "P1", "current_crop": "groundnut",
+            "growth_stage": "flowering", "days_to_harvest": 40,
+            "total_area_hectares": 2.0,
+            "current_timestamp": "2026-06-15T05:30:00+05:30" },
+  "resources": { "labor_units_available": 3, "water_available_liters": 800000 },
+  "weather_agent": { "forecast": [
+      { "date": "2026-06-15", "temp_min_c": 26, "temp_max_c": 34,
+        "rainfall_mm": 0, "rain_probability_percent": 10, "wind_speed_kmh": 8 },
+      { "date": "2026-06-16", "temp_min_c": 25, "temp_max_c": 31,
+        "rainfall_mm": 40, "rain_probability_percent": 90, "wind_speed_kmh": 22 } ] },
+  "irrigation_agent": { "soil_moisture_current_percent": 22, "schedule": [
+      { "date": "2026-06-15", "irrigation_required": true, "water_depth_mm": 30,
+        "duration_hours": 2, "method": "drip", "timing": "morning" } ] },
+  "pest_disease_agent": { "threat_detected": true, "threat_type": "leaf_spot",
+      "severity": 7.5, "affected_area_percent": 30, "treatment_type": "fungicide",
+      "chemical_name": "mancozeb", "pre_harvest_interval_days": 14 }
+}
+
+RESPONSE (abridged)
+
+  headline : "1 urgent job(s) today - start with treat leaf spot with mancozeb."
+  do_first : "Treat leaf spot with mancozeb"
+
+  1) Treat leaf spot with mancozeb      15 Jun 06:00-07:00   CRITICAL
+     why_now : "It is on about 30% of the field. Left alone, an outbreak this
+                size usually doubles within a week."
+     do      : "Identify the pest before you spray - the wrong chemical costs
+                money and kills the natural enemies that were helping." …
+     do_not  : "Do not spray within the pre-harvest interval on the label -
+                residue above the limit makes the produce unsellable and unsafe." …
+     safety  : "Keep everyone out of the field for 12 hours after spraying.",
+               "Do not harvest for 14 day(s) after this spray."
+
+  2) Irrigate - drip (30 mm)            17 Jun 06:00-08:00   CRITICAL
+     why_now : "The crop is at flowering - water stress now cannot be made up
+                later in the season."
+     do      : "Protect the pegging and pod-filling stage above all - water
+                stress there is a direct loss of pods."   (groundnut-specific)
+     do_not  : "Do not irrigate heavily just before harvest; wet pods at
+                lifting are how aflatoxin starts."
+     blocked_by   : ["it has to wait after pest control"]
+     cost_of_delay: "2 day(s) without water at this stage takes yield you
+                     cannot get back. Do this first as soon as conditions allow."
+
+  Why the 17th and not the 16th: water must wait 24 h after the spray (4.4),
+  and the 16th brings 40 mm of rain, which covers a 30 mm irrigation (4.1).
+
+
+================================================================================
+10. ERRORS
+================================================================================
+422   the input could not be read - no agent block, or a field out of range
+      (a percentage above 100, a negative area, a malformed "HH:MM")
+500   an unexpected failure; the farmer sees a generic message and the detail
+      goes to the log, never to the response
+
+As a LangGraph node nothing is raised: unusable state returns {} so one bad
+input cannot stop the farm's other answers.
+
+Tuning by environment variable (operations only - agronomic and safety
+thresholds are deliberately not overridable):
+  FARMXPERT_TS_HORIZON      default planning horizon (3)
+  FARMXPERT_TS_MAX_HORIZON  hard maximum (14)
+  FARMXPERT_TS_MAX_TASKS    jobs per day (8)
+  FARMXPERT_TS_MAX_HOURS    working hours per day (10)
+  FARMXPERT_TS_WORK_START   default day start ("06:00")
+  FARMXPERT_TS_WORK_END     default day end ("18:00")

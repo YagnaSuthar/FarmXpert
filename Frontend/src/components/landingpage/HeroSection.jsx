@@ -1,25 +1,56 @@
 'use client';
 import { useEffect } from 'react';
 import { Sun } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+
+/**
+ * Split a string into user-perceived characters (grapheme clusters).
+ *
+ * `[...str]` and `Array.from(str)` only split on Unicode code points,
+ * which is wrong for Devanagari ("कृषि" splits into क + ृ + ष + ि,
+ * scattering vowel marks) and Gujarati (same problem). Intl.Segmenter
+ * with `granularity: 'grapheme'` respects extended grapheme clusters
+ * per Unicode UAX #29 — consonant + matras stay as one unit.
+ *
+ * Falls back to code-point splitting on the (rare) environment that
+ * doesn't ship Intl.Segmenter, which is acceptable degradation.
+ */
+function toGraphemes(text, locale) {
+  if (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function') {
+    const segmenter = new Intl.Segmenter(locale, { granularity: 'grapheme' });
+    return Array.from(segmenter.segment(text), (s) => s.segment);
+  }
+  return Array.from(text);
+}
 
 export default function HeroSection() {
+  const t = useTranslations('hero');
+  const tTitle = useTranslations('hero.titleParts');
+  const tSensors = useTranslations('hero.sensors');
+  const tStats = useTranslations('hero.stats');
+  const locale = useLocale();
+
+  // Title is animated character-by-character below. Read the three
+  // localized title parts once so the animation effect can rebuild
+  // the DOM whenever the language changes.
+  const titleBefore = tTitle('before');
+  const titleAccent = tTitle('accent');
+  const titleAfter = tTitle('after');
+
   useEffect(() => {
     // ══ HERO TITLE — character by character animation ══
-    // const lineData = [
-    //   { text: 'SMART', green: false },
-    //   { text: 'FARMING', green: true },
-    //   { text: 'REDEFINED', green: false },
-    // ];
-
     const lineData = [
-      { text: 'Revolutionizing', green: false },
-      { text: 'Agriculture', green: true },
-      { text: 'with FarmXpert.', green: false },
+      { text: titleBefore, green: false },
+      { text: titleAccent, green: true },
+      { text: titleAfter, green: false },
     ];
-    //Revolutionizing Agriculture with AI.
 
     const titleEl = document.getElementById('heroTitle');
     if (!titleEl) return;
+
+    // Locale switches keep the DOM node but we re-fire this effect,
+    // so wipe the previous render before appending the new chars.
+    titleEl.innerHTML = '';
 
     const baseDelay = 400;
     let charIdx = 0;
@@ -30,7 +61,9 @@ export default function HeroSection() {
       lineSpan.style.lineHeight = '1.1';
       if (li === 1) lineSpan.style.color = 'var(--accent-green)';
 
-      [...line.text].forEach((ch) => {
+      // Split into user-perceived characters so Devanagari/Gujarati
+      // conjuncts and vowel marks animate as a single unit.
+      toGraphemes(line.text, locale).forEach((ch) => {
         const span = document.createElement('span');
         span.className = 'char' + (line.green ? ' char-green' : '');
         span.textContent = ch === ' ' ? '\u00A0' : ch;
@@ -327,7 +360,9 @@ export default function HeroSection() {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    // Re-run when title strings or the active locale change so the
+    // animation re-renders with the new content + grapheme rules.
+  }, [titleBefore, titleAccent, titleAfter, locale]);
 
   return (
     <section className="hero">
@@ -335,74 +370,71 @@ export default function HeroSection() {
 
       {/* Text block */}
       <div className="hero-text-block">
-        {/* <div className="hero-badge"><span className="badge-dot"></span> Next-Gen AI Agricultural Intelligence</div> */}
         <h1 className="hero-title" id="heroTitle"></h1>
-        <p className="hero-desc">
-          Multi-agent AI systems monitor soil health, predict yields, detect disease, and forecast
-          market prices in real-time — turning every field into a data-driven operation.
-        </p>
+        <p className="hero-desc">{t('description')}</p>
         <div className="hero-actions">
-          {/* <button className="btn-primary">Launch Platform</button> */}
-          {/* <button className="btn-secondary">Watch Demo</button> */}
+          {/* CTAs intentionally commented; uncomment when ready and
+              wire to messages: tCta('launch'), tCta('demo') */}
         </div>
       </div>
 
       {/* Surface line */}
       <div className="surface-line" id="surfaceLine"></div>
-      <div className="surface-lbl" id="surfaceLbl">Surface Level — 0 cm</div>
+      <div className="surface-lbl" id="surfaceLbl">{t('surfaceLabel')}</div>
 
       {/* Root canvas */}
       <div className="root-canvas-wrap" id="rootWrap">
         <canvas id="rootCanvas"></canvas>
 
-        {/* Sensor nodes */}
+        {/* Sensor nodes — numeric values are not translated (they're
+            data, not copy). Labels are. */}
         <div className="snode lg" id="sn-ph" data-x="0.50" data-y="0.32">
           <span className="snode-sym">pH</span>
           <span className="snode-val">6.4</span>
-          <span className="snode-lbl">Soil pH</span>
+          <span className="snode-lbl">{tSensors('soilPh')}</span>
           <div className="snode-dot"></div>
         </div>
         <div className="snode lg" id="sn-sm" data-x="0.22" data-y="0.52">
           <span className="snode-sym">H₂O</span>
           <span className="snode-val">43%</span>
-          <span className="snode-lbl">Moisture</span>
+          <span className="snode-lbl">{tSensors('moisture')}</span>
           <div className="snode-dot"></div>
         </div>
         <div className="snode lg" id="sn-n" data-x="0.78" data-y="0.52">
           <span className="snode-sym">N</span>
           <span className="snode-val">82%</span>
-          <span className="snode-lbl">Nitrogen</span>
+          <span className="snode-lbl">{tSensors('nitrogen')}</span>
           <div className="snode-dot"></div>
         </div>
         <div className="snode md" id="sn-p" data-x="0.13" data-y="0.44">
           <span className="snode-sym">P</span>
           <span className="snode-val">38</span>
-          <span className="snode-lbl">Phosphorus</span>
+          <span className="snode-lbl">{tSensors('phosphorus')}</span>
         </div>
         <div className="snode md" id="sn-k" data-x="0.37" data-y="0.44">
           <span className="snode-sym">K</span>
           <span className="snode-val">High</span>
-          <span className="snode-lbl">Potassium</span>
+          <span className="snode-lbl">{tSensors('potassium')}</span>
         </div>
         <div className="snode md" id="sn-st" data-x="0.63" data-y="0.44">
           <span className="snode-sym">T°</span>
           <span className="snode-val">18°</span>
-          <span className="snode-lbl">Soil Temp</span>
+          <span className="snode-lbl">{tSensors('soilTemp')}</span>
         </div>
         <div className="snode md" id="sn-at" data-x="0.87" data-y="0.44">
           <span className="snode-sym">°C</span>
           <span className="snode-val">24°</span>
-          <span className="snode-lbl">Air Temp</span>
+          <span className="snode-lbl">{tSensors('airTemp')}</span>
         </div>
         <div className="snode sm" id="sn-hum" data-x="0.50" data-y="0.72">
           <span className="snode-sym">RH</span>
           <span className="snode-val">68%</span>
-          <span className="snode-lbl">Humidity</span>
+          <span className="snode-lbl">{tSensors('humidity')}</span>
         </div>
         <div className="snode sm" id="sn-lux" data-x="0.50" data-y="0.88">
           <span className="snode-sym"><Sun size={14} /></span>
           <span className="snode-val">780</span>
-          <span className="snode-lbl">Light lux</span>
+          <span className="snode-lbl">{tSensors('lightLux')}</span>
         </div>
       </div>
 
@@ -410,23 +442,23 @@ export default function HeroSection() {
       <div className="hero-stats">
         <div className="stat-card">
           <span className="stat-num">94.7%</span>
-          <span className="stat-label">Pest Detection Accuracy</span>
+          <span className="stat-label">{tStats('pestAccuracy')}</span>
         </div>
         <div className="stat-card">
           <span className="stat-num">38%</span>
-          <span className="stat-label">Water Savings Avg</span>
+          <span className="stat-label">{tStats('waterSavings')}</span>
         </div>
         <div className="stat-card">
           <span className="stat-num">2.4×</span>
-          <span className="stat-label">Yield Improvement</span>
+          <span className="stat-label">{tStats('yieldImprovement')}</span>
         </div>
         <div className="stat-card">
           <span className="stat-num">12K+</span>
-          <span className="stat-label">Active Farm Nodes</span>
+          <span className="stat-label">{tStats('farmNodes')}</span>
         </div>
         <div className="stat-card">
           <span className="stat-num">&lt;200ms</span>
-          <span className="stat-label">Real-time Response</span>
+          <span className="stat-label">{tStats('response')}</span>
         </div>
       </div>
     </section>

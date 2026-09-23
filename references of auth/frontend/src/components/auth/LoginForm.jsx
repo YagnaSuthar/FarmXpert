@@ -1,0 +1,389 @@
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import useFormDraft from '@/hooks/useFormDraft';
+import { useTranslations } from 'next-intl';
+import { Link, useRouter } from '@/i18n/navigation';
+import { useAuth, getDashboardPath } from '@/context/AuthContext';
+import { usePageTransition } from '@/reusablefiles/pagetransition';
+import api from '@/lib/api';
+
+export default function LoginForm({
+  onSwitchToRegister,
+  onSwitchToForgot,
+  onSwitchToVerifyEmail,
+  initialEmail = '',
+}) {
+  const t = useTranslations('auth');
+  const router = useRouter();
+  const { login } = useAuth();
+  const { trigger } = usePageTransition();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [captcha, setCaptcha] = useState({ captchaId: '', challenge: '', loading: true });
+
+  // Retained across a locale switch (which remounts this tree). The
+  // password and the captcha answer are excluded: the first should not
+  // outlive the form, the second is void once a new challenge is fetched.
+  const [formData, setFormData, clearDraft] = useFormDraft(
+    'auth:login',
+    {
+      email: initialEmail,
+      password: '',
+      captchaAnswer: '',
+      remember: false,
+    },
+    { exclude: ['password', 'captchaAnswer'] },
+  );
+
+  // Fetch a new CAPTCHA challenge
+  const fetchCaptcha = useCallback(async () => {
+    try {
+      setCaptcha((prev) => ({ ...prev, loading: true }));
+      const res = await api.get('/auth/captcha');
+      if (res.success && res.data) {
+        setCaptcha({
+          captchaId: res.data.captchaId,
+          challenge: res.data.challenge,
+          loading: false,
+        });
+      }
+    } catch {
+      setCaptcha((prev) => ({ ...prev, loading: false }));
+    }
+  }, []);
+
+  useEffect(() => {
+    let ignore = false;
+    async function loadCaptcha() {
+      try {
+        const res = await api.get('/auth/captcha');
+        if (!ignore && res.success && res.data) {
+          setCaptcha({
+            captchaId: res.data.captchaId,
+            challenge: res.data.challenge,
+            loading: false,
+          });
+        }
+      } catch {
+        if (!ignore) {
+          setCaptcha((prev) => ({ ...prev, loading: false }));
+        }
+      }
+    }
+    loadCaptcha();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+
+    if (!formData.email || !formData.password) {
+      setErrorMessage(t('errors.invalidCredentials'));
+      return;
+    }
+
+    if (!formData.captchaAnswer) {
+      setErrorMessage(t('errors.captchaRequired'));
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const res = await login({
+        email: formData.email.trim(),
+        password: formData.password,
+        captchaId: captcha.captchaId,
+        captchaAnswer: formData.captchaAnswer.trim(),
+        remember: Boolean(formData.remember),
+      });
+
+      if (res.success) {
+        clearDraft(); // the form served its purpose — drop the retained email
+        const userRole = res.data?.user?.role || 'user';
+        const targetDashboard = getDashboardPath(userRole);
+        trigger({
+          to: targetDashboard,
+          replace: true,
+          text: 'Initializing Furnova',
+          subtitle: 'Redirecting to your workspace',
+        });
+      }
+    } catch (err) {
+      const msg = err.message || t('errors.generic');
+      setErrorMessage(msg);
+
+      // If email is not verified, allow immediate switch to verify
+      if (err.status === 403 && msg.toLowerCase().includes('verify')) {
+        if (onSwitchToVerifyEmail) {
+          setTimeout(() => {
+            onSwitchToVerifyEmail(formData.email.trim());
+          }, 1500);
+        }
+      }
+
+      // Reset and refresh CAPTCHA on error
+      setFormData((prev) => ({ ...prev, captchaAnswer: '' }));
+      fetchCaptcha();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <>
+      <header className="form-head-auth">
+        <h1 className="form-title-auth">{t('login.title')}</h1>
+        <p className="form-sub-auth">
+          {t('login.subtitle')}{' '}
+          {onSwitchToRegister ? (
+            <button
+              type="button"
+              onClick={onSwitchToRegister}
+              className="btn-link-auth link-auth"
+            >
+              {t('login.switchAction')}
+            </button>
+          ) : (
+            <Link href="/auth/register" className="link-auth">
+              {t('login.switchAction')}
+            </Link>
+          )}
+        </p>
+        <p className="form-note-auth">{t('login.noAccountNote')}</p>
+      </header>
+
+      {/* Backend / Validation Error Banner */}
+      {errorMessage && (
+        <div className="error-banner-auth" role="alert">
+          <svg
+            className="error-icon-auth"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <div className="error-content-auth">
+            <p className="error-title-auth">{errorMessage}</p>
+          </div>
+        </div>
+      )}
+
+      <form className="login-form-auth" onSubmit={handleSubmit} noValidate>
+        {/* Username / Email field */}
+        <div className="field-auth">
+          <label className="field-label-auth" htmlFor="login-email">
+            {t('login.usernameOrEmailLabel')}
+          </label>
+          <input
+            id="login-email"
+            name="email"
+            type="email"
+            autoComplete="username"
+            placeholder={t('login.usernameOrEmailPlaceholder')}
+            className="field-input-auth"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required
+            disabled={isSubmitting}
+          />
+        </div>
+
+        {/* Password field with peek toggle */}
+        <div className="field-auth">
+          <label className="field-label-auth" htmlFor="login-password">
+            {t('login.passwordLabel')}
+          </label>
+          <div className="field-control-auth">
+            <input
+              id="login-password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              placeholder={t('login.passwordPlaceholder')}
+              className="field-input-auth"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required
+              disabled={isSubmitting}
+            />
+            <button
+              type="button"
+              className="peek-btn-auth"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? t('common.hidePassword') : t('common.showPassword')}
+              aria-pressed={showPassword}
+              tabIndex={-1}
+            >
+              {showPassword ? (
+                <svg className="peek-eye-auth" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path
+                    d="M3 3l14 14M9.5 9.5a2.5 2.5 0 003.5 3.5m-1.5-6.5C14 6.5 17 9.5 17 9.5s-1.2 2.3-3.2 4.1M7.5 7.8C4.5 9.2 3 10 3 10s3 6 7 6c1.5 0 2.9-.5 4.1-1.3"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ) : (
+                <svg className="peek-eye-auth" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path
+                    d="M1 10s3.2-6 9-6 9 6 9 6-3.2 6-9 6-9-6-9-6Z"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="10" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.4" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* CAPTCHA challenge section — 1 row side-by-side grid */}
+        <div className="captcha-container-auth">
+          <label className="field-label-auth" htmlFor="login-captcha">
+            {t('captcha.label')}
+          </label>
+          <div className="captcha-row-auth">
+            <div className="captcha-challenge-box-auth">
+              <span className="captcha-challenge-text-auth">
+                {captcha.loading ? t('captcha.loading') : captcha.challenge.replace(/^What is\s*/i, '')}
+              </span>
+              <button
+                type="button"
+                className="captcha-refresh-btn-auth"
+                onClick={fetchCaptcha}
+                disabled={captcha.loading || isSubmitting}
+                aria-label={t('captcha.refresh')}
+              >
+                <svg
+                  className="captcha-refresh-icon-auth"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                </svg>
+                <span>{t('captcha.refresh')}</span>
+              </button>
+            </div>
+            <input
+              id="login-captcha"
+              name="captchaAnswer"
+              type="text"
+              inputMode="numeric"
+              placeholder={t('captcha.placeholder')}
+              className="field-input-auth"
+              value={formData.captchaAnswer}
+              onChange={(e) => setFormData({ ...formData, captchaAnswer: e.target.value })}
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+        </div>
+
+        {/* Row: Remember me + Forgot password */}
+        <div className="field-row-auth">
+          <label className="checkbox-auth">
+            <input
+              type="checkbox"
+              name="remember"
+              className="checkbox-input-auth"
+              checked={formData.remember}
+              onChange={(e) => setFormData({ ...formData, remember: e.target.checked })}
+              disabled={isSubmitting}
+            />
+            <span className="checkbox-box-auth" aria-hidden="true">
+              <svg className="checkbox-check-auth" viewBox="0 0 12 10" aria-hidden="true">
+                <path
+                  d="M1 5l3.2 3.2L11 1"
+                  stroke="white"
+                  strokeWidth="1.6"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+            <span className="checkbox-text-auth">{t('login.rememberMe')}</span>
+          </label>
+
+          {onSwitchToForgot ? (
+            <button
+              type="button"
+              onClick={onSwitchToForgot}
+              className="btn-link-auth link-muted-auth"
+            >
+              {t('login.forgotPasswordLink')}
+            </button>
+          ) : (
+            <Link href="/auth/forgot-password" className="link-muted-auth">
+              {t('login.forgotPasswordLink')}
+            </Link>
+          )}
+        </div>
+
+        {/* Primary Submit Button */}
+        <button
+          type="submit"
+          className="btn-primary-auth"
+          disabled={isSubmitting}
+        >
+          <span>{isSubmitting ? t('login.submittingButton') : t('login.submitButton')}</span>
+        </button>
+
+        {/* Divider */}
+        <div className="divider-auth">
+          <span>{t('login.orContinueWith')}</span>
+        </div>
+
+        {/* Social Login Buttons */}
+        <div className="social-row-auth">
+          <button type="button" className="btn-social-auth" aria-label={t('login.google')} disabled={isSubmitting}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="#4285F4"
+                d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12Z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.13C3.26 21.4 7.34 24 12 24Z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.57H1.24C.45 8.14 0 9.99 0 12s.45 3.86 1.24 5.43l4.04-3.14Z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.6 1.24 6.57l4.04 3.14c.95-2.83 3.6-4.96 6.72-4.96Z"
+              />
+            </svg>
+            <span>{t('login.google')}</span>
+          </button>
+
+          <button type="button" className="btn-social-auth" aria-label={t('login.x')} disabled={isSubmitting}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M17.3 3h3l-6.6 7.5L21.5 21h-6l-4.7-6.1L5.3 21h-3l7.1-8.1L2.5 3h6.2l4.3 5.6L17.3 3Zm-1 16.2h1.6L7.8 4.7H6l10.3 14.5Z"
+              />
+            </svg>
+            <span>{t('login.x')}</span>
+          </button>
+        </div>
+      </form>
+    </>
+  );
+}

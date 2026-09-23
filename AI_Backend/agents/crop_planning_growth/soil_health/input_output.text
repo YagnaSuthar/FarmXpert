@@ -1,0 +1,80 @@
+# Soil Health Agent - POST /api/soil-health/analyze
+
+# Input (only soil_ph and electrical_conductivity are required)
+{
+    "soil_ph": 8.1,
+    "electrical_conductivity": 0.6,     # dS/m, read as saturated-paste ECe
+    "soil_moisture": 28.0,              # volumetric water content, %
+    "soil_temperature": 27.0,           # C at 10-15 cm
+    "nitrogen": 45.0,                   # mg/kg mineral N (NO3-N + NH4-N)
+    "phosphorus": 16.0,                 # mg/kg Olsen P
+    "potassium": 140.0,                 # mg/kg NH4OAc K
+    "air_temperature": 33.0,
+    "air_humidity": 60.0,
+    "soil_type": "Black Cotton",        # GET /api/soil-health/options lists all
+    "crop_type": "groundnut",
+    "rainfall": 4.0,                    # mm in the last 7 days
+    "fertilizer_type": "urea"           # last applied - enables conflict detection
+}
+
+
+# Output (abridged)
+{
+    "agent_id": "soil_health_agent",
+    "agent_version": "3.0.0",
+    "soil_health_score": 78.4,
+    "soil_health_status": "Good",       # Excellent | Good | Fair | Poor | Critical
+    "summary": "Soil health is good (score: 78.4/100). Issue detected: ...",
+
+    "moisture_status": {                # the reading interpreted for THIS soil
+        "volumetric_percent": 28.0,
+        "available_water_percent": 33.3,        # 0 = wilting point, 100 = field capacity
+        "field_capacity_percent": 40.0,
+        "wilting_point_percent": 22.0,
+        "stress_starts_below_percent": 50.0,    # (1 - p) x 100, FAO-56 p for the crop
+        "soil_type_used": "black_cotton",
+        "soil_type_assumed": false
+    },
+
+    "alerts": [
+        {"type": "LOW_MOISTURE", "severity": "medium", "parameter": "moisture",
+         "observed_value": 33.3, "boundary": 50.0, "unit": "% plant-available water",
+         "message": "Plant-available water is running low for this soil; stress is starting."},
+        {"type": "HIGH_EC", "severity": "medium", "parameter": "ec",
+         "observed_value": 3.0, "boundary": 1.7, "expected_relative_yield": 84.4,
+         "message": "EC 3.0 dS/m is above Potato's salt tolerance (1.7 dS/m) - expected yield about 84% ..."}
+    ],
+    "critical_factors": [],
+
+    "fertilizers": [
+        {"triggered_by": "LOW_N", "fertilizer": "rhizobium_plus_starter_n",     # legume
+         "display_name": "Rhizobium seed inoculation + starter nitrogen",
+         "dosage": "Rhizobium 600 g per ha-seed lot; starter 20 kg N/ha (~43 kg urea)"}
+    ],
+    "suggestions": [
+        {"message": "Gypsum 500 kg/ha at pegging (30-40 days) supplies the calcium and sulphur pods need ...",
+         "priority": "info", "source": "crop"}
+    ],
+    "conflicts": [],
+    "confidence": {"type": "rule-based", "score": 1.0},
+    "data_quality_score": 1.0,
+    "validation_errors": []
+}
+
+
+# How readings are judged
+# Moisture   plant-available water for the soil type (FAO-56 field capacity / wilting
+#            point); stress below (1 - p) with the crop's FAO-56 p; above field
+#            capacity + 5 points = waterlogging risk. Rice: below field capacity = low.
+# Salinity   crop Maas-Hoffman threshold and slope -> expected relative yield.
+#            Unknown crop: USDA classes (above 2 dS/m elevated, above 4 saline).
+# Nutrients  crop optimal ranges; legumes get Rhizobium for low N, not urea.
+# Amendments saline soil -> leaching + drainage; gypsum only when sodic (pH >= 8.5)
+#            or strongly alkaline (pH >= 8.8, confirm with ESP).
+# Score      weighted closeness to the crop's optimum minus alert impacts;
+#            independent of the season label.
+
+
+# Errors
+# 422  soil_ph or electrical_conductivity missing or out of range
+# Unknown crop / soil names are reported in validation_errors, never rejected.

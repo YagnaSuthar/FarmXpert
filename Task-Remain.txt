@@ -1,0 +1,55 @@
+soil health		- done(crop data will extend)
+market intelligence	- done(crop data will extend in config and LSTM)
+weather watcher		- done yagna
+crop selector		- done (ML model claude)
+irrigation planer	- done yagna
+task scheduler		- done(in this agent config.py 113 line,
+			  TASK_INSTRUCTIONS: make big,make all agent connect and make proper task - output in json form)
+yield predictor		- 
+farm mapping		- 
+pest 			- 
+growth 			- 
+
+Voice
+Orchestrator
+
+
+Technical side
+- Database
+- Tokenizer
+- Json to Toon formet
+- Multilingual service
+- Frontend
+- PWA
+
+- At login 
+	- basic farm soil information
+	- len lon(gps)
+	- state
+	- area
+	- Hardwere Token(2)
+	- Farmer name and basic information like number,email id
+	- Login time ID generate
+- Admin Panel(
+	1 - All user 
+	2 - User token usage
+	3 - Block unblock
+
+
+- SMTP
+- SMS Number verification
+- Security
+- Docker
+- Memory Storage previous chat store(last chat)
+- Cold Storage
+
+
+{
+	farmer ID:
+	Farmer name:
+	Soil type:
+}
+
+
+
+ 

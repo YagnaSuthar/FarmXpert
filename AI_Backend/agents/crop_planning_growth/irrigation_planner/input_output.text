@@ -1,51 +1,95 @@
+# Irrigation Planner Agent - POST /irrigation-planner/plan
+
 # Input
 {
-    "farm_id": "farm_123",
-    "crop": "rice",
-    "growth_stage": "vegetative",
-    "soil_moisture": 0.65,  # Current moisture (0-1)
-    "weather_forecast": {
-        "next_7_days": [
-            {"date": "2024-04-23", "rainfall_mm": 0, "temp_max": 38, "humidity": 45},
-            {"date": "2024-04-24", "rainfall_mm": 12, "temp_max": 35, "humidity": 65}
-        ]
-    },
-    "soil_type": "clay",
-    "irrigation_method": "drip",
-    "field_capacity": 0.85,
-    "wilting_point": 0.25
+    "location": {"lat": 23.02, "lon": 72.57},   # needed to fetch the forecast
+    "crop": "groundnut",                        # GET /irrigation-planner/options lists all
+    "days_after_sowing": 95,                    # or "growth_stage": "fruiting", or "sowing_date"
+    "soil_type": "Black Cotton",                # crop-prediction names accepted
+    "soil_moisture_percent": 27.0,              # volumetric water content from the sensor
+    "electrical_conductivity": 0.8,             # soil EC, dS/m
+    "water_ec_ds_m": 1.2,                       # optional: irrigation water EC -> leaching dose
+    "irrigation_method": "furrow",              # drip | sprinkler | center_pivot | furrow | border | basin | flood
+    "farm_area_hectares": 1.0,
+    "planning_horizon_days": 7,                 # 1-14
+    "farm_id": "farm-sunrise-001"               # optional: stored reading used if no moisture given
 }
 
-# Output
+
+# Output (abridged)
 {
+    "agent_id": "irrigation_agent",
+    "agent_version": "3.0.0",
+    "status": "ok",                             # partial: no forecast or no moisture reading
+
     "irrigation_schedule": [
         {
-            "date": "2024-04-23",
+            "date": "2026-09-22",
+            "decision_code": "IRRIGATE",
             "irrigation_required": true,
-            "water_depth_mm": 35,
-            "duration_hours": 3.5,
-            "timing": "Early morning (6-9 AM)",
-            "reason": "No rainfall expected, high evapotranspiration"
-        },
-        {
-            "date": "2024-04-24",
-            "irrigation_required": false,
-            "reason": "12mm rainfall forecasted"
+            "water_depth_mm": 166.6,            # GROSS - what to apply
+            "net_irrigation_mm": 100.0,         # what the root zone needs
+            "sets": 2,                          # split over 2 working days (<= 8 h each)
+            "duration_hours": 4.17,
+            "water_volume_liters": 1666000,
+            "timing": "early_morning",
+            "method": "furrow",
+            "reasons": [
+                {"code": "SOIL_BELOW_TARGET", "factor": "root_zone_depletion",
+                 "value": 100.0, "threshold": 54.0, "unit": "mm", "severity": "medium"},
+                {"code": "CROP_CRITICAL_STAGE", "factor": "growth_stage", "severity": "high"}
+            ],
+            "recommendation": "Apply ~167 mm by furrow in the early morning, split over 2 days. Critical growth stage - do not skip.",
+            "water_balance_mm": {
+                "moisture_before": 202.5, "et0_mm": 4.8, "etc_mm": 2.5,
+                "effective_rain_mm": 0.0, "irrigation_mm": 100.0,
+                "depletion_mm": 100.0, "raw_mm": 54.0, "moisture_after": 300.0
+            },
+            "crop_coefficient_kc": 1.15,
+            "growth_stage": "fruiting"
         }
     ],
-    "water_savings": {
-        "optimized_usage_liters": 42000,
-        "traditional_usage_liters": 58000,
-        "savings_percentage": 27.6
+
+    "crop_profile": {
+        "crop": "groundnut", "growth_stage": "fruiting", "soil_type": "black_cotton",
+        "root_depth_m": 0.75,
+        "field_capacity_mm": 300.0, "wilting_point_mm": 165.0,
+        "total_available_water_mm": 135.0,      # FAO-56 TAW
+        "readily_available_water_mm": 54.0,     # FAO-56 RAW = p x TAW
+        "depletion_fraction_p": 0.4,            # 0.5, 20 % tighter at a critical stage
+        "application_efficiency": 0.6,
+        "et0_source": "fao56_penman_monteith",  # or hargreaves_fallback
+        "preferred_method": "furrow"
     },
-    "alerts": [
-        {
-            "type": "warning",
-            "message": "High evapotranspiration expected on 2024-04-23"
-        }
-    ]
+
+    "water_savings": {"savings_percentage": 16.7},   # vs flood irrigation of the same need
+    "soil_health_insights": {"electrical_conductivity": 0.8, "salinity_relative_yield_percent": 100.0},
+    "summary": {"irrigation_days": 1, "headline": "Groundnut at fruiting stage: 1 of 7 days need irrigation; soil holds 74% of its available water."},
+    "next_irrigation": {"date": "2026-09-22", "water_depth_mm": 166.6, "method": "furrow"},
+    "farmer_actions": [{"action_code": "IRRIGATE_TODAY", "priority": "high"}],
+    "alerts": [],
+    "warnings": []
 }
 
 
+# Decision codes (FAO-56 root-zone depletion Dr)
+# POSTPONE_STORM      heavy rain (>= 64.5 mm) likely today
+# EMERGENCY_IRRIGATE  Dr >= 90 % of TAW - close to wilting
+# SKIP_SATURATED      Dr <= 10 % of TAW - near field capacity
+# SKIP_DEFICIT_SMALL  Dr within RAW - no stress yet
+# SKIP_RAIN           past RAW, but likely rain brings it back inside RAW
+# IRRIGATE            past RAW - refill to field capacity
+# MAINTAIN_FLOOD / DRAIN_FIELD   rice standing-water branch
 
- # Current one is not much specific with the crop it is just taking based on soil +weather requirements 
+
+# Methods and sources
+# ET0          weather agent's FAO-56 Penman-Monteith; Hargreaves-Samani (FAO-56 eq. 52) fallback
+# Kc, Zr, p    FAO-56 Tables 12 and 22, per crop and stage; p x 0.8 at yield-critical stages
+# Soil water   FAO-56 Table 19 field capacity / wilting point per soil
+# Rain         probability-weighted, 80 % effective, half of rain above 50 mm lost to runoff
+# Gross depth  net / application efficiency (drip 0.90 ... flood 0.50) / (1 - leaching fraction)
+# Salinity     Maas-Hoffman crop thresholds; FAO-29 leaching requirement from water EC
+
+
+# Errors
+# 422  unknown crop, soil, stage or method; no location and no weather data

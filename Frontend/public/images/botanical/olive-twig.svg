@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -50 490 350" fill="none">
+<defs>
+  <linearGradient id="deep" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#174D2C"/><stop offset=".5" stop-color="#2F7A42"/><stop offset="1" stop-color="#76B062"/></linearGradient>
+  <linearGradient id="fresh" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2C6E3C"/><stop offset=".6" stop-color="#5FA35A"/><stop offset="1" stop-color="#B2D796"/></linearGradient>
+  <linearGradient id="euca" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#4F7F6C"/><stop offset=".55" stop-color="#7FA898"/><stop offset="1" stop-color="#C5DBCF"/></linearGradient>
+  <linearGradient id="olive" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#4A5E2E"/><stop offset=".6" stop-color="#7C8F4E"/><stop offset="1" stop-color="#B7C48E"/></linearGradient>
+  <linearGradient id="silver" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#8FA38A"/><stop offset="1" stop-color="#DCE5D3"/></linearGradient>
+  <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0B3A22" stop-opacity=".4"/><stop offset="1" stop-color="#0B3A22" stop-opacity="0"/></linearGradient>
+  <linearGradient id="stem" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#40592F"/><stop offset="1" stop-color="#86A060"/></linearGradient>
+  <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0F3D25" flood-opacity=".16"/></filter>
+<g id="ol"><path d="M0 0 C 8 -10, 10 -62, 0 -96 C -10 -62, -8 -10, 0 0Z" fill="url(#olive)"/>
+<path d="M0 0 C -8 -10, -10 -62, 0 -96 C -3 -60, -2 -12, 0 0Z" fill="url(#silver)" opacity=".75"/>
+<path d="M0 -2 C .8 -35, .8 -60, 0 -90" stroke="#E9EFD9" stroke-opacity=".5" stroke-width=".9"/></g>
+<radialGradient id="berry" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#8A9A5B"/><stop offset=".6" stop-color="#4E5E2B"/><stop offset="1" stop-color="#2F3A18"/></radialGradient>
+</defs>
+<g filter="url(#soft)">
+<path d="M0 300 Q 200 250 400 70" stroke="url(#stem)" stroke-width="2.6" stroke-linecap="round"/>
+<use href="#ol" transform="translate(80.0 274.8) rotate(26.7) scale(0.88)"/>
+<use href="#ol" transform="translate(104.6 265.0) rotate(112.1) scale(0.86)"/>
+<use href="#ol" transform="translate(129.2 254.1) rotate(19.4) scale(0.84)"/>
+<use href="#ol" transform="translate(153.8 242.3) rotate(112.3) scale(0.82)"/>
+<use href="#ol" transform="translate(178.5 229.5) rotate(16.8) scale(0.79)"/>
+<use href="#ol" transform="translate(203.1 215.7) rotate(108.3) scale(0.77)"/>
+<use href="#ol" transform="translate(227.7 201.0) rotate(27.6) scale(0.75)"/>
+<use href="#ol" transform="translate(252.3 185.2) rotate(95.9) scale(0.73)"/>
+<use href="#ol" transform="translate(276.9 168.5) rotate(6.1) scale(0.71)"/>
+<use href="#ol" transform="translate(301.5 150.7) rotate(96.5) scale(0.69)"/>
+<use href="#ol" transform="translate(326.2 132.0) rotate(4.0) scale(0.66)"/>
+<use href="#ol" transform="translate(350.8 112.3) rotate(82.9) scale(0.64)"/>
+<use href="#ol" transform="translate(375.4 91.7) rotate(9.9) scale(0.62)"/>
+<use href="#ol" transform="translate(400.0 70.0) rotate(82.9) scale(0.60)"/>
+<ellipse cx="146.0" cy="265.1" rx="9" ry="12" fill="url(#berry)"/>
+<ellipse cx="254.0" cy="204.0" rx="9" ry="12" fill="url(#berry)"/>
+<use href="#ol" transform="translate(400 70) rotate(50) scale(.55)"/>
+</g>
+</svg>

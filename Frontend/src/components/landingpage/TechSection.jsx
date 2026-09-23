@@ -1,8 +1,20 @@
-const techChips = [
-  'Next.js 14',
+'use client';
+
+// ============================================================
+// FILE: src/components/landingpage/TechSection.jsx
+//
+// Tech chip labels are brand/product names (Next.js, FastAPI,
+// etc.) so they intentionally stay untranslated — they're
+// proper nouns. Only the surrounding copy is localized.
+// ============================================================
+
+import { useTranslations } from 'next-intl';
+
+const TECH_CHIPS = [
+  'Next.js',
   'FastAPI',
-  'TensorFlow 2.x',
-  'Python 3.11',
+  'TensorFlow',
+  'Python',
   'CNN Models',
   'LSTM Networks',
   'Transformer AI',
@@ -18,22 +30,23 @@ const techChips = [
 ];
 
 export default function TechSection() {
+  const t = useTranslations('tech');
+  const tTitle = useTranslations('tech.titleParts');
+
   return (
     <section className="tech-section" id="tech">
       <div className="section-container">
-        <div className="section-eyebrow">Technology Stack</div>
+        <div className="section-eyebrow">{t('eyebrow')}</div>
         <h2 className="section-title">
-          Built on <span className="text-green">Modern</span>
+          {tTitle('before')}{' '}
+          <span className="text-green">{tTitle('accent')}</span>
           <br />
-          AI Infrastructure
+          {tTitle('after')}
         </h2>
-        <p className="section-sub">
-          Enterprise-grade ML pipelines, scalable microservices, and production-ready AI — built for
-          the demands of precision agriculture at scale.
-        </p>
+        <p className="section-sub">{t('intro')}</p>
         <div className="tech-strip reveal">
-          {techChips.map((chip, i) => (
-            <div key={i} className="tech-chip">
+          {TECH_CHIPS.map((chip) => (
+            <div key={chip} className="tech-chip">
               <span className="tc-dot"></span>
               {chip}
             </div>

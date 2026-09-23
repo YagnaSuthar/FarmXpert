@@ -1,0 +1,24 @@
+{
+  "about": "Farmer questions across Indian languages and scripts. Offline: script and deterministic language are checked for every row. Live (FARMXPERT_LIVE_EVAL=1 with a real LLM key): intent, crop, language and English rendering are checked through the configured model.",
+  "cases": [
+    {"text": "When should I irrigate my wheat?", "language": "en", "script": "latn", "intent": "irrigation", "crop": "wheat"},
+    {"text": "मेरे गेहूं में पानी कब देना चाहिए?", "language": "hi", "script": "deva", "intent": "irrigation", "crop": "wheat"},
+    {"text": "mera gehu sukh raha hai, pani kab du?", "language": "hi", "script": "latn", "intent": "irrigation", "crop": "wheat"},
+    {"text": "મારા કપાસમાં ક્યારે પાણી આપવું?", "language": "gu", "script": "gujr", "intent": "irrigation", "crop": "cotton"},
+    {"text": "maro kapas ma pani kyare aapvu che?", "language": "gu", "script": "latn", "intent": "irrigation", "crop": "cotton", "hint": "gu"},
+    {"text": "माझ्या सोयाबीनला कोणते खत द्यावे?", "language": "mr", "script": "deva", "intent": "soil", "crop": "soybean", "hint": "mr"},
+    {"text": "என் நெல் வயலுக்கு எப்போது தண்ணீர் விட வேண்டும்?", "language": "ta", "script": "taml", "intent": "irrigation", "crop": "rice"},
+    {"text": "నా వరి పంటకు ఎప్పుడు నీరు పెట్టాలి?", "language": "te", "script": "telu", "intent": "irrigation", "crop": "rice"},
+    {"text": "ನನ್ನ ರಾಗಿ ಬೆಳೆಗೆ ಯಾವ ಗೊಬ್ಬರ ಹಾಕಬೇಕು?", "language": "kn", "script": "knda", "intent": "soil", "crop": "finger millet"},
+    {"text": "എന്റെ നെല്ലിന് എപ്പോൾ വെള്ളം കൊടുക്കണം?", "language": "ml", "script": "mlym", "intent": "irrigation", "crop": "rice"},
+    {"text": "আমার ধানে কখন সেচ দেব?", "language": "bn", "script": "beng", "intent": "irrigation", "crop": "rice"},
+    {"text": "ਮੇਰੀ ਕਣਕ ਨੂੰ ਪਾਣੀ ਕਦੋਂ ਲਾਉਣਾ ਚਾਹੀਦਾ ਹੈ?", "language": "pa", "script": "guru", "intent": "irrigation", "crop": "wheat"},
+    {"text": "ମୋ ଧାନ କ୍ଷେତରେ କେବେ ପାଣି ଦେବି?", "language": "or", "script": "orya", "intent": "irrigation", "crop": "rice"},
+    {"text": "আমাৰ ধানত কেতিয়া পানী দিম?", "language": "as", "script": "beng", "intent": "irrigation", "crop": "rice", "hint": "as"},
+    {"text": "میری گندم کو پانی کب دینا چاہیے؟", "language": "ur", "script": "arab", "intent": "irrigation", "crop": "wheat"},
+    {"text": "aaj mandi mein pyaz ka bhav kya hai?", "language": "hi", "script": "latn", "intent": "market", "crop": "onion"},
+    {"text": "कल बारिश होगी क्या?", "language": "hi", "script": "deva", "intent": "weather", "crop": null},
+    {"text": "इस मौसम में कौन सी फसल बोऊं?", "language": "hi", "script": "deva", "intent": "crop_choice", "crop": null},
+    {"text": "Soil pH 8.2 hai, kya karu?", "language": "hi", "script": "latn", "intent": "soil", "crop": null}
+  ]
+}

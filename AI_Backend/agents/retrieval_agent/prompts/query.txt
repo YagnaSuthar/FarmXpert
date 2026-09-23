@@ -1,1 +1,11 @@
-# query.txt
+Rewrite the farmer's question as a short search query using the technical
+terms an agricultural handbook or extension bulletin would use.
+
+Rules:
+- Reply with the query only. No punctuation, no explanation, no quotes.
+- At most 12 words.
+- Keep the crop name if one is given.
+- Prefer the technical term over the colloquial one: "pre-harvest interval"
+  rather than "how long before cutting", "root zone depletion" rather than
+  "when soil gets dry".
+- Do not invent a crop, a chemical or a number that the farmer did not mention.

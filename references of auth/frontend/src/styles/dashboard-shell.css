@@ -1,0 +1,1702 @@
+/* ============================================================
+   Furnova — Dashboard Shell & Reusable Surfaces
+   Styles for the components in src/reusablefiles/ that the dashboard
+   composes: shell, sidebar, topbar, cards, stat tiles, lists, tracker,
+   buttons, inputs, pills, avatars.
+
+   Every color is a var() from globals.css (Frozen Lake palette).
+   Typography follows strict.md: Orbitron for titles and numbers,
+   Sora for body, labels and controls.
+   ============================================================ */
+
+/* ============================================================
+   1. SHELL — white board carrying three panels
+   The page itself never scrolls: the sidebar and main panel each
+   scroll internally, which keeps the topbar and the promo panel
+   pinned. `min-height:0` on the grid children is required — without
+   it a grid item refuses to shrink below its content and the
+   overflow escapes the viewport instead of scrolling.
+   ============================================================ */
+
+.dash-shell {
+  width: 100%;
+  height: 100dvh;
+  background: var(--dash-board-bg);
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 224px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 8px;
+  overflow: hidden;
+  /* the track animates, so the main panel widens in step with the rail
+     instead of snapping once the class flips */
+  transition: grid-template-columns 0.34s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dash-sidebar {
+  grid-row: 1 / 3;
+  background: var(--dash-panel-bg);
+  border-radius: 14px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  transition: padding 0.34s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dash-topbar {
+  background: var(--dash-panel-bg);
+  border-radius: 14px;
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.dash-main {
+  background: var(--dash-panel-bg);
+  border-radius: 14px;
+  padding: 16px;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.dash-main::-webkit-scrollbar,
+.dash-sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dash-main::-webkit-scrollbar-thumb,
+.dash-sidebar::-webkit-scrollbar-thumb {
+  background: var(--dash-scroll-thumb);
+  border-radius: 8px;
+}
+
+.dash-main::-webkit-scrollbar-thumb:hover,
+.dash-sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--dash-scroll-thumb-hover);
+}
+
+.dash-main::-webkit-scrollbar-track,
+.dash-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* drawer scrim — inert until the sidebar becomes an overlay */
+.dash-scrim {
+  display: none;
+}
+
+/* ============================================================
+   2. SIDEBAR
+   ============================================================ */
+
+.dash-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 2px 6px 12px;
+}
+
+.dash-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+  color: var(--text-primary);
+  min-width: 0;
+}
+
+.dash-brand-mark {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  background: var(--dash-brand-mark-bg);
+  border: 1.5px solid var(--dash-brand-mark-border);
+  color: var(--accent-primary);
+}
+
+/* the mark doubles as the collapse control */
+.dash-brand-toggle {
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.dash-brand-toggle:hover {
+  background: var(--dash-nav-active-bg);
+  border-color: var(--dash-nav-rail);
+}
+
+.dash-brand-toggle:active {
+  transform: scale(0.94);
+}
+
+.dash-brand-toggle:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* both glyphs occupy the same cell and cross-fade */
+.dash-brand-glyph,
+.dash-brand-panel {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.dash-brand-panel {
+  opacity: 0;
+  transform: scale(0.82);
+}
+
+.dash-brand-toggle:hover .dash-brand-glyph,
+.dash-brand-toggle:focus-visible .dash-brand-glyph {
+  opacity: 0;
+  transform: scale(0.82);
+}
+
+.dash-brand-toggle:hover .dash-brand-panel,
+.dash-brand-toggle:focus-visible .dash-brand-panel {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dash-brand-name {
+  max-width: 160px;
+  opacity: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.34s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.18s ease 0.06s;
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.dash-toggle-fill {
+  opacity: 1;
+  transform-box: fill-box;
+  transform-origin: left center;
+  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dash-shell.is-collapsed .dash-toggle-fill {
+  opacity: 0;
+  transform: scaleX(0.2);
+}
+
+.dash-toggle-rail {
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+
+.dash-shell.is-collapsed .dash-toggle-rail {
+  opacity: 1;
+}
+
+.dash-sidebar-close {
+  display: none;
+  margin-left: auto;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--dash-nav-text);
+  cursor: pointer;
+  place-items: center;
+}
+
+.dash-nav-group + .dash-nav-group {
+  margin-top: 15px;
+}
+
+.dash-nav-label {
+  height: auto;
+  opacity: 1;
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s ease, margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--dash-nav-label);
+  padding: 0 8px;
+  margin: 4px 0 5px;
+}
+
+/* navbar.css styles the bare `nav` element (position:fixed, blur, padding).
+   The sidebar's <nav> lands in that selector too, so those declarations are
+   reset here — scoped to .dash-nav; navbar.css itself is untouched. */
+.dash-nav {
+  position: static;
+  top: auto;
+  left: auto;
+  right: auto;
+  z-index: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  background: none;
+  backdrop-filter: none;
+  border-bottom: 0;
+}
+
+.dash-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 3px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  text-align: left;
+  text-decoration: none;
+  color: var(--dash-nav-text);
+  font-family: 'Sora', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.dash-nav-item svg {
+  flex: none;
+  /* the solid glyphs sit slightly lighter than the label; the active
+     pill lifts them to full strength along with the text */
+  opacity: 0.78;
+}
+
+.dash-nav-item:hover svg,
+.dash-nav-item.is-active svg {
+  opacity: 1;
+}
+
+.dash-nav-item:hover {
+  background: var(--dash-nav-hover-bg);
+}
+
+/* the selected row reads as one solid pill rather than a tint plus a
+   rail — the icon and label both invert onto the accent */
+.dash-nav-item.is-active {
+  background: var(--dash-nav-active-solid-bg);
+  color: var(--dash-nav-active-solid-text);
+  font-weight: 600;
+  box-shadow: 0 6px 14px -7px var(--dash-nav-active-shadow);
+}
+
+.dash-nav-item.is-active:hover {
+  background: var(--dash-nav-active-solid-bg);
+}
+
+.dash-nav-item.is-active .dash-nav-badge {
+  background: var(--dash-nav-active-badge-bg);
+  color: var(--dash-nav-active-solid-text);
+}
+
+.dash-nav-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* collapsing to zero width (rather than display:none) is what lets the
+     label glide out with the rail instead of vanishing on frame one */
+  max-width: 170px;
+  opacity: 1;
+  transition: max-width 0.34s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.18s ease 0.06s;
+}
+
+.dash-nav-badge {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.16s ease, transform 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: auto;
+  min-width: 19px;
+  height: 17px;
+  padding: 0 5px;
+  border-radius: 5px;
+  background: var(--dash-badge-bg);
+  color: var(--dash-badge-text);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+/* illustration pinned to the bottom of the sidebar */
+.dash-sidebar-media {
+  margin-top: auto;
+  padding-top: 14px;
+  flex: none;
+  max-height: 320px;
+  opacity: 1;
+  transition: max-height 0.36s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.22s ease, padding-top 0.3s ease;
+}
+
+/* The artwork ships on a pure-white field, which reads as a bright
+   block against the panel. `multiply` maps white onto whatever is
+   behind it — so the backdrop becomes the sidebar colour exactly,
+   with no per-asset colour matching to keep in sync. */
+.dash-sidebar-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  background: var(--dash-panel-bg);
+  mix-blend-mode: multiply;
+}
+
+/* ============================================================
+   3. TOPBAR
+   ============================================================ */
+
+.dash-menu-btn {
+  display: none;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 10px;
+  border: 1px solid var(--dash-icon-btn-border);
+  background: var(--dash-icon-btn-bg);
+  color: var(--dash-icon-btn-text);
+  cursor: pointer;
+  place-items: center;
+}
+
+.dash-search {
+  flex: 1;
+  max-width: 310px;
+  min-width: 0;
+}
+
+.dash-top-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.dash-icon-btn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 10px;
+  border: 1px solid var(--dash-icon-btn-border);
+  background: var(--dash-icon-btn-bg);
+  color: var(--dash-icon-btn-text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.dash-icon-btn:hover {
+  background: var(--dash-icon-btn-hover-bg);
+  color: var(--accent-primary);
+}
+
+.dash-icon-dot {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dash-dot);
+  border: 2px solid var(--dash-dot-ring);
+}
+
+.dash-user {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 0 0 8px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  min-width: 0;
+  text-align: left;
+}
+
+.dash-user-who {
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.dash-user-who b {
+  display: block;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-user-who span {
+  display: block;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.64rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 158px;
+}
+
+/* ============================================================
+   4. PAGE HEAD
+   ============================================================ */
+
+.dash-page-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.dash-page-head-text {
+  min-width: 0;
+}
+
+.dash-page-title {
+  margin: 0;
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.15rem, 2.1vw, 1.45rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.dash-page-sub {
+  margin: 3px 0 0;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+}
+
+.dash-page-actions {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ============================================================
+   5. GRID
+   ============================================================ */
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
+
+.ui-span-1  { grid-column: span 1; }
+.ui-span-2  { grid-column: span 2; }
+.ui-span-3  { grid-column: span 3; }
+.ui-span-4  { grid-column: span 4; }
+.ui-span-5  { grid-column: span 5; }
+.ui-span-6  { grid-column: span 6; }
+.ui-span-7  { grid-column: span 7; }
+.ui-span-8  { grid-column: span 8; }
+.ui-span-9  { grid-column: span 9; }
+.ui-span-10 { grid-column: span 10; }
+.ui-span-11 { grid-column: span 11; }
+.ui-span-12 { grid-column: span 12; }
+
+/* ============================================================
+   6. CARD
+   ============================================================ */
+
+.ui-card {
+  position: relative;
+  min-width: 0;
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-card-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px var(--dash-card-shadow-1), 0 1px 3px var(--dash-card-shadow-2);
+}
+
+.ui-card.is-padded {
+  padding: 12px 14px;
+}
+
+.ui-card-plain {
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+/* deep surface — navy gradient carrying the generative texture */
+.ui-card-deep {
+  border-color: transparent;
+  color: var(--dash-on-deep);
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(148deg,
+      var(--dash-deep-1) 0%,
+      var(--dash-deep-2) 44%,
+      var(--dash-deep-3) 100%);
+  box-shadow: 0 10px 30px -14px var(--dash-deep-shadow);
+}
+
+.ui-texture {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.ui-card-deep > *:not(.ui-texture) {
+  position: relative;
+  z-index: 1;
+}
+
+.ui-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px 0;
+}
+
+.ui-card-head-text {
+  min-width: 0;
+}
+
+.ui-card-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: var(--text-primary);
+}
+
+.ui-card-title-icon {
+  display: inline-grid;
+  place-items: center;
+  color: var(--accent-primary);
+}
+
+.ui-card-subtitle {
+  margin: 3px 0 0;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+}
+
+.ui-card-head-action {
+  flex: none;
+}
+
+.ui-card-body {
+  padding: 10px 14px 14px;
+}
+
+/* ============================================================
+   7. STAT CARD
+   ============================================================ */
+
+.ui-stat {
+  padding: 12px 14px;
+  overflow: hidden;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+}
+
+.ui-stat.is-clickable {
+  cursor: pointer;
+  text-align: left;
+}
+
+.ui-stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.ui-stat-title {
+  margin: 0;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+.ui-stat-icon {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--dash-badge-bg);
+  color: var(--accent-primary);
+}
+
+.ui-card-deep .ui-stat-icon {
+  background: var(--dash-on-deep-chip);
+  color: var(--dash-on-deep);
+}
+
+.ui-stat-value {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 6px;
+  color: var(--stat-num-color);
+}
+
+.ui-card-deep .ui-stat-value {
+  color: var(--dash-on-deep);
+}
+
+.ui-stat-skeleton {
+  display: block;
+  width: 2.6rem;
+  height: 1.2rem;
+  border-radius: 8px;
+  background: var(--graph-track);
+  animation: dash-pulse 1.4s ease-in-out infinite;
+}
+
+/* Full bleed: the spark runs edge to edge by breaking out of the card's
+   18px inline padding, so the line has no gap at either end. The card's
+   own overflow:hidden trims it back to the rounded corners. */
+.ui-stat-spark {
+  margin: 0 -14px 7px;
+  height: 26px;
+}
+
+.ui-stat-trend {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: auto;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.64rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.ui-stat-trend.is-up { color: var(--dash-trend-up); }
+.ui-stat-trend.is-down { color: var(--dash-trend-down); }
+
+.ui-stat-trend-text {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.ui-card-deep .ui-stat-trend.is-up { color: var(--dash-trend-up-deep); }
+.ui-card-deep .ui-stat-trend.is-down { color: var(--dash-on-deep-soft); }
+.ui-card-deep .ui-stat-trend-text { color: var(--dash-on-deep-soft); }
+
+@keyframes dash-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* ============================================================
+   8. LIST CARD
+   ============================================================ */
+
+.ui-list {
+  padding: 5px 14px 11px;
+}
+
+.ui-list-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0.46rem 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+.ui-list.is-divided .ui-list-row + .ui-list-row {
+  border-top: 1px solid var(--dash-divider);
+}
+
+.ui-list-row.is-clickable {
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background 0.16s ease;
+}
+
+.ui-list-row.is-clickable:hover {
+  background: var(--dash-nav-hover-bg);
+}
+
+.ui-list-media {
+  flex: none;
+}
+
+.ui-list-icon {
+  width: 31px;
+  height: 31px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: var(--dash-badge-bg);
+  color: var(--accent-primary);
+  font-size: 0.86rem;
+}
+
+.ui-list-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ui-list-label {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.ui-list-media .ui-list-label,
+.ui-list-media + .ui-list-text .ui-list-label {
+  font-weight: 600;
+}
+
+.ui-list-sub {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+}
+
+.ui-list-progress {
+  margin-top: 4px;
+  max-width: 148px;
+}
+
+/* the split variant keeps the label/value rhythm the panels had */
+.ui-list-split .ui-list-value {
+  margin-left: auto;
+}
+
+.ui-list-value {
+  margin-left: auto;
+  flex: none;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  text-align: right;
+}
+
+.ui-list-value.is-muted { color: var(--text-secondary); }
+.ui-list-value.is-strong { color: var(--dash-state-strong); }
+
+.ui-list-badge {
+  margin-left: auto;
+  flex: none;
+}
+
+.ui-list-badge + .ui-list-value {
+  margin-left: 0;
+}
+
+.ui-list-empty {
+  padding: 1rem 0;
+  text-align: center;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.ui-list-row.is-skeleton {
+  pointer-events: none;
+}
+
+.ui-skeleton-line {
+  display: block;
+  width: 100%;
+  height: 0.74rem;
+  border-radius: 6px;
+  background: var(--graph-track);
+  animation: dash-pulse 1.4s ease-in-out infinite;
+}
+
+/* ============================================================
+   9. TIME TRACKER
+   ============================================================ */
+
+.ui-tracker {
+  min-height: 178px;
+  display: flex;
+}
+
+.ui-tracker-inner {
+  padding: 14px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ui-tracker-title {
+  margin: 0;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--dash-on-deep);
+}
+
+.ui-tracker-read {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+.ui-tracker-clock {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--dash-on-deep);
+}
+
+.ui-tracker-task {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.67rem;
+  font-weight: 500;
+  color: var(--dash-on-deep-soft);
+  text-align: center;
+}
+
+.ui-tracker-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.ui-tracker-btn {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: transform 0.15s ease;
+}
+
+.ui-tracker-btn:active {
+  transform: scale(0.93);
+}
+
+.ui-tracker-btn.is-toggle {
+  background: var(--dash-on-deep);
+  color: var(--dash-deep-2);
+  fill: var(--dash-deep-2);
+}
+
+.ui-tracker-btn.is-stop {
+  background: var(--dash-on-deep-accent);
+  color: var(--dash-deep-2);
+  fill: var(--dash-deep-2);
+}
+
+/* ============================================================
+   10. BUTTON
+   ============================================================ */
+
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid transparent;
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease,
+              box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.ui-btn:disabled,
+.ui-btn.is-loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ui-btn-sm { height: 28px; padding: 0 11px; font-size: 0.69rem; }
+.ui-btn-md { height: 36px; padding: 0 15px; font-size: 0.75rem; }
+.ui-btn-lg { height: 41px; padding: 0 19px; font-size: 0.82rem; }
+
+.ui-btn-pill { border-radius: 20px; }
+.ui-btn-rounded { border-radius: 9px; }
+
+.ui-btn.is-block { width: 100%; }
+
+.ui-btn-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+}
+
+/* variants */
+.ui-btn-primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  box-shadow: 0 8px 18px -10px var(--btn-primary-shadow);
+}
+
+.ui-btn-primary:hover:not(:disabled) {
+  box-shadow: 0 12px 24px -10px var(--btn-primary-hover-shadow);
+  transform: translateY(-1px);
+}
+
+.ui-btn-ghost {
+  background: var(--dash-ghost-bg);
+  color: var(--accent-primary);
+  border-color: var(--dash-ghost-border);
+}
+
+.ui-btn-ghost:hover:not(:disabled) {
+  background: var(--dash-ghost-hover-bg);
+}
+
+.ui-btn-subtle {
+  background: var(--dash-icon-btn-bg);
+  color: var(--text-secondary);
+  border-color: var(--dash-icon-btn-border);
+  border-radius: 9px;
+}
+
+.ui-btn-subtle:hover:not(:disabled) {
+  background: var(--dash-icon-btn-hover-bg);
+  color: var(--accent-primary);
+}
+
+.ui-btn-quiet {
+  background: none;
+  color: var(--text-secondary);
+  border-color: transparent;
+}
+
+.ui-btn-quiet:hover:not(:disabled) {
+  background: var(--dash-nav-hover-bg);
+  color: var(--accent-primary);
+}
+
+.ui-btn-danger {
+  background: var(--dash-ghost-bg);
+  color: var(--dash-danger-text);
+  border-color: var(--dash-ghost-border);
+}
+
+.ui-btn-danger:hover:not(:disabled) {
+  background: var(--dash-danger-hover-bg);
+  border-color: var(--dash-danger-text);
+}
+
+.ui-btn-promo {
+  background: var(--dash-on-deep-accent);
+  color: var(--dash-deep-2);
+  font-weight: 700;
+}
+
+.ui-btn-promo:hover:not(:disabled) {
+  background: var(--dash-on-deep);
+}
+
+/* ============================================================
+   11. INPUT
+   ============================================================ */
+
+.ui-field.is-block { width: 100%; }
+
+.ui-field-label {
+  display: block;
+  margin-bottom: 0.28rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.64rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.ui-field-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ui-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 11px;
+  border: 1px solid var(--dash-icon-btn-border);
+  border-radius: 10px;
+  background: var(--dash-card-bg);
+  color: var(--text-primary);
+  font-family: 'Sora', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  outline: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.ui-input-sm { height: 30px; font-size: 0.7rem; border-radius: 8px; }
+.ui-input-lg { height: 41px; }
+
+.ui-input.has-icon { padding-left: 34px; }
+.ui-input.has-hint { padding-right: 48px; }
+
+.ui-input::placeholder {
+  color: var(--text-muted);
+}
+
+.ui-input:hover {
+  border-color: var(--auth-input-border-hover);
+}
+
+.ui-input:focus {
+  border-color: var(--auth-input-border-focus);
+  box-shadow: 0 0 0 3px var(--auth-input-focus-ring);
+}
+
+.ui-input.is-invalid {
+  border-color: var(--dash-danger-text);
+}
+
+select.ui-input {
+  cursor: pointer;
+  font-weight: 500;
+  appearance: none;
+  padding-right: 32px;
+}
+
+.ui-input-icon {
+  position: absolute;
+  left: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.ui-input-hint {
+  position: absolute;
+  right: 9px;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--dash-kbd-bg);
+  border-radius: 5px;
+  padding: 2px 6px;
+  pointer-events: none;
+}
+
+/* ============================================================
+   12. PILL & AVATAR
+   ============================================================ */
+
+.ui-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 20px;
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ui-pill-sm { padding: 2px 7px; font-size: 0.6rem; }
+.ui-pill-md { padding: 3px 9px; font-size: 0.64rem; }
+
+.ui-pill-strong { background: var(--dash-state-strong-bg); color: var(--dash-state-strong); }
+.ui-pill-mid    { background: var(--dash-state-mid-bg);    color: var(--dash-state-mid); }
+.ui-pill-soft   { background: var(--dash-state-soft-bg);   color: var(--dash-state-soft); }
+
+.ui-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.ui-avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 50%;
+  overflow: hidden;
+  color: var(--dash-on-deep);
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ui-avatar-sm { width: 32px; height: 32px; font-size: 0.66rem; }
+.ui-avatar-md { width: 35px; height: 35px; font-size: 0.7rem; }
+.ui-avatar-lg { width: 37px; height: 37px; font-size: 0.72rem; }
+
+.ui-avatar.has-ring {
+  box-shadow: 0 0 0 2px var(--dash-card-bg), 0 0 0 3.5px var(--dash-card-border);
+}
+
+.ui-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ============================================================
+   13. TABLE STATE CELLS (reuses .table-dash from dashboard.css)
+   ============================================================ */
+
+.ui-table-caption {
+  caption-side: top;
+  padding: 0 0 0.6rem;
+  text-align: left;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.ui-table-state {
+  text-align: center;
+  padding: 2rem;
+  font-family: 'Sora', sans-serif;
+  color: var(--text-secondary);
+}
+
+.table-dash tr.is-clickable {
+  cursor: pointer;
+}
+
+/* ============================================================
+   14. RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1180px) {
+  .dash-shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  /* the sidebar leaves the grid and becomes an overlay drawer */
+  .dash-sidebar {
+    position: fixed;
+    z-index: 60;
+    top: 8px;
+    bottom: 8px;
+    left: 8px;
+    width: 240px;
+    max-width: calc(100% - 20px);
+    transform: translateX(calc(-100% - 12px));
+    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 24px 60px -24px var(--dash-deep-shadow);
+  }
+
+  .dash-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .dash-sidebar-close {
+    display: grid;
+  }
+
+  .dash-menu-btn {
+    display: grid;
+  }
+
+  .dash-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: var(--dash-deep-shadow);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.24s ease, visibility 0.24s ease;
+  }
+
+  .dash-shell.has-drawer .dash-scrim {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .ui-span-3, .ui-span-4 { grid-column: span 6; }
+  .ui-span-5, .ui-span-6, .ui-span-7, .ui-span-8,
+  .ui-span-9, .ui-span-10, .ui-span-11 { grid-column: span 12; }
+}
+
+/* ---- header, breakpoint by breakpoint ------------------------------
+   The topbar carries six controls in one row. Rather than let them
+   crush each other, each step drops the least useful thing: the label
+   text, then the keyboard hint, then the search moves to its own row,
+   and finally the secondary icon button goes.
+   ------------------------------------------------------------------ */
+
+@media (max-width: 1180px) {
+  .dash-search { max-width: 280px; }
+}
+
+@media (max-width: 860px) {
+  /* the avatar still identifies the account, so the name/email go */
+  .dash-user-who { display: none; }
+  .dash-user { padding-left: 2px; }
+  .dash-search { max-width: none; }
+
+  .ui-input-hint { display: none; }
+  .ui-input.has-hint { padding-right: 11px; }
+
+  .dash-topbar .lang-switcher__btn,
+  .dash-topbar .lang-switcher__select {
+    font-size: 0.6rem;
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* search takes a row of its own — flex-basis:100% forces the wrap */
+  .dash-topbar { flex-wrap: wrap; row-gap: 8px; }
+  .dash-search { order: 3; flex: 1 0 100%; }
+  .dash-top-actions { gap: 5px; }
+  .dash-icon-btn { width: 34px; height: 34px; }
+  .dash-icon-dot { top: 7px; right: 8px; }
+}
+
+@media (max-width: 430px) {
+  /* messages is the one control with no unread signal — drop it first */
+  .dash-icon-btn[data-key="messages"] { display: none; }
+  .dash-menu-btn { width: 32px; height: 32px; }
+}
+
+@media (max-width: 640px) {
+  .dash-shell {
+    padding: 6px;
+    gap: 6px;
+    height: 100dvh;
+  }
+
+  .dash-main { padding: 12px; }
+  .dash-topbar { padding: 8px 10px; gap: 8px; }
+  .dash-grid { gap: 9px; }
+
+  .ui-span-1, .ui-span-2, .ui-span-3, .ui-span-4,
+  .ui-span-5, .ui-span-6 { grid-column: span 12; }
+
+  .dash-page-actions { width: 100%; margin-left: 0; }
+  .dash-page-actions .ui-btn { flex: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-sidebar,
+  .dash-scrim,
+  .ui-btn,
+  .ui-tracker-btn,
+  .ui-list-row.is-clickable {
+    transition: none;
+  }
+
+  .ui-stat-skeleton,
+  .ui-skeleton-line {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   15. PAGE-LEVEL HELPERS
+   Small hooks the dashboard pages use to place shared components.
+   ============================================================ */
+
+/* search that sits inside a card head */
+.ui-head-search {
+  width: 215px;
+  max-width: 100%;
+}
+
+/* table cell treatments */
+.ui-cell-strong {
+  font-weight: 600;
+}
+
+.ui-cell-locked {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+/* the super-admin feedback banners reuse the auth banner styles */
+.ui-dash-banner {
+  margin-bottom: 14px;
+}
+
+/* the language switcher is shared with the navbar — only its box is
+   adjusted here so it lines up with the 44px topbar controls */
+.dash-topbar .lang-switcher__btn,
+.dash-topbar .lang-switcher__select {
+  height: 36px;
+  padding: 0 11px;
+  border-radius: 10px;
+  font-size: 0.68rem;
+  border-color: var(--dash-icon-btn-border);
+  background-color: var(--dash-icon-btn-bg);
+}
+
+@media (max-width: 860px) {
+  .ui-head-search { width: 100%; }
+  .ui-card-head { flex-wrap: wrap; }
+  .ui-card-head-action { width: 100%; }
+  .dash-topbar .lang-switcher__btn,
+  .dash-topbar .lang-switcher__select {
+    padding: 0 10px;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* ============================================================
+   16. TABLE SCALE
+   The directory table's own rules live in dashboard.css. Rather than
+   editing that file, the dashboard scale is applied here, scoped to
+   the main panel, so the original stylesheet stays intact.
+   ============================================================ */
+
+.dash-main .table-dash {
+  font-size: 0.75rem;
+}
+
+.dash-main .table-dash th {
+  padding: 0.6rem 0.8rem;
+  font-size: 0.64rem;
+}
+
+.dash-main .table-dash td {
+  padding: 0.55rem 0.8rem;
+}
+
+.dash-main .meta-pill-dash {
+  padding: 2px 8px;
+  font-size: 0.66rem;
+}
+
+.dash-main .dashboard-badge-dash {
+  padding: 3px 9px;
+  font-size: 0.62rem;
+}
+
+/* ============================================================
+   17. COLLAPSED RAIL
+   Above the drawer breakpoint the sidebar can shrink to icons only.
+   Labels are not removed from the DOM — they move to a hover tooltip
+   fed by `data-label`, so the accessible name is unchanged.
+   ============================================================ */
+
+.dash-shell.is-collapsed {
+  grid-template-columns: 62px minmax(0, 1fr);
+}
+
+.dash-shell.is-collapsed .dash-sidebar {
+  padding: 14px 8px;
+  /* the rail is short enough not to scroll, and visible overflow is
+     what lets the tooltips escape the panel */
+  overflow: visible;
+}
+
+/* Nothing here uses display:none — every collapsing element animates a
+   measurable property (width / height / opacity) so the rail closes as
+   one continuous motion rather than a set of elements blinking out. */
+.dash-shell.is-collapsed .dash-nav-text,
+.dash-shell.is-collapsed .dash-brand-name {
+  max-width: 0;
+  opacity: 0;
+  transition: max-width 0.34s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.14s ease;
+}
+
+.dash-shell.is-collapsed .dash-nav-badge {
+  opacity: 0;
+  transform: scale(0.7);
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.dash-shell.is-collapsed .dash-nav-label {
+  height: 0;
+  margin: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.dash-shell.is-collapsed .dash-sidebar-media {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  overflow: hidden;
+}
+
+.dash-shell.is-collapsed .dash-brand {
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 0 12px;
+}
+
+.dash-shell.is-collapsed .dash-brand-link {
+  justify-content: center;
+}
+
+.dash-shell.is-collapsed .dash-brand-link {
+  display: none;
+}
+
+.dash-shell.is-collapsed .dash-nav-item {
+  justify-content: center;
+  padding: 9px 0;
+  gap: 0;
+}
+
+.dash-nav-item {
+  transition: background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease,
+              padding 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dash-shell.is-collapsed .dash-nav-group + .dash-nav-group {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--dash-divider);
+}
+
+.dash-shell.is-collapsed .dash-nav-item::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--dash-tip-bg);
+  color: var(--dash-tip-text);
+  font-family: 'Sora', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.14s ease, visibility 0.14s ease;
+}
+
+.dash-shell.is-collapsed .dash-nav-item:hover::after,
+.dash-shell.is-collapsed .dash-nav-item:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* the rail is a desktop affordance — the drawer owns small screens */
+@media (max-width: 1180px) {
+  .dash-shell.is-collapsed {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dash-shell.is-collapsed .dash-sidebar {
+    padding: 14px 10px;
+    overflow-y: auto;
+  }
+
+  /* the stored rail preference must not shrink the mobile drawer */
+  .dash-shell.is-collapsed .dash-nav-text,
+  .dash-shell.is-collapsed .dash-brand-name {
+    max-width: 170px;
+    opacity: 1;
+  }
+
+  .dash-shell.is-collapsed .dash-nav-badge {
+    opacity: 1;
+    transform: none;
+    width: auto;
+    min-width: 19px;
+    padding: 0 5px;
+  }
+
+  .dash-shell.is-collapsed .dash-nav-label {
+    height: auto;
+    opacity: 1;
+    margin: 4px 0 5px;
+  }
+
+  .dash-shell.is-collapsed .dash-sidebar-media {
+    max-height: 320px;
+    opacity: 1;
+    padding-top: 14px;
+  }
+
+  .dash-shell.is-collapsed .dash-brand { flex-direction: row; gap: 9px; padding: 2px 6px 12px; }
+  .dash-shell.is-collapsed .dash-nav-item { justify-content: flex-start; padding: 8px 10px; gap: 11px; }
+  .dash-shell.is-collapsed .dash-nav-item::after { content: none; }
+  .dash-shell.is-collapsed .dash-nav-group + .dash-nav-group { border-top: 0; padding-top: 0; margin-top: 15px; }
+  /* the drawer is dismissed with the X; no rail on small screens */
+  .dash-brand-toggle { pointer-events: none; }
+  .dash-brand-toggle .dash-brand-panel { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-shell,
+  .dash-sidebar,
+  .dash-nav-item,
+  .dash-nav-text,
+  .dash-brand-name,
+  .dash-nav-badge,
+  .dash-nav-label,
+  .dash-sidebar-media,
+  .dash-brand-glyph,
+  .dash-brand-panel,
+  .dash-toggle-fill,
+  .dash-toggle-rail {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   18. SKELETON
+   A sweeping sheen rather than a pulsing block: the highlight travels
+   left to right so a screen of placeholders reads as one surface
+   loading, not as dozens of independently blinking boxes.
+   ============================================================ */
+
+.ui-skeleton {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  flex: none;
+  border-radius: 6px;
+  background: var(--skeleton-base);
+}
+
+.ui-skeleton-circle { border-radius: 50%; }
+
+.ui-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--skeleton-sheen) 50%,
+    transparent 100%
+  );
+  animation: ui-shimmer 1.45s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.ui-skeleton-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+@keyframes ui-shimmer {
+  to { transform: translateX(100%); }
+}
+
+/* the two placeholders that predate this system now share the sheen */
+.ui-stat-skeleton,
+.ui-skeleton-line {
+  position: relative;
+  overflow: hidden;
+  animation: none;
+}
+
+.ui-stat-skeleton::after,
+.ui-skeleton-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--skeleton-sheen) 50%,
+    transparent 100%
+  );
+  animation: ui-shimmer 1.45s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* a deep card's placeholders sit on navy — the light sheen would blow out */
+.ui-card-deep .ui-skeleton {
+  background: var(--dash-on-deep-chip);
+}
+
+.ui-card-deep .ui-skeleton::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--dash-on-deep-chip) 50%,
+    transparent 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-skeleton::after,
+  .ui-stat-skeleton::after,
+  .ui-skeleton-line::after {
+    animation: none;
+  }
+}

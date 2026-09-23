@@ -1,44 +1,125 @@
-# Input
-{
-    "location": {"lat": 23.02, "lon": 72.57},
-    "farm_id": "farm_123"
-}
+# Weather Watcher Agent - GET /weather-watcher/?lat=23.02&lon=72.57
+
+# Input (agent.run accepts any of these)
+{"lat": 23.02, "lon": 72.57}
+{"location": {"lat": 23.02, "lon": 72.57}}
+{"farm": {"location": {"lat": 23.02, "lon": 72.57}}}
+
 
 # Output
 {
+    "agent_id": "weather_agent",
+    "agent_version": "3.0.0",
+    "status": "ok",                          # ok | partial | unavailable - check first
+    "location": {"lat": 23.02, "lon": 72.57},
+    "timezone": "Asia/Kolkata",
+
     "current_weather": {
-        "temperature": 35,
-        "humidity": 48,
-        "rainfall_today": 0,
-        "wind_speed": 12,
-        "conditions": "Clear"
+        "temperature": 31.7,                 # C
+        "humidity": 68.0,                    # %
+        "wind_speed": 5.1,                   # km/h
+        "conditions": "Clear",               # Clear | Clouds | Rain | Drizzle | Thunderstorm | Fog | Snow
+        "rainfall_today": 0.2,               # full-day total for today, mm (null if unknown)
+        "rainfall_last_hour_mm": 0.0,
+        "source": "open-meteo"               # openweather | open-meteo
     },
-    "forecast_7_days": [
+
+    "forecast_short_term": [                 # today + next 6 days, full local calendar days
         {
-            "date": "2024-04-23",
-            "temp_min": 24,
-            "temp_max": 38,
-            "rainfall_probability": 10,
-            "rainfall_mm": 0,
-            "humidity": 45,
-            "wind_speed": 15
+            "date": "2026-09-22",
+            "temp_min": 27.2,
+            "temp_max": 33.9,
+            "rainfall_mm": 0.2,
+            "rain_probability_percent": 20.0,
+            "humidity": 74.0,                # daily mean %
+            "wind_speed": 14.0,              # daily max km/h
+            "source": "open-meteo",
+            "frost_risk": false,             # Tmin <= 2 C in either model
+            "storm_warning": false,          # wind >= 39 km/h or rain >= 64.5 mm in either model
+            "heat_stress_risk": false,       # Tmax >= 40 C in either model
+            "spray_unsafe": false,           # wind > 15 km/h in either model
+
+            "forecast_confidence": "high",   # high (days 0-2) | medium (3-6) | low (7+)
+            "et0_mm": 5.19,                  # FAO-56 Penman-Monteith reference ET
+            "gdd_base10": 20.6,              # growing degree days, base 10 C
+            "leaf_wetness_hours": 4,         # hours with RH >= 90 % or rain
+            "fungal_risk": "low",            # low | moderate | high
+            "late_blight_risk": false,       # Hutton criteria (potato / tomato)
+            "max_heat_index_c": 40.5,        # NOAA feels-like temperature
+            "heat_index_category": "danger"  # none | caution | extreme_caution | danger | extreme_danger
         }
     ],
+    "forecast_long_term": [],                # days 8-14, same shape
+
     "alerts": [
         {
-            "type": "heatwave",
-            "severity": "high",
-            "message": "High temperatures expected (38°C). Increase irrigation.",
-            "recommendations": [
-                "Irrigate early morning or evening",
-                "Provide shade for sensitive crops",
-                "Monitor for heat stress"
-            ]
+            "type": "heavy_rainfall",        # heatwave | heat_stress | frost | cold_wave |
+                                             # high_wind | storm | heavy_rainfall | high_humidity
+            "severity": "high",              # low | medium | high | critical
+            "message": "Heavy rain expected on 2026-09-24 (70 mm).",
+            "date": "2026-09-24",
+            "source": "forecast",            # current | forecast
+            "recommendations": ["Clear field drains and channels now", "..."]
         }
     ],
-    "farming_advisories": {
-        "irrigation": "High priority - increase watering frequency",
-        "spraying": "Favorable conditions on 2024-04-24",
-        "harvesting": "Avoid during peak heat (12-3 PM)"
-    }
+
+    "agro_advisory": {
+        "summary": [                         # ready to show a farmer
+            "Next 7 days: rain covers only 1% of water demand (0.5 mm rain vs 35.4 mm ET0) - plan irrigation.",
+            "Best spray window: 2026-09-23 08:00 to 10:00 (2 h).",
+            "Dry spell 2026-09-22 to 2026-10-05 (14 days) - suitable for harvest, fertilizer and field work.",
+            "Forecasts from 2026-09-29 onward are low-confidence; re-check before acting on them."
+        ],
+        "water_balance_7d": {
+            "days": 7, "rainfall_mm": 0.5, "reference_et0_mm": 35.4, "balance_mm": -34.9,
+            "rain_covers_percent": 1,
+            "status": "irrigation_likely_needed",   # rain_covers_demand | partly_covered | irrigation_likely_needed
+            "note": "ET0 is for a reference grass surface; crop demand is ET0 x Kc."
+        },
+        "gdd_base10": {"next_7_days": 142.3, "next_14_days": 281.0},
+        "spray_windows": [
+            {"date": "2026-09-23", "start": "2026-09-23T08:00", "end": "2026-09-23T10:00",
+             "hours": 2, "mean_wind_kmh": 9.1, "mean_delta_t_c": 6.4, "max_temp_c": 29.8}
+        ],
+        "spray_limiting_factor": null,       # e.g. "Delta-T above 8 C (droplets evaporate)" when no window
+        "dry_spells": [{"start": "2026-09-22", "end": "2026-10-05", "days": 14}],
+        "hourly_available": true
+    },
+    "utc_offset_seconds": 19800,
+
+    "sources": {"openweather_current": "ok", "openweather_forecast": "ok", "open_meteo": "ok"},
+    "warnings": [],
+    "fetched_at": "2026-09-22T06:15:00+00:00",
+    "cached": false,
+    "data_age_seconds": 0,
+    "processed_at": "2026-09-22 06:15:01.120"
 }
+
+
+# Agrometeorology - methods
+# ET0              FAO-56 Penman-Monteith (computed by Open-Meteo)
+# spray window     daylight, wind 3-15 km/h, Delta-T 2-8 C (Stull 2011 wet bulb),
+#                  temp <= 30 C, no rain in the hour or the 4 h after (rainfastness)
+# fungal risk      leaf-wetness hours (RH >= 90 % or rain) at 15-30 C: >= 6 moderate, >= 10 high
+# late blight      Hutton criteria: 2 consecutive days, Tmin >= 10 C and >= 6 h RH >= 90 %
+# heat safety      NOAA heat index: danger >= 39.4 C, extreme danger >= 51.7 C
+# dry spell        >= 2 days with rain < 1 mm and rain chance < 40 %
+# New alert types: late_blight_risk, fungal_disease_risk, heat_safety.
+# With hourly data, fungal_disease_risk replaces the cruder high_humidity alert.
+
+
+# Alert thresholds
+# heatwave        Tmax >= 45 C (critical >= 47)          IMD absolute criterion
+# heat_stress     Tmax 40-45 C                           no departure-from-normal data, so not called a heat wave
+# frost           Tmin <= 2 C (critical <= 0)
+# cold_wave       Tmin <= 4 C                            IMD plains
+# heavy_rainfall  >= 64.5 mm high; >= 115.6 critical     IMD 24 h categories
+# storm/high_wind >= 39 km/h high; >= 62 critical        Beaufort 6 / 8
+# high_humidity   daily mean >= 85 %                     fungal disease risk
+# A hazard predicted by either forecast model raises an alert; its message says
+# "(one forecast model)" when only one does.
+
+
+# Errors
+# 422  lat/lon missing, not numbers, or out of range
+# 503  no provider reachable and no forecast cached in the last 6 hours

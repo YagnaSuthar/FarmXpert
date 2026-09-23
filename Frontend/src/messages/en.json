@@ -1,0 +1,928 @@
+{
+  "metadata": {
+    "title": "FarmXpert — AI-Powered Agriculture Platform",
+    "description": "Multi-agent AI for precision agriculture: soil health, irrigation, pest detection, yield prediction and live market intelligence — running on every field, every season.",
+    "ogTitle": "FarmXpert — Intelligence for every acre",
+    "ogDescription": "Eight specialized AI agents working as one. Built for real farms and real margins."
+  },
+  "navbar": {
+    "agents": "AI Agents",
+    "features": "Features",
+    "howItWorks": "How It Works",
+    "technology": "Technology",
+    "getStarted": "Get Started"
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "hi": "हिन्दी",
+    "gu": "ગુજરાતી"
+  },
+  "hero": {
+    "titleParts": {
+      "before": "Revolutionizing",
+      "accent": "Agriculture",
+      "after": "with FarmXpert."
+    },
+    "description": "Multi-agent AI systems monitor soil health, predict yields, detect disease, and forecast market prices in real-time — turning every field into a data-driven operation.",
+    "surfaceLabel": "Surface Level — 0 cm",
+    "sensors": {
+      "soilPh": "Soil pH",
+      "moisture": "Moisture",
+      "nitrogen": "Nitrogen",
+      "phosphorus": "Phosphorus",
+      "potassium": "Potassium",
+      "soilTemp": "Soil Temp",
+      "airTemp": "Air Temp",
+      "humidity": "Humidity",
+      "lightLux": "Light lux"
+    },
+    "stats": {
+      "pestAccuracy": "Pest Detection Accuracy",
+      "waterSavings": "Water Savings Avg",
+      "yieldImprovement": "Yield Improvement",
+      "farmNodes": "Active Farm Nodes",
+      "response": "Real-time Response"
+    }
+  },
+  "agents": {
+    "eyebrow": "AI Agent Network",
+    "titleParts": {
+      "before": "Eight Intelligent",
+      "accent": "Agents",
+      "after": "One Unified Platform"
+    },
+    "intro": "Each agent is a specialized ML model, trained on millions of agricultural data points and working in concert to give holistic farm intelligence.",
+    "rosterLabel": "Agent roster",
+    "roster": {
+      "soilHealth": {
+        "domain": "Soil",
+        "name": "Soil Health"
+      },
+      "smartIrrigation": {
+        "domain": "Water",
+        "name": "Smart Irrigation"
+      },
+      "pestDetection": {
+        "domain": "Protect",
+        "name": "Pest Detection"
+      },
+      "cropAdvisor": {
+        "domain": "Crop",
+        "name": "Crop Advisor"
+      },
+      "yieldPrediction": {
+        "domain": "Harvest",
+        "name": "Yield Prediction"
+      },
+      "marketInsight": {
+        "domain": "Market",
+        "name": "Market Insight"
+      },
+      "growthMonitor": {
+        "domain": "Field",
+        "name": "Growth Monitor"
+      },
+      "voiceAssistant": {
+        "domain": "Voice",
+        "name": "Voice Assistant"
+      }
+    }
+  },
+  "features": {
+    "eyebrow": "Platform Capabilities",
+    "titleParts": {
+      "before": "Intelligence at Every",
+      "accent": "Layer",
+      "after": ""
+    },
+    "intro": "From root to revenue — FarmXpert's layered AI architecture monitors everything that affects your yield and profitability.",
+    "badge": {
+      "value": "8 Agents",
+      "label": "Always Active"
+    },
+    "items": {
+      "multiAgent": {
+        "title": "Multi-Agent Collaboration",
+        "description": "Agents communicate asynchronously to produce compound recommendations — for example, irrigation schedules that factor in pest stress and forecasted rain simultaneously."
+      },
+      "edgeAnalytics": {
+        "title": "Real-Time Edge Analytics",
+        "description": "Sub-200ms latency analytics via edge-deployed TensorFlow Lite models, even in low-connectivity rural areas with intermittent internet."
+      },
+      "satelliteFusion": {
+        "title": "Satellite + IoT Fusion",
+        "description": "Sentinel-2 satellite bands fused with on-field sensor telemetry for ground-truth accuracy at every spatial scale from 10m² to 1000 hectares."
+      },
+      "adaptiveLoop": {
+        "title": "Adaptive Learning Loop",
+        "description": "Models retrain monthly on your farm's actual outcomes — yield data, treatment results, weather events — continuously improving recommendation precision."
+      }
+    }
+  },
+  "howItWorks": {
+    "eyebrow": "Process Flow",
+    "titleParts": {
+      "before": "From Data to",
+      "accent": "Decision",
+      "after": ""
+    },
+    "intro": "FarmXpert's pipeline transforms raw sensor readings into actionable decisions in under 200 milliseconds.",
+    "steps": {
+      "ingestion": {
+        "title": "Data Ingestion",
+        "description": "IoT sensors, drones, satellite feeds, and weather APIs stream live data to the FarmXpert edge gateway continuously."
+      },
+      "analysis": {
+        "title": "Agent Analysis",
+        "description": "Specialized AI agents process relevant data streams in parallel using CNN, LSTM, and transformer models optimized for agriculture."
+      },
+      "fusion": {
+        "title": "Multi-Agent Fusion",
+        "description": "Orchestration layer combines insights from all agents, resolves conflicts, and weights recommendations by confidence scores."
+      },
+      "action": {
+        "title": "Smart Action",
+        "description": "Recommendations delivered via app, voice, or direct actuator control — automated irrigation, alerts, task assignments, and reports."
+      }
+    }
+  },
+  "tech": {
+    "eyebrow": "Technology Stack",
+    "titleParts": {
+      "before": "Built on",
+      "accent": "Modern",
+      "after": "AI Infrastructure"
+    },
+    "intro": "Enterprise-grade ML pipelines, scalable microservices, and production-ready AI — built for the demands of precision agriculture at scale."
+  },
+  "chipScene": {
+    "eyebrow": "Core Architecture",
+    "titleParts": {
+      "before": "The",
+      "accent": "Neural Core",
+      "after": "Driving Every Decision"
+    },
+    "intro": "FarmXpert's multi-agent processor — sixteen specialized AI modules on a single intelligent substrate, routing real-time farm intelligence at sub-200ms latency.",
+    "poweredBy": "POWERED BY",
+    "tagline": "MULTI-AGENT AI CORE"
+  },
+  "cta": {
+    "eyebrow": "Start Today",
+    "titleParts": {
+      "before": "Your Farm's AI",
+      "accent": "Command Center",
+      "after": "Awaits"
+    },
+    "intro": "Join 12,000+ farmers already using FarmXpert to optimize every acre. Setup takes under 10 minutes — no hardware required to start.",
+    "actions": {
+      "primary": "Start Free Trial",
+      "secondary": "Schedule a Demo"
+    }
+  },
+  "footer": {
+    "copyright": "© {year} FarmXpert. AI-powered precision agriculture.",
+    "links": {
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "docs": "Docs",
+      "contact": "Contact"
+    }
+  },
+  "chat": {
+    "title": "Ask FarmXpert",
+    "subtitle": "Type or speak in your own language.",
+    "empty": "Ask anything about your farm — watering, fertilizer, weather, mandi prices. Hold the mic to speak.",
+    "placeholder": "Type your question…",
+    "send": "Send",
+    "holdToTalk": "Hold the mic to speak",
+    "releaseToSend": "Release to send",
+    "listening": "Listening…",
+    "thinking": "Thinking",
+    "spoken": "Spoken question",
+    "stopSpeaking": "Stop speaking",
+    "holdLonger": "Hold the mic a little longer while you speak.",
+    "voiceNotHeard": "(voice question)",
+    "micDenied": "Microphone access is off. Allow it in your browser settings, or type your question.",
+    "micUnsupported": "This browser cannot record audio. Please type your question.",
+    "noAnswer": "No answer could be written, but your farm data was checked.",
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "network": "No connection. Check your internet and try again.",
+      "token_quota_exceeded": "Today's question allowance is used up. It resets at midnight.",
+      "voice_quota_exceeded": "Today's voice allowance is used up. You can still type your question.",
+      "no_speech": "I couldn't hear anything. Please hold the mic and speak clearly.",
+      "audio_too_large": "The recording is too long. Please keep it under a minute.",
+      "audio_too_long": "The recording is too long. Please keep it under a minute.",
+      "unsupported_audio": "This recording format is not supported.",
+      "speech_unavailable": "Voice is not available right now. Please type your question.",
+      "stream_failed": "The answer was interrupted. Please ask again.",
+      "orchestration_failed": "The answer could not be prepared. Please try again.",
+      "ai_timeout": "This is taking too long. Please try again.",
+      "unavailable": "The advisory service is busy. Please try again shortly.",
+      "validation_failed": "Please check your question and try again."
+    }
+  },
+  "app": {
+    "theme": {
+      "label": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "Auto",
+      "switchTo": "Switch to {mode} theme"
+    }
+  },
+  "auth": {
+    "common": {
+      "email": "Email address",
+      "password": "Password",
+      "show": "Show password",
+      "hide": "Hide password",
+      "optional": "Optional"
+    },
+    "shell": {
+      "eyebrow": "Advice for every acre",
+      "scriptTop": "Grow with",
+      "scriptBottom": "confidence",
+      "lead": "Seven expert agents study your soil, the weather and the market, then tell you what to do today - in your own language.",
+      "promiseWater": "Know exactly when and how much to irrigate",
+      "promiseWeather": "Plan around rain, heat and wind before it arrives",
+      "promiseCrop": "Pick the crop and fertiliser your soil is asking for",
+      "languages": "English · हिन्दी · ગુજરાતી · and 19 more Indian languages"
+    },
+    "password": {
+      "too_short": "8+ characters",
+      "needs_uppercase": "A capital letter",
+      "needs_lowercase": "A small letter",
+      "needs_number": "A number",
+      "needs_symbol": "A symbol (!@#…)",
+      "met": "done",
+      "notMet": "still needed"
+    },
+    "captcha": {
+      "label": "Quick check: are you human?",
+      "answer": "Your answer",
+      "refresh": "New question",
+      "unavailable": "Unavailable"
+    },
+    "login": {
+      "metaTitle": "Log in",
+      "eyebrow": "Welcome back",
+      "title": "Good to see",
+      "titleScript": "you",
+      "subtitle": "Log in to see today’s plan for your farm.",
+      "remember": "Keep me signed in",
+      "forgot": "Forgot password?",
+      "submit": "Log in",
+      "noAccount": "New to FarmXpert?",
+      "createOne": "Create an account",
+      "emailInvalid": "Please enter a valid email address.",
+      "passwordMissing": "Please enter your password.",
+      "verifiedNotice": "Email verified. You can log in now.",
+      "resetNotice": "Password changed. Log in with your new password.",
+      "captchaMissing": "Please answer the security question."
+    },
+    "register": {
+      "metaTitle": "Create account",
+      "eyebrow": "Join FarmXpert",
+      "title": "Start your",
+      "titleScript": "harvest",
+      "subtitle": "Free for farmers. Takes one minute.",
+      "name": "Full name",
+      "phone": "Mobile number",
+      "agree": "I agree to the terms of use and to FarmXpert storing my farm data to give me advice.",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "signIn": "Log in",
+      "nameShort": "Please enter your name.",
+      "emailInvalid": "Please enter a valid email address.",
+      "phoneInvalid": "Please enter a valid mobile number.",
+      "passwordWeak": "Please meet all the password points below.",
+      "captchaMissing": "Please answer the question.",
+      "agreeMissing": "Please accept to continue."
+    },
+    "verify": {
+      "metaTitle": "Verify email",
+      "eyebrow": "One last step",
+      "title": "Check your",
+      "titleScript": "inbox",
+      "subtitle": "We sent a 6-digit code to <email></email>. It is valid for 10 minutes.",
+      "codeLabel": "Verification code digit",
+      "submit": "Verify email",
+      "resend": "Send a new code",
+      "resendIn": "You can ask for a new code in {seconds}s",
+      "resent": "A new code is on its way.",
+      "wrongEmail": "Wrong email? Start again"
+    },
+    "forgot": {
+      "metaTitle": "Reset password",
+      "eyebrow": "Step {step} of 3",
+      "back": "Back to log in",
+      "titleEmail": "Forgot your password?",
+      "subtitleEmail": "Enter your email and we will send you a code.",
+      "titleCode": "Enter the code",
+      "subtitleCode": "We sent a 6-digit code to <email></email>.",
+      "titlePassword": "Choose a new password",
+      "subtitlePassword": "You will be logged out on other devices.",
+      "sendCode": "Send code",
+      "codeLabel": "Reset code digit",
+      "codeHint": "The code works once and for 10 minutes.",
+      "newPassword": "New password",
+      "save": "Save new password",
+      "emailInvalid": "Please enter a valid email address.",
+      "passwordWeak": "Please meet all the password points.",
+      "captchaMissing": "Please answer the security question."
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "network": "No connection. Check your internet and try again.",
+      "invalid_credentials": "Email or password is not right.",
+      "email_unverified": "Please verify your email first.",
+      "account_locked": "Too many wrong tries. Please wait 15 minutes, or reset your password.",
+      "email_taken": "This email already has an account. Please log in.",
+      "weak_password": "Please choose a stronger password.",
+      "captcha_required": "Please answer the question below.",
+      "captcha_wrong": "That answer is not right. Try again.",
+      "captcha_expired": "The question expired. Here is a new one.",
+      "code_wrong": "That code is not right.",
+      "code_wrong_left": "That code is not right. {count, plural, one {# try} other {# tries}} left.",
+      "code_expired": "This code has expired. Please ask for a new one.",
+      "code_locked": "Too many wrong tries. Please ask for a new code.",
+      "code_missing": "No active code. Please ask for a new one.",
+      "reset_expired": "This reset has expired. Please start again.",
+      "rate_limited": "Too many attempts. Please wait a moment.",
+      "validation_failed": "Please check the details and try again.",
+      "conflict": "This is already in use."
+    },
+    "art": {
+      "pointWater": "Irrigation timed to the millimetre",
+      "pointWeather": "Weather warnings before they hit",
+      "pointCrop": "Crops and fertiliser your soil asks for",
+      "login": {
+        "kicker": "Seven agents · one farm",
+        "title": "Your farm,\nread every morning",
+        "script": "in your language",
+        "sub": "Soil, sky and mandi, weighed together - then one clear plan for today."
+      },
+      "register": {
+        "kicker": "Free for farmers",
+        "title": "Every acre\ndeserves an expert",
+        "script": "grow with confidence",
+        "sub": "Tell us about your land once. FarmXpert remembers, and advises through the season."
+      },
+      "verify": {
+        "kicker": "Keeping your farm yours",
+        "title": "One code\nto confirm it is you",
+        "script": "almost there",
+        "sub": "We never share your farm data. The code simply proves the email is yours."
+      },
+      "forgot": {
+        "kicker": "Safe recovery",
+        "title": "Locked out?\nWe will get you back",
+        "script": "in three steps",
+        "sub": "A code to your email, a new password, and every old session signed out."
+      },
+      "reset": {
+        "kicker": "Almost done",
+        "title": "A fresh key\nfor your farm",
+        "script": "stay protected",
+        "sub": "Choose a password you do not use anywhere else."
+      }
+    }
+  },
+  "options": {
+    "crops": {
+      "wheat": "Wheat",
+      "rice": "Rice",
+      "cotton": "Cotton",
+      "maize": "Maize",
+      "soybean": "Soybean",
+      "groundnut": "Groundnut",
+      "sugarcane": "Sugarcane",
+      "mustard": "Mustard",
+      "chickpea": "Chickpea",
+      "pigeonpea": "Pigeon pea",
+      "green_gram": "Green gram",
+      "black_gram": "Black gram",
+      "bajra": "Bajra",
+      "jowar": "Jowar",
+      "ragi": "Ragi",
+      "potato": "Potato",
+      "onion": "Onion",
+      "tomato": "Tomato",
+      "chilli": "Chilli",
+      "banana": "Banana",
+      "mango": "Mango",
+      "turmeric": "Turmeric",
+      "cumin": "Cumin",
+      "castor": "Castor",
+      "sesame": "Sesame"
+    },
+    "soils": {
+      "alluvial": "Alluvial",
+      "black_cotton": "Black (regur)",
+      "red_laterite": "Red / laterite",
+      "loamy": "Loamy",
+      "sandy_loam": "Sandy loam",
+      "sandy": "Sandy",
+      "clay_loam": "Clay loam",
+      "clay": "Clay",
+      "silt": "Silty",
+      "peaty": "Peaty"
+    },
+    "stages": {
+      "germination": "Germination",
+      "seedling": "Seedling",
+      "vegetative": "Growing",
+      "flowering": "Flowering",
+      "fruiting": "Fruiting",
+      "maturation": "Ripening",
+      "harvest_ready": "Ready to harvest"
+    },
+    "irrigation": {
+      "drip": "Drip",
+      "sprinkler": "Sprinkler",
+      "furrow": "Furrow",
+      "flood": "Flood",
+      "basin": "Basin",
+      "border": "Border strip",
+      "center_pivot": "Centre pivot",
+      "rainfed": "Rain-fed only"
+    },
+    "water": {
+      "borewell": "Borewell",
+      "canal": "Canal",
+      "well": "Open well",
+      "river": "River",
+      "pond": "Farm pond",
+      "rainfed": "Rain only",
+      "tanker": "Tanker",
+      "other": "Other"
+    },
+    "equipment": {
+      "tractor": "Tractor",
+      "power_tiller": "Power tiller",
+      "sprayer": "Sprayer",
+      "drone_sprayer": "Drone sprayer",
+      "seed_drill": "Seed drill",
+      "harvester": "Harvester",
+      "pump": "Water pump",
+      "drip_system": "Drip system",
+      "sprinkler_set": "Sprinkler set"
+    }
+  },
+  "onboarding": {
+    "metaTitle": "Set up your farm",
+    "progress": "{percent}% done",
+    "stepOf": "Step {step} of {total}",
+    "railScript": "Your farm story",
+    "railLead": "Six short steps. Every answer makes the advice fit your land better.",
+    "back": "Back",
+    "continue": "Continue",
+    "skip": "Skip for now",
+    "finish": "Finish and see my plan",
+    "optional": "Optional",
+    "whyLabel": "Why we ask:",
+    "defaultFieldName": "Main field",
+    "steps": {
+      "you": {
+        "short": "About you",
+        "title": "First, a little",
+        "script": "about you",
+        "lead": "So FarmXpert can greet you, and answer in the language you think in.",
+        "why": "Your language decides how every answer, text or voice, is written and spoken."
+      },
+      "farm": {
+        "short": "Your farm",
+        "title": "Where is",
+        "script": "your farm?",
+        "lead": "Standing on your field? Tap \"Use my location\" - it is the most accurate.",
+        "why": "The exact location fetches your weather forecast, the rain and heat warnings, and the nearest mandi prices. Area sets how much water and fertiliser is needed."
+      },
+      "crop": {
+        "short": "Your crop",
+        "title": "What are you",
+        "script": "growing now?",
+        "lead": "The crop in the field today, and the soil it grows in.",
+        "why": "Crop, stage and sowing date drive the irrigation schedule and the day-by-day work plan. Soil type decides how fast water drains and how much the soil holds."
+      },
+      "soil": {
+        "short": "Soil test",
+        "title": "Do you have a",
+        "script": "soil test?",
+        "lead": "A Soil Health Card or a lab report makes fertiliser advice exact. No report? Skip this - we will use your soil type.",
+        "why": "pH and N-P-K levels decide which fertiliser, how much, and whether the soil needs lime or gypsum."
+      },
+      "resources": {
+        "short": "Resources",
+        "title": "What you have",
+        "script": "to work with",
+        "lead": "Workers, machines and money - so the plan only asks for what you can actually do.",
+        "why": "The task planner schedules jobs within your people, equipment, budget and working hours."
+      },
+      "device": {
+        "short": "Soil sensor",
+        "title": "Connect a",
+        "script": "soil sensor",
+        "lead": "Have a Blynk soil probe? Connect it for live moisture and nutrient readings. No sensor? Skip - you can add one later.",
+        "why": "Live readings let irrigation advice follow the soil as it dries, instead of estimating."
+      }
+    },
+    "fields": {
+      "name": "Your name",
+      "phone": "Mobile number",
+      "phoneHint": "For important alerts only. Never shared.",
+      "language": "Language for advice",
+      "languageHint": "You can always ask in any Indian language - this is the default.",
+      "farmName": "Farm name",
+      "farmNamePlaceholder": "e.g. Patel farm, Khet no. 12",
+      "location": "Farm location",
+      "locationHint": "Latitude and longitude of the field",
+      "gps": "Use my location",
+      "gpsAgain": "Update location",
+      "gpsUnsupported": "This phone cannot share location. Please type it in.",
+      "gpsDenied": "Location permission was denied. Allow it, or type the numbers in.",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "locationSet": "Location set",
+      "state": "State",
+      "choose": "Choose…",
+      "district": "District",
+      "districtPlaceholder": "e.g. Surat",
+      "area": "Farm area",
+      "unit": "Unit",
+      "units": {
+        "acres": "Acres",
+        "hectares": "Hectares",
+        "bigha": "Bigha"
+      },
+      "areaAcres": "≈ {acres} acres",
+      "water": "Water source",
+      "crop": "Crop in the field",
+      "otherCrop": "+ Other",
+      "otherCropPlaceholder": "Type the crop name",
+      "cropHint": "Between crops? Leave it empty - FarmXpert can suggest what to sow.",
+      "stage": "Crop stage",
+      "sownOn": "Sowing date",
+      "harvestOn": "Expected harvest",
+      "soilType": "Soil type",
+      "soilTypeHint": "Not sure? Black soil cracks when dry; red soil is reddish and gritty; alluvial is fine river soil.",
+      "irrigation": "Irrigation method",
+      "hasTest": "Yes, I have a report",
+      "hasTestHint": "Soil Health Card or lab test",
+      "noTest": "No report yet",
+      "noTestHint": "We will use your soil type",
+      "reportType": "Which report?",
+      "reportCard": "Soil Health Card (kg/ha)",
+      "reportLab": "Lab or sensor (mg/kg)",
+      "cardNote": "Phosphorus and potassium from the card are converted for the agents. The card measures nitrogen differently, so its nitrogen value is not used - that avoids wrong fertiliser advice.",
+      "typical": "Typical: {range}",
+      "labour": "Workers available on a normal day",
+      "labourHint": "Include yourself and family who work the field.",
+      "less": "Fewer",
+      "more": "More",
+      "equipment": "Equipment you can use",
+      "budget": "Monthly budget for inputs (₹)",
+      "budgetHint": "Seeds, fertiliser, sprays and labour.",
+      "workStart": "Work starts",
+      "workEnd": "Work ends",
+      "deviceIntro": "Find the token in the Blynk app: open your device, then Device Info, then Auth Token. It stays private - we never show it again.",
+      "token": "Blynk auth token",
+      "tokenHint": "Letters and numbers, usually 32 characters.",
+      "deviceName": "Device name",
+      "testDevice": "Test connection",
+      "deviceOk": "Connected. Reading now:",
+      "tokenRejected": "Blynk did not accept this token. Please check it.",
+      "deviceUnreachable": "Could not reach Blynk right now. You can still continue."
+    },
+    "soilFields": {
+      "soil_ph": "pH",
+      "nitrogen": "Nitrogen (N)",
+      "phosphorus": "Phosphorus (P)",
+      "potassium": "Potassium (K)",
+      "soil_moisture": "Moisture",
+      "electrical_conductivity": "EC (salinity)",
+      "soil_temperature": "Soil temperature",
+      "air_temperature": "Air temperature",
+      "air_humidity": "Humidity"
+    },
+    "units": {
+      "ph": "0-14",
+      "kgHa": "kg/ha",
+      "mgKg": "mg/kg",
+      "percent": "%",
+      "dsm": "dS/m"
+    },
+    "errors": {
+      "name": "Please enter your name.",
+      "phone": "Please enter a valid mobile number.",
+      "farmName": "Please name your farm.",
+      "location": "Please set the farm location (it must be in India).",
+      "area": "Please enter the farm area.",
+      "state": "Please choose the state.",
+      "district": "Please enter the district.",
+      "soilType": "Please choose the soil type.",
+      "sownFuture": "The sowing date cannot be in the future.",
+      "harvestBeforeSowing": "Harvest must be after sowing.",
+      "ph": "pH must be between 0 and 14.",
+      "token": "That does not look like a Blynk token."
+    },
+    "submitErrors": {
+      "generic": "Could not save. Please try again - your answers are kept.",
+      "network": "No connection. Your answers are kept - try again when online.",
+      "conflict": "That device token or phone number is already used by another account.",
+      "validation_failed": "Some details need checking. Please review the steps."
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "overview": "Today",
+      "assistant": "Ask",
+      "tasks": "Tasks",
+      "irrigation": "Water",
+      "soil": "Soil",
+      "market": "Mandi",
+      "usage": "Usage",
+      "settings": "Settings"
+    },
+    "shell": {
+      "farm": "Your farm",
+      "switchFarm": "Switch farm",
+      "menu": "Main menu",
+      "logout": "Log out"
+    },
+    "time": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "yesterday": "Yesterday",
+      "minutesAgo": "{count, plural, one {# minute} other {# minutes}} ago",
+      "hoursAgo": "{count, plural, one {# hour} other {# hours}} ago",
+      "daysAgo": "{count, plural, one {# day} other {# days}} ago"
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "network": "No connection. Check your internet and try again.",
+      "token_quota_exceeded": "Today's question allowance is used up. It resets at midnight.",
+      "rate_limited": "Too many requests. Please wait a moment.",
+      "unavailable": "The advisory service is busy. Please try again shortly.",
+      "ai_timeout": "This is taking too long. Please try again.",
+      "ai_error": "The advisory service could not answer right now.",
+      "not_found": "Not found.",
+      "no_measurements": "The sensor sent no usable readings.",
+      "invalid_device_token": "Blynk rejected the device token.",
+      "device_unreachable": "Could not reach the sensor service.",
+      "conflict": "This is already in use.",
+      "invalid_credentials": "The current password is not right.",
+      "weak_password": "Choose a stronger password (8+ characters, upper and lower case, a number and a symbol).",
+      "validation_failed": "Please check the details and try again."
+    },
+    "overview": {
+      "welcome": "Your farm is set up. Tap \"Get today's plan\" whenever you want fresh advice.",
+      "greeting": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening"
+      },
+      "dayOfCrop": "day {day}",
+      "todaysPlan": "Today's plan",
+      "planTitle": "What should I do today?",
+      "planLead": "FarmXpert checks your soil, the weather and your crop, then writes the day's plan.",
+      "planButton": "Get today's plan",
+      "planAgain": "Refresh plan",
+      "ask": "Ask anything",
+      "planQuery": "What should I do on my farm today?",
+      "stats": {
+        "moisture": "Soil moisture",
+        "measured": "Measured {when}",
+        "noReading": "No reading yet",
+        "ph": "Soil pH",
+        "phBand": {
+          "acid": "Acidic - may need lime",
+          "alkaline": "Alkaline - may need gypsum",
+          "good": "In the healthy range"
+        },
+        "nextWater": "Next watering",
+        "depth": "{mm} mm of water",
+        "noPlan": "No plan yet",
+        "allowance": "Allowance left",
+        "allowanceNote": "Questions you can still ask today"
+      },
+      "seeAll": "See all",
+      "tasks": {
+        "title": "Today's work",
+        "subtitle": "{count, plural, =0 {Nothing waiting} one {# job waiting} other {# jobs waiting}}",
+        "emptyTitle": "No jobs yet",
+        "emptyText": "Ask for today's plan and the jobs appear here.",
+        "markDone": "Mark as done"
+      },
+      "priority": {
+        "critical": "Urgent",
+        "high": "High",
+        "medium": "Normal",
+        "low": "Low",
+        "deferred": "Later"
+      },
+      "water": {
+        "title": "Water this week",
+        "emptyTitle": "No water plan yet",
+        "emptyText": "Ask FarmXpert when to irrigate.",
+        "mm": "{mm} mm",
+        "none": "no water"
+      },
+      "market": {
+        "title": "{crop} at the mandi",
+        "noCrop": "Add your crop in Settings to follow its price.",
+        "perQuintal": "Average per quintal · {count} reports",
+        "none": "No recent prices for this crop."
+      },
+      "quick": {
+        "title": "Ask FarmXpert",
+        "subtitle": "Tap a question, or ask your own - by voice or text.",
+        "q": {
+          "water": "Should I water today?",
+          "fertiliser": "Which fertiliser now?",
+          "weather": "Will it rain this week?",
+          "pest": "Leaves are yellowing - why?",
+          "sell": "Sell now or wait?"
+        }
+      }
+    },
+    "assistant": {
+      "eyebrow": "Your farm advisor",
+      "title": "Ask",
+      "titleScript": "FarmXpert",
+      "about": "Answers are about {farm}",
+      "emptyTitle": "Ask in your own language",
+      "emptyText": "Type, or hold the mic and speak. Hindi, Gujarati, Marathi, Tamil - any Indian language.",
+      "suggest": {
+        "water": "Should I water my crop today?",
+        "fertiliser": "How much urea should I apply?",
+        "weather": "Is rain coming this week?",
+        "pest": "My leaves have white spots. What is it?"
+      },
+      "noAnswer": "No answer could be written, but your farm data was checked.",
+      "voiceNotHeard": "(voice question)",
+      "holdLonger": "Hold the mic a little longer while you speak.",
+      "listening": "Listening…",
+      "micDenied": "Microphone access is off. Allow it in your browser settings, or type.",
+      "micUnsupported": "This browser cannot record. Please type your question.",
+      "spoken": "Spoken question",
+      "thinking": "Thinking",
+      "checkedBy": "Checked by {count, plural, one {# expert agent} other {# expert agents}}",
+      "stopSpeaking": "Stop speaking",
+      "placeholder": "Ask about your farm…",
+      "send": "Send",
+      "releaseToSend": "Release to send",
+      "holdToTalk": "Hold the mic to speak",
+      "errors": {
+        "generic": "Something went wrong. Please try again.",
+        "network": "No connection. Check your internet.",
+        "token_quota_exceeded": "Today's question allowance is used up. It resets at midnight.",
+        "voice_quota_exceeded": "Today's voice allowance is used up. You can still type.",
+        "no_speech": "I couldn't hear anything. Hold the mic and speak clearly.",
+        "audio_too_large": "The recording is too long. Keep it under a minute.",
+        "audio_too_long": "The recording is too long. Keep it under a minute.",
+        "unsupported_audio": "This recording format is not supported.",
+        "speech_unavailable": "Voice is not available right now. Please type.",
+        "stream_failed": "The answer was interrupted. Please ask again.",
+        "orchestration_failed": "The answer could not be prepared. Please try again.",
+        "ai_timeout": "This is taking too long. Please try again.",
+        "unavailable": "The advisory service is busy. Try again shortly.",
+        "validation_failed": "Please check your question.",
+        "rate_limited": "Too many questions at once. Wait a moment."
+      }
+    },
+    "tasks": {
+      "eyebrow": "Work plan",
+      "title": "Jobs on",
+      "script": "your farm",
+      "lead": "Planned around your weather, soil, people and equipment.",
+      "filter": "Show",
+      "open": "To do",
+      "all": "All",
+      "emptyTitle": "Nothing planned",
+      "emptyText": "Ask for today's plan on the Today screen.",
+      "makePlan": "Get a plan",
+      "someday": "When convenient",
+      "undo": "Mark as not done",
+      "done": "Mark as done",
+      "delayed": "Delayed",
+      "minutes": "{count} min",
+      "skip": "Skip"
+    },
+    "irrigation": {
+      "eyebrow": "Irrigation",
+      "title": "Water,",
+      "script": "just enough",
+      "lead": "Your {method} schedule, balanced against rain and the soil's moisture.",
+      "leadNoMethod": "Your schedule, balanced against rain and the soil's moisture.",
+      "emptyTitle": "No water plan yet",
+      "emptyText": "Ask FarmXpert for an irrigation plan.",
+      "askQuery": "Make my irrigation plan for this week",
+      "ask": "Make a plan",
+      "noWater": "No water needed",
+      "duration": "About {hours} hours of running",
+      "watered": "I watered",
+      "skipped": "Skip",
+      "status": {
+        "applied": "Watered",
+        "skipped": "Skipped",
+        "planned": "Planned"
+      }
+    },
+    "soil": {
+      "eyebrow": "Soil health",
+      "title": "What your soil",
+      "script": "is saying",
+      "lead": "Readings from your sensor, lab tests and your own checks.",
+      "sync": "Read sensor now",
+      "add": "Add a reading",
+      "synced": "New reading saved from your sensor.",
+      "addTitle": "Add a reading",
+      "save": "Save",
+      "from": "{source} · {when}",
+      "source": {
+        "sensor": "Sensor",
+        "lab": "Lab",
+        "manual": "Entered",
+        "estimated": "Estimated"
+      },
+      "none": "No readings yet.",
+      "history": "Recent readings",
+      "when": "When",
+      "sensor": "Soil sensor",
+      "probe": "Soil probe",
+      "tokenEnds": "Token ending …{hint}",
+      "lastSeen": "Last reading {when}",
+      "neverSynced": "No reading yet - tap \"Read sensor now\".",
+      "noSensor": "No sensor connected",
+      "noSensorText": "A Blynk soil probe gives live moisture and nutrient readings.",
+      "connect": "Connect a sensor"
+    },
+    "market": {
+      "eyebrow": "Mandi prices",
+      "title": "Know your",
+      "script": "price",
+      "lead": "Recent prices from APMC mandis, so you choose when and where to sell.",
+      "search": "Crop, e.g. wheat, cotton, onion",
+      "area": "Area",
+      "allIndia": "All India",
+      "show": "Show prices",
+      "pickTitle": "Choose a crop",
+      "pickText": "Type a crop to see its latest mandi prices.",
+      "noneTitle": "No recent prices for {crop}",
+      "noneText": "Try All India, or another crop.",
+      "last30": "last 30 days",
+      "perQuintal": "average modal price per quintal",
+      "low": "Lowest",
+      "high": "Highest",
+      "markets": "Best markets ({count})"
+    },
+    "usage": {
+      "eyebrow": "Your allowance",
+      "title": "Questions",
+      "script": "today",
+      "lead": "Each question uses a little of your daily allowance. It resets every midnight.",
+      "today": "Today",
+      "left": "left",
+      "used": "{used} of {limit} units used",
+      "unlimited": "No daily limit on your account.",
+      "voice": "Voice: {used} of {limit} minutes",
+      "resets": "Resets at midnight",
+      "fortnight": "Last two weeks",
+      "fortnightNote": "How much you asked each day",
+      "none": "No questions yet."
+    },
+    "settings": {
+      "eyebrow": "Account",
+      "title": "Settings",
+      "script": "and profile",
+      "profile": "Profile",
+      "saved": "Saved.",
+      "name": "Name",
+      "phone": "Mobile number",
+      "email": "Email",
+      "emailHint": "Your login email cannot be changed here.",
+      "save": "Save",
+      "farm": "Farm",
+      "farmName": "Farm name",
+      "district": "District",
+      "farmHint": "Area: {acres} acres. To change location, crop or soil, set up the farm again from onboarding.",
+      "device": "Soil sensor (Blynk)",
+      "deviceSaved": "Sensor connected. Any earlier token is switched off.",
+      "token": "Blynk auth token",
+      "tokenHint": "Adding a new token switches off the old one.",
+      "connect": "Connect",
+      "security": "Password and security",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "passwordHint": "8+ characters with upper and lower case, a number and a symbol.",
+      "everywhere": "Log out on all devices",
+      "changePassword": "Change password",
+      "danger": "Delete account",
+      "deleteText": "Deletes your account, farms, readings, plans and conversations. This cannot be undone.",
+      "deleteConfirm": "Delete your FarmXpert account and all farm data? This cannot be undone.",
+      "delete": "Delete my account"
+    }
+  }
+}

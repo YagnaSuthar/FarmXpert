@@ -1,0 +1,278 @@
+/* ============================================================
+   Furnova — Dashboard Styles
+   Uses tokens from globals.css (:root Frozen Lake Palette)
+   All classes use the '-dash' suffix
+   ============================================================ */
+
+.dashboard-viewport-dash {
+  min-height: 100vh;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-container-dash {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 100px 24px 60px;
+  flex: 1;
+}
+
+/* Dashboard Header */
+.dashboard-header-dash {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-medium);
+  margin-bottom: 2rem;
+}
+
+.dashboard-badge-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 128, 0.06);
+  border: 1px solid var(--border-medium);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+.dashboard-title-dash {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.8rem, 3.5vw, 2.3rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.4rem;
+}
+
+.dashboard-subtitle-dash {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.dashboard-actions-dash {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-logout-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 1.4rem;
+  height: 44px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-medium);
+  background: var(--bg-raised);
+  color: #ea4335;
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.btn-logout-dash:hover {
+  background: rgba(234, 67, 53, 0.08);
+  border-color: #ea4335;
+}
+
+/* User Card / Meta Bar */
+.user-meta-bar-dash {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.meta-card-dash {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.2rem 1.4rem;
+  box-shadow: 0 4px 20px -6px var(--nm-shadow-dark);
+}
+
+.meta-label-dash {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.35rem;
+}
+
+.meta-value-dash {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.meta-pill-dash {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.meta-pill-dash.pill-user {
+  background: rgba(0, 0, 128, 0.08);
+  color: var(--accent-primary);
+}
+
+.meta-pill-dash.pill-manager {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+
+.meta-pill-dash.pill-admin {
+  background: rgba(234, 179, 8, 0.12);
+  color: #ca8a04;
+}
+
+.meta-pill-dash.pill-super_admin {
+  background: rgba(168, 85, 247, 0.12);
+  color: #9333ea;
+}
+
+/* Grid & Cards */
+.dashboard-grid-dash {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.panel-card-dash {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 1.6rem;
+  box-shadow: 0 4px 20px -6px var(--nm-shadow-dark);
+}
+
+.panel-title-dash {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-item-dash {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.panel-item-dash:last-child {
+  border-bottom: none;
+}
+
+.panel-item-label-dash {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.panel-item-val-dash {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+/* Table styling for Admin / Super Admin directory */
+.table-wrap-dash {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.table-dash {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.table-dash th {
+  background: rgba(0, 0, 128, 0.04);
+  padding: 0.9rem 1.1rem;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--border-medium);
+}
+
+.table-dash td {
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.table-dash tr:last-child td {
+  border-bottom: none;
+}
+
+.table-dash tr:hover td {
+  background: rgba(0, 0, 128, 0.02);
+}
+
+/* Role Select in Super Admin */
+.role-select-dash {
+  height: 36px;
+  padding: 0 0.8rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: 'Sora', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+
+.role-select-dash:focus {
+  border-color: var(--accent-primary);
+}
+
+/* Loading overlay */
+.dashboard-loading-dash {
+  min-height: 80vh;
+  display: grid;
+  place-items: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}

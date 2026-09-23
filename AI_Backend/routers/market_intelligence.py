@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
 
 from AI_Backend.agents.supplychain_market_access.market_intelligence.schemas import (
+    MarketInsightsResponse,
     MarketQueryInput,
-    MarketRecommendationResponse,
 )
 from AI_Backend.agents.supplychain_market_access.market_intelligence.agent import (
     run_market_agent,
@@ -13,49 +13,47 @@ router = APIRouter(prefix="/api/market-intelligence", tags=["Market Intelligence
 
 
 @router.get(
-    "/recommendation",
-    response_model=MarketRecommendationResponse,
-    summary="AI-powered selling recommendation",
+    "/insights",
+    response_model=MarketInsightsResponse,
+    summary="Commodity price insights — current and forecast",
     description=(
-        "Invokes the Market Intelligence Agent to analyze mandi prices "
-        "and return the optimal profit-based selling recommendation."
+        "Returns current mandi prices, aggregated price stats, historical "
+        "trend, and a forecast prediction for the given commodity. "
+        "Insights only — no SELL/HOLD action and no transport/storage advice."
     ),
 )
-async def get_ai_recommendation(
+async def get_market_insights(
     commodity: str = Query(
-        ...,
-        min_length=2,
-        max_length=100,
+        ..., min_length=2, max_length=100,
         description="Commodity name, e.g. Wheat, Rice, Tomato",
         example="Wheat",
     ),
-    local_market: Optional[str] = Query(
+    state: Optional[str] = Query(
         None,
-        description="Farmer's local/nearest market name",
-        example="Ahmedabad",
+        description="Optional regional filter — scopes the underlying fetch to a state.",
+        example="Gujarat",
     ),
     district: Optional[str] = Query(
         None,
-        description="Farmer's district (for transport cost estimation)",
+        description="Optional — annotates the snapshot with the farmer's district.",
         example="Ahmedabad",
     ),
-    trend: Optional[str] = Query(
-        None,
-        description="Price trend hint: increasing, decreasing, stable",
-        example="stable",
+    forecast_horizon_days: int = Query(
+        7, ge=1, le=30,
+        description="Days ahead the forecast targets (informational).",
     ),
 ):
     input_data = MarketQueryInput(
         commodity=commodity,
-        local_market=local_market,
+        state=state,
         district=district,
+        forecast_horizon_days=forecast_horizon_days,
     )
-    result = await run_market_agent(input_data, trend=trend)
+    result = await run_market_agent(input_data)
 
     if result is None:
         raise HTTPException(
             status_code=404,
-            detail=f"Agent could not generate recommendation for '{commodity}'.",
+            detail=f"No price data available for '{commodity}'.",
         )
-
     return result

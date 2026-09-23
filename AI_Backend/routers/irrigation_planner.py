@@ -1,70 +1,56 @@
-from fastapi import APIRouter, Depends, HTTPException, status
 import logging
-from sqlalchemy.ext.asyncio import AsyncSession
-# Import get_db from Backend module (parent directory)
-from Backend.app.core.config import get_db
+
+from fastapi import APIRouter, HTTPException, status
+
 from AI_Backend.agents.crop_planning_growth.irrigation_planner.agent import IrrigationAgent
-from AI_Backend.agents.crop_planning_growth.irrigation_planner.schemas import Location, IrrigationPlannerResponse
-from AI_Backend.services.soil_repository import SoilRepository
-
-# Irrigation by crop type and variety is still pending 
-
-router = APIRouter(
-    prefix="/irrigation-planner",
-    tags=["Irrigation Planner - Provides optimized day-wise irrigation plans"]
+from AI_Backend.agents.crop_planning_growth.irrigation_planner.config import (
+    CROP_CONFIG,
+    METHODS,
+    SOIL_CONFIG,
+)
+from AI_Backend.agents.crop_planning_growth.irrigation_planner.schemas import (
+    IrrigationPlannerResponse,
+    IrrigationRequest,
 )
 
-logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/irrigation-planner", tags=["Irrigation Planner"])
 
-@router.post("/plan-irrigation/{farm_id}", response_model=IrrigationPlannerResponse)
-async def get_irrigation(
-    farm_id: str, 
-    location: Location, 
-    db: AsyncSession = Depends(get_db)
-) -> IrrigationPlannerResponse:
-    """
-    Generate an optimized irrigation plan for a farm
-    
-    Args:
-        farm_id: Unique identifier for the farm
-        location: Farm location with latitude and longitude
-        db: Database session
-        
-    Returns:
-        IrrigationPlannerResponse: Detailed irrigation plan with schedule, water savings, and alerts
-    """
+logger = logging.getLogger(__name__)
+irrigation_agent = IrrigationAgent()
+
+
+async def _plan(payload: dict) -> dict:
     try:
-        logger.info(f"Generating irrigation plan for farm: {farm_id}")
-        
-        # Fetch latest soil data
-        soil_repo = SoilRepository()
-        soil_data = await soil_repo.get_latest_soil_data(farm_id, db)
-        
-        if not soil_data:
-            logger.warning(f"No soil data found for farm {farm_id}")
-            soil_data = {}
-        
-        # Create agent and run
-        irrigation_agent = IrrigationAgent()
-        result = await irrigation_agent.run(
-            input_data={
-                "soil_data": soil_data, 
-                "location": location.model_dump()
-            }
-        )
-        
-        logger.info(f"Successfully generated irrigation plan for farm {farm_id}")
-        return result
-        
-    except ValueError as e:
-        logger.error(f"Validation error for farm {farm_id}: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(e)
-        )
-    except Exception as e:
-        logger.error(f"Error generating irrigation plan for farm {farm_id}: {str(e)}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while generating the irrigation plan"
-        )
+        return await irrigation_agent.run(payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        logger.error("Irrigation planning failed: %s", exc, exc_info=True)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="An error occurred while generating the irrigation plan.")
+
+
+@router.post(
+    "/plan",
+    response_model=IrrigationPlannerResponse,
+    summary="Day-by-day irrigation plan for one field (FAO-56 water balance)",
+    description=(
+        "Name the crop and its stage (or days after sowing), the soil type and, ideally, "
+        "the current soil moisture. With `farm_id` and no moisture reading, the latest "
+        "stored reading is used. `water_depth_mm` is what to apply; `net_irrigation_mm` "
+        "is what the roots need after application losses."
+    ),
+)
+async def plan_irrigation(request: IrrigationRequest) -> dict:
+    payload = request.model_dump(exclude_none=True)
+    if request.farm_id and request.soil_moisture_percent is None and not request.soil_data:
+        stored, problem = await _stored_soil_reading(request.farm_id)
+        if stored:
+            payload["soil_data"] = stored
+    return await _plan(payload)
+
+
+@router.get("/options", summary="Crops, soils and methods the planner knows")
+async def options() -> dict:
+    return {"crops": sorted(CROP_CONFIG), "soil_types": sorted(SOIL_CONFIG),
+            "methods": {m: {"application_efficiency": v["efficiency"]} for m, v in METHODS.items()}}

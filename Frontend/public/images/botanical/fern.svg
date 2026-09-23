@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -50 410 570" fill="none">
+<defs>
+  <linearGradient id="deep" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#174D2C"/><stop offset=".5" stop-color="#2F7A42"/><stop offset="1" stop-color="#76B062"/></linearGradient>
+  <linearGradient id="fresh" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2C6E3C"/><stop offset=".6" stop-color="#5FA35A"/><stop offset="1" stop-color="#B2D796"/></linearGradient>
+  <linearGradient id="euca" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#4F7F6C"/><stop offset=".55" stop-color="#7FA898"/><stop offset="1" stop-color="#C5DBCF"/></linearGradient>
+  <linearGradient id="olive" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#4A5E2E"/><stop offset=".6" stop-color="#7C8F4E"/><stop offset="1" stop-color="#B7C48E"/></linearGradient>
+  <linearGradient id="silver" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#8FA38A"/><stop offset="1" stop-color="#DCE5D3"/></linearGradient>
+  <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0B3A22" stop-opacity=".4"/><stop offset="1" stop-color="#0B3A22" stop-opacity="0"/></linearGradient>
+  <linearGradient id="stem" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#40592F"/><stop offset="1" stop-color="#86A060"/></linearGradient>
+  <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0F3D25" flood-opacity=".16"/></filter>
+<g id="pinna"><path d="M0 0 C 7 -6, 9 -30, 0 -48 C -9 -30, -7 -6, 0 0Z" fill="url(#deep)"/>
+<path d="M0 0 C -7 -6, -9 -30, 0 -48 C -4 -30, -3 -8, 0 0Z" fill="url(#shade)"/>
+<path d="M0 -2 L0 -44" stroke="#D7EAC6" stroke-opacity=".45" stroke-width=".8"/></g>
+</defs>
+<g filter="url(#soft)">
+<path d="M0 520 Q 150 330 260 40" stroke="url(#stem)" stroke-width="3" stroke-linecap="round"/>
+<use href="#pinna" transform="translate(58.4 440.0) rotate(-36.0) scale(1.15)"/>
+<use href="#pinna" transform="translate(58.4 440.0) rotate(102.4) scale(1.15)"/>
+<use href="#pinna" transform="translate(67.4 426.5) rotate(-35.0) scale(1.12)"/>
+<use href="#pinna" transform="translate(67.4 426.5) rotate(101.6) scale(1.12)"/>
+<use href="#pinna" transform="translate(76.4 412.7) rotate(-32.9) scale(1.09)"/>
+<use href="#pinna" transform="translate(76.4 412.7) rotate(96.0) scale(1.09)"/>
+<use href="#pinna" transform="translate(85.3 398.8) rotate(-37.8) scale(1.05)"/>
+<use href="#pinna" transform="translate(85.3 398.8) rotate(101.0) scale(1.05)"/>
+<use href="#pinna" transform="translate(94.1 384.6) rotate(-35.8) scale(1.02)"/>
+<use href="#pinna" transform="translate(94.1 384.6) rotate(94.9) scale(1.02)"/>
+<use href="#pinna" transform="translate(102.8 370.2) rotate(-29.9) scale(0.99)"/>
+<use href="#pinna" transform="translate(102.8 370.2) rotate(95.5) scale(0.99)"/>
+<use href="#pinna" transform="translate(111.5 355.7) rotate(-31.1) scale(0.96)"/>
+<use href="#pinna" transform="translate(111.5 355.7) rotate(94.3) scale(0.96)"/>
+<use href="#pinna" transform="translate(120.0 340.9) rotate(-32.6) scale(0.93)"/>
+<use href="#pinna" transform="translate(120.0 340.9) rotate(90.5) scale(0.93)"/>
+<use href="#pinna" transform="translate(128.5 325.9) rotate(-32.6) scale(0.89)"/>
+<use href="#pinna" transform="translate(128.5 325.9) rotate(95.0) scale(0.89)"/>
+<use href="#pinna" transform="translate(136.9 310.7) rotate(-33.4) scale(0.86)"/>
+<use href="#pinna" transform="translate(136.9 310.7) rotate(92.8) scale(0.86)"/>
+<use href="#pinna" transform="translate(145.2 295.4) rotate(-32.1) scale(0.83)"/>
+<use href="#pinna" transform="translate(145.2 295.4) rotate(86.2) scale(0.83)"/>
+<use href="#pinna" transform="translate(153.4 279.8) rotate(-31.3) scale(0.80)"/>
+<use href="#pinna" transform="translate(153.4 279.8) rotate(89.2) scale(0.80)"/>
+<use href="#pinna" transform="translate(161.6 264.0) rotate(-34.9) scale(0.77)"/>
+<use href="#pinna" transform="translate(161.6 264.0) rotate(83.6) scale(0.77)"/>
+<use href="#pinna" transform="translate(169.6 248.0) rotate(-30.3) scale(0.73)"/>
+<use href="#pinna" transform="translate(169.6 248.0) rotate(85.9) scale(0.73)"/>
+<use href="#pinna" transform="translate(177.6 231.8) rotate(-31.3) scale(0.70)"/>
+<use href="#pinna" transform="translate(177.6 231.8) rotate(88.0) scale(0.70)"/>
+<use href="#pinna" transform="translate(185.5 215.4) rotate(-31.2) scale(0.67)"/>
+<use href="#pinna" transform="translate(185.5 215.4) rotate(87.2) scale(0.67)"/>
+<use href="#pinna" transform="translate(193.3 198.7) rotate(-33.7) scale(0.64)"/>
+<use href="#pinna" transform="translate(193.3 198.7) rotate(85.1) scale(0.64)"/>
+<use href="#pinna" transform="translate(201.1 181.9) rotate(-33.1) scale(0.61)"/>
+<use href="#pinna" transform="translate(201.1 181.9) rotate(85.1) scale(0.61)"/>
+<use href="#pinna" transform="translate(208.7 164.9) rotate(-29.5) scale(0.57)"/>
+<use href="#pinna" transform="translate(208.7 164.9) rotate(77.2) scale(0.57)"/>
+<use href="#pinna" transform="translate(216.3 147.7) rotate(-35.3) scale(0.54)"/>
+<use href="#pinna" transform="translate(216.3 147.7) rotate(77.1) scale(0.54)"/>
+<use href="#pinna" transform="translate(223.8 130.2) rotate(-28.5) scale(0.51)"/>
+<use href="#pinna" transform="translate(223.8 130.2) rotate(77.7) scale(0.51)"/>
+<use href="#pinna" transform="translate(231.2 112.6) rotate(-31.0) scale(0.48)"/>
+<use href="#pinna" transform="translate(231.2 112.6) rotate(75.5) scale(0.48)"/>
+<use href="#pinna" transform="translate(238.5 94.8) rotate(-31.8) scale(0.45)"/>
+<use href="#pinna" transform="translate(238.5 94.8) rotate(75.1) scale(0.45)"/>
+<use href="#pinna" transform="translate(245.8 76.7) rotate(-32.8) scale(0.41)"/>
+<use href="#pinna" transform="translate(245.8 76.7) rotate(75.6) scale(0.41)"/>
+<use href="#pinna" transform="translate(252.9 58.5) rotate(-30.8) scale(0.38)"/>
+<use href="#pinna" transform="translate(252.9 58.5) rotate(77.1) scale(0.38)"/>
+<use href="#pinna" transform="translate(260.0 40.0) rotate(-29.8) scale(0.35)"/>
+<use href="#pinna" transform="translate(260.0 40.0) rotate(76.2) scale(0.35)"/>
+<use href="#pinna" transform="translate(260 40) rotate(42) scale(.45)"/>
+</g>
+</svg>

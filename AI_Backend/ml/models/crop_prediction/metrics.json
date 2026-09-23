@@ -1,0 +1,30 @@
+{
+  "holdout_accuracy": 0.8191721132897604,
+  "holdout_macro_f1": 0.7934799870494808,
+  "holdout_top3": 0.9622367465504721,
+  "log_loss": 0.5186595178390788,
+  "cv_accuracy": 0.8601584764949768,
+  "cv_train_accuracy": 0.9329770132861803,
+  "overfit_gap": 0.07281853679120354,
+  "params": {
+    "num_leaves": 7,
+    "max_depth": 5,
+    "min_child_samples": 40,
+    "reg_lambda": 20.0,
+    "learning_rate": 0.05,
+    "n_estimators": 400
+  },
+  "gujarat": {
+    "accuracy_mean": 0.8061558904706502,
+    "accuracy_std": 0.03735505753764809,
+    "top3_mean": 0.9903623775538901,
+    "macro_f1_mean": 0.6667942573742535,
+    "region_filter_gain": 0.0216312472478164,
+    "n_folds": 15
+  },
+  "rejected": {
+    "gujarat_only_training": 0.7899,
+    "ensemble_lgbm_rf_et": 0.855,
+    "untuned_gap": 0.132
+  }
+}

@@ -1,1 +1,0 @@
-# pgvector_client.py

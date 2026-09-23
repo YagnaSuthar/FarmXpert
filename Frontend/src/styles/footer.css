@@ -1,3 +1,6 @@
+/* Wrapped in a cascade layer so the app's Tailwind utilities (a later layer) win over
+   this file's global resets; the landing page itself renders exactly as before. */
+@layer landing {
 /* ============ FOOTER ============ */
 footer {
   background: var(--bg-base);
@@ -73,4 +76,4 @@ footer {
   .footer-links a {
     font-size: 0.65rem;
   }
-}
+}}

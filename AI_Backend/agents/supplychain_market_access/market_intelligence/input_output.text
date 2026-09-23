@@ -1,337 +1,228 @@
 ================================================================================
-          MARKET INTELLIGENCE AGENT — INPUT / OUTPUT SPECIFICATION
+        MARKET INTELLIGENCE AGENT — INPUT / OUTPUT SPECIFICATION
 ================================================================================
 
-Agent:      Market Intelligence Agent
-Location:   AI_Backend/agents/supplychain_market_access/market_intelligence/
-Entry:      agent.py → run_market_agent(input_data)
-API:        GET /api/market-intelligence/recommendation
-Version:    2.0 (Production)
+Agent     : Market Intelligence Agent
+Location  : AI_Backend/agents/supplychain_market_access/market_intelligence/
+Entry     : agent.py → run_market_agent(input_data)
+HTTP API  : GET /api/market-intelligence/insights
+Version   : 3.0  (insights-only)
+
+What changed vs v2.x:
+  • REMOVED: SELL_NOW / SELL_IN_OTHER_MANDI / HOLD action
+  • REMOVED: transport-cost estimation and state-adjacency map
+  • REMOVED: profit ranking, best_market / best_profit
+  • REMOVED: storage / logistics suggestions
+  • KEPT   : current market prices, historical trend, forecast prediction
+  • KEPT   : confidence + data-quality signals
+  • ADDED  : per-market price table, aggregated price summary
+             (modal min/max/avg/median, spread %, fresh_records_pct)
+  • ADDED  : agent_id / agent_version provenance
+
 
 ================================================================================
   INPUT
 ================================================================================
 
-1. MarketQueryInput (Pydantic Model)
-────────────────────────────────────
+MarketQueryInput (Pydantic):
 
-  Field           Type              Required    Example
-  ─────────────   ───────────────   ────────    ─────────────────────
-  commodity       str               ✅ Yes      "Wheat"
-  state           Optional[str]     ❌ No       "Gujarat"
-  district        Optional[str]     ❌ No       "Ahmedabad"
-  local_market    Optional[str]     ❌ No       "Ahmedabad"
+  Field                  Type             Required  Example
+  --------------------   --------------   --------  ---------------------
+  commodity              str              Yes       "Wheat"
+  state                  Optional[str]    No        "Gujarat"
+  district               Optional[str]    No        "Ahmedabad"
+  forecast_horizon_days  int              No        7   (default; range 1-30)
 
-  Notes:
-  • commodity is stripped of whitespace and control characters.
-  • state, district, local_market are optional but improve accuracy:
-      - state    → scopes Backend API fetch to a region (faster, more relevant)
-      - district → enables same-district transport tier (₹50 vs ₹150+)
-      - local_market → triggers SELL_IN_OTHER_MANDI detection
+Notes:
+  • Trailing whitespace and control characters are stripped automatically.
+  • `state` narrows the underlying mandi fetch — improves response time and
+    relevance for the farmer's region.
+  • `district` is informational only (annotates per-market rows). No
+    transport-cost calculation is performed.
 
-  ⚠ The `trend` parameter from v1 has been REMOVED.
-    Trend is now computed internally (historical OLS + LSTM forecast).
-
-
-SAMPLE INPUT (via API):
-───────────────────────
-
-  GET /api/market-intelligence/recommendation
+SAMPLE HTTP CALL:
+  GET /api/market-intelligence/insights
       ?commodity=Wheat
       &state=Gujarat
       &district=Ahmedabad
-      &local_market=Ahmedabad
+      &forecast_horizon_days=7
 
-
-SAMPLE INPUT (internal call):
-─────────────────────────────
-
-  input_data = MarketQueryInput(
-      commodity="Wheat",
-      state="Gujarat",
-      district="Ahmedabad",
-      local_market="Ahmedabad",
-  )
-
-  result = await run_market_agent(input_data)
+SAMPLE INTERNAL CALL:
+  insights = await run_market_agent(MarketQueryInput(commodity="Wheat",
+                                                     state="Gujarat"))
 
 
 ================================================================================
-  INTERNAL DATA (PriceRecord DTO — fetched from Backend API)
+  OUTPUT — MarketInsights  (insights-only JSON)
 ================================================================================
 
-  Fetched via:
-    GET {BACKEND_BASE_URL}/api/v1/market/prices
-        ?commodity=Wheat
-        &state=Gujarat        ← optional, narrows results
-        &limit=200
+Top-level fields:
 
-  Each row is validated and converted to a PriceRecord DTO:
+  agent_id         : str   "market_intelligence_agent"
+  agent_version    : str   "3.0.0"
+  processed_at     : str   ISO-8601 UTC timestamp
+  commodity        : str
+  query_state      : Optional[str]
+  query_district   : Optional[str]
+  market_prices    : List[MarketPrice]     -- per-market snapshot
+  price_summary    : PriceSummary           -- aggregated stats
+  price_trend      : PriceTrend             -- OLS direction
+  forecast         : PriceForecast          -- next-step prediction
+  confidence       : float (0-1)
+  data_quality     : DataQuality
+  warnings         : List[str]
 
-  Field           Type              Example          Notes
-  ─────────────   ───────────────   ─────────────    ──────────────────────────
-  commodity       str               "Wheat"          Required
-  market          str               "Surat"          Required
-  state           Optional[str]     "Gujarat"
-  district        Optional[str]     "Surat"
-  min_price       Optional[float]   2100.0           Must be > 0 to be valid
-  max_price       Optional[float]   2600.0           Must be ≥ min_price
-  modal_price     Optional[float]   2450.0           Primary price used in logic
-  arrival_date    Optional[str]     "2026-04-25"     ISO date string
-  variety         Optional[str]     "Lokwan"
-  grade           Optional[str]     "FAQ"
+----------- Sub-models -----------
 
-  Validation:
-  • Prices are coerced from strings if needed.
-  • Records with modal_price = null or ≤ 0 are excluded from all logic.
-  • min_price / max_price are auto-corrected if swapped.
-  • Backend response can be a JSON array OR {"data": [...]} — both handled.
+MarketPrice:
+  market, state, district, variety, grade, arrival_date,
+  modal_price, min_price, max_price
 
+PriceSummary:
+  modal_price_avg, modal_price_min, modal_price_max, modal_price_median,
+  min_price_avg, max_price_avg, spread_pct, price_unit,
+  sampled_markets, sampled_records
 
-================================================================================
-  OUTPUT
-================================================================================
+PriceTrend:
+  direction        : "increasing" | "decreasing" | "stable"
+  slope_normalised : float  (slope / mean — scale-independent)
+  window_records   : int
 
-1. MarketRecommendation (Pydantic Model)
-────────────────────────────────────────
+PriceForecast:
+  predicted_price       : float
+  predicted_trend       : "increasing" | "decreasing" | "stable"
+  expected_change_pct   : float
+  model_used            : "lstm" | "moving_average" | "fallback"
+  horizon_days          : int
 
-  Field               Type                  Example               Notes
-  ─────────────────   ───────────────────   ──────────────────    ──────────────────────────────
-  commodity           str                   "Wheat"
-  best_market         str                   "Surat"
-  best_price          float                 2450.0                Modal price at best market (₹/qtl)
-  best_profit         float                 2300.0                best_price − transport_cost
-  transport_cost      float                 150.0                 ₹ to reach best market          ← NEW
-  recommended_action  str                   "SELL_IN_OTHER_MANDI" SELL_NOW / SELL_IN_OTHER_MANDI / HOLD
-  top_markets         List[RankedMarket]    (see below)
-  reason              str                   "Surat offers ₹..."   Includes forecast note
-  confidence          float (0–1)           0.78
-  trend               Optional[str]         "stable"              Historical OLS trend            ← NEW
-  predicted_price     Optional[float]       2510.0                LSTM / WMA forecast (₹/qtl)    ← NEW
-  predicted_trend     Optional[str]         "increasing"          Direction of forecast           ← NEW
-  data_points_used    int                   87                    Records used in decision        ← NEW
-
-2. RankedMarket (sub-model inside top_markets)
-──────────────────────────────────────────────
-
-  Field           Type              Example
-  ─────────────   ───────────────   ─────────────
-  rank            int               1
-  market          str               "Surat"
-  state           Optional[str]     "Gujarat"
-  district        Optional[str]     "Surat"
-  price           float             2450.0
-  profit          float             2300.0        net after transport
-  transport_cost  float             150.0         ₹ from farmer's location
-
-3. Possible Actions (recommended_action)
-────────────────────────────────────────
-
-  Action                  When Triggered
-  ──────────────────────  ─────────────────────────────────────────────────────────────────
-  SELL_NOW                Predicted trend is "decreasing" (price will fall — exit now)
-                          OR best market is local with no better alternative
-  SELL_IN_OTHER_MANDI     Best market ≠ local market AND profit advantage ≥ ₹100
-  HOLD                    historical OR predicted trend is "increasing" AND
-                          neither is "decreasing" AND confidence ≥ 0.40
-
-  Priority order (first match wins):
-    1. SELL_NOW  if predicted_trend == "decreasing" AND confidence ≥ 0.30
-    2. HOLD      if either trend increasing, none decreasing, confidence ≥ 0.40
-    3. SELL_IN_OTHER_MANDI if profit advantage ≥ MIN_PROFIT_TO_TRAVEL (₹100)
-    4. SELL_NOW  (default)
+DataQuality:
+  records_used, unique_markets, coefficient_of_variation, fresh_records_pct
 
 
-================================================================================
-  TRANSPORT COST TIERS  (₹ per quintal — config-driven, env-overridable)
-================================================================================
+SAMPLE OUTPUT (JSON):
 
-  Tier                Condition                               Cost
-  ──────────────────  ──────────────────────────────────────  ──────
-  Same market         record.market == local_market           ₹0
-  Same district       record.district == local_district       ₹50
-  Same state          record.state == local_state             ₹150
-  Adjacent state      state in STATE_ADJACENCY[local_state]   ₹300
-  Distant / unknown   no match                                ₹500
-
-  All comparisons are case-insensitive.
-  Adjacency map covers all major Indian states (see config.py → STATE_ADJACENCY).
-  All tier values are overridable via environment variables.
-
-
-================================================================================
-  FORECASTING
-================================================================================
-
-  The agent generates a price forecast using a waterfall strategy:
-
-  Priority  Method                    Condition
-  ────────  ────────────────────────  ──────────────────────────────────────────
-  1         LSTM model                Model loaded AND ≥ 30 price records available
-  2         Weighted moving average   ≥ 3 price records (7-day window, linear weights)
-  3         Last known price          Fallback — no trend direction assigned
-
-  Output:
-    predicted_price  → forecast ₹ value
-    predicted_trend  → "increasing" | "decreasing" | "stable"
-                       (based on % change vs current price, ±2% threshold)
-
-  LSTM details:
-    • Input shape:   (1, LSTM_SEQUENCE_LENGTH, 1)  — default window = 30
-    • Model file:    AI_Backend/ml/models/mandi_price_lstm.h5
-    • Scaler file:   AI_Backend/ml/models/price_scaler.pkl  (optional)
-    • Fallback norm: per-window min-max if scaler not found
+{
+  "agent_id": "market_intelligence_agent",
+  "agent_version": "3.0.0",
+  "processed_at": "2026-06-21T08:00:00Z",
+  "commodity": "Wheat",
+  "query_state": "Gujarat",
+  "query_district": "Ahmedabad",
+  "market_prices": [
+    {"market": "Surat", "state": "Gujarat", "district": "Surat",
+     "modal_price": 2450.0, "min_price": 2200.0, "max_price": 2600.0,
+     "arrival_date": "2026-06-20"},
+    {"market": "Ahmedabad", "state": "Gujarat", "district": "Ahmedabad",
+     "modal_price": 2200.0, "min_price": 2050.0, "max_price": 2350.0,
+     "arrival_date": "2026-06-20"},
+    {"market": "Rajkot", "state": "Gujarat", "district": "Rajkot",
+     "modal_price": 2180.0, "min_price": 2050.0, "max_price": 2310.0,
+     "arrival_date": "2026-06-20"}
+  ],
+  "price_summary": {
+    "modal_price_avg": 2276.7,
+    "modal_price_min": 2180.0,
+    "modal_price_max": 2450.0,
+    "modal_price_median": 2200.0,
+    "min_price_avg": 2100.0,
+    "max_price_avg": 2420.0,
+    "spread_pct": 11.9,
+    "price_unit": "INR/quintal",
+    "sampled_markets": 3,
+    "sampled_records": 3
+  },
+  "price_trend": {
+    "direction": "stable",
+    "slope_normalised": 0.012,
+    "window_records": 87
+  },
+  "forecast": {
+    "predicted_price": 2510.0,
+    "predicted_trend": "increasing",
+    "expected_change_pct": 7.5,
+    "model_used": "lstm",
+    "horizon_days": 7
+  },
+  "confidence": 0.74,
+  "data_quality": {
+    "records_used": 87,
+    "unique_markets": 12,
+    "coefficient_of_variation": 0.07,
+    "fresh_records_pct": 88.5
+  },
+  "warnings": []
+}
 
 
 ================================================================================
-  CONFIDENCE SCORE FACTORS
+  WHY NO SELL / HOLD ACTION
 ================================================================================
 
-  Factor              Weight   Measures
-  ──────────────────  ───────  ─────────────────────────────────────────────────
-  Data coverage       0 – 0.30  Number of unique markets in fetched data
-  Price consistency   0 – 0.30  Coefficient of variation (low CV = consistent data)
-  Decisiveness        0 – 0.25  Profit gap between #1 and #2 ranked market
-  Signal agreement    0 – 0.15  Historical trend and LSTM forecast agree / disagree ← NEW
+The agent emits structured price intelligence only. Two design reasons:
+  1. The orchestrator is the layer that knows the farmer's intent, risk
+     appetite, storage capacity, and family income. Telling a farmer to
+     SELL or HOLD requires that context.
+  2. Different downstream consumers (dashboard, voice assistant, broker
+     terminal) want to render the same JSON differently. A baked-in
+     decision blocks that.
 
-  Thresholds (informational):
-    High    confidence ≥ 0.70  → Decision is well-supported
-    Medium  confidence ≥ 0.45  → Moderate certainty
-    Low     confidence < 0.25  → Limited data; treat with caution
-
-  Signal agreement detail:
-    Both trends agree     → +0.15
-    Partial (one stable)  → +0.07
-    No signals            → +0.05
-    Directly conflicting  → +0.00  (penalised)
+If you need the orchestrator to surface a "should I sell?" answer:
+  • increasing forecast + stable history + high confidence  → HOLD
+  • decreasing forecast + high confidence                    → SELL NOW
+  • low confidence                                           → SHOW DATA, NO ACTION
 
 
 ================================================================================
-  HISTORICAL TREND
+  HOW THE TASK SCHEDULER USES THIS
 ================================================================================
 
-  Computed via OLS (ordinary least squares) linear regression on modal_price.
-  Requires ≥ 5 valid price records.
+The scheduler accepts the same insights via the
+`market_intelligence_agent` block of SchedulerInput. In v3.0 this block
+is **informational only** — no scheduler task is generated from it.
+The scheduler now requires no `recommended_action`; if present, it is
+honoured for back-compat.
 
-  Slope is normalised by mean price so the threshold is scale-independent
-  (works for ₹50 vegetables and ₹5000 grains alike).
+Adapter (orchestrator → scheduler):
 
-    normalised_slope > +2%  →  "increasing"
-    normalised_slope < -2%  →  "decreasing"
-    otherwise               →  "stable"
+  from AI_Backend.agents.orchestrator.adapters import \
+      market_insights_to_scheduler_block
 
-
-================================================================================
-  PIPELINE STEPS
-================================================================================
-
-  ┌──────────────────────────────────────────────────────────────────────────┐
-  │  Step  1 │ Ensure LSTM model loaded (once per process, lazy init)        │
-  │  Step  2 │ Fetch prices from Backend API (with retry + state filter)     │
-  │  Step  3 │ Validate data sufficiency (≥ 1 record required)               │
-  │  Step  4 │ calculate_trend()       → historical OLS trend                │
-  │  Step  5 │ predict_price_trend()   → LSTM / WMA / fallback forecast      │
-  │  Step  6 │ find_best_market()      → MAX(modal_price − transport_cost)   │
-  │  Step  7 │ rank_markets()          → Top 3 by profit (deduplicated)      │
-  │  Step  8 │ calculate_confidence()  → 4-factor score (0–1)                │
-  │  Step  9 │ determine_action()      → SELL_NOW / OTHER / HOLD             │
-  │  Step 10 │ generate_reason()       → Quantitative farmer-friendly text   │
-  │  Step 11 │ Assemble MarketRecommendation and return                       │
-  └──────────────────────────────────────────────────────────────────────────┘
+  scheduler_input["market_intelligence_agent"] = \
+      market_insights_to_scheduler_block(insights_output)
 
 
 ================================================================================
-  SAMPLE OUTPUT (JSON)
+  CONFIDENCE SCORE (3-factor, v3.0)
 ================================================================================
 
-  {
-      "commodity": "Wheat",
-      "best_market": "Surat",
-      "best_price": 2450.0,
-      "best_profit": 2300.0,
-      "transport_cost": 150.0,
-      "recommended_action": "SELL_IN_OTHER_MANDI",
-      "top_markets": [
-          {
-              "rank": 1,
-              "market": "Surat",
-              "state": "Gujarat",
-              "district": "Surat",
-              "price": 2450.0,
-              "profit": 2300.0,
-              "transport_cost": 150.0
-          },
-          {
-              "rank": 2,
-              "market": "Ahmedabad",
-              "state": "Gujarat",
-              "district": "Ahmedabad",
-              "price": 2200.0,
-              "profit": 2200.0,
-              "transport_cost": 0.0
-          },
-          {
-              "rank": 3,
-              "market": "Rajkot",
-              "state": "Gujarat",
-              "district": "Rajkot",
-              "price": 2180.0,
-              "profit": 2030.0,
-              "transport_cost": 150.0
-          }
-      ],
-      "reason": "Surat offers ₹100 higher net profit than Ahmedabad (₹2300 vs ₹2200) after ₹150 transport cost. Forecast: price expected to rise to ₹2510.",
-      "confidence": 0.78,
-      "trend": "stable",
-      "predicted_price": 2510.0,
-      "predicted_trend": "increasing",
-      "data_points_used": 87
-  }
+  Factor             Weight   Measures
+  -----------------  ------   ------------------------------------------
+  Data coverage      0.40     Unique markets observed
+  Price consistency  0.40     Coefficient of variation across markets
+  Signal agreement   0.20     Historical trend vs forecast direction
 
 
 ================================================================================
-  SAMPLE OUTPUT — No Data (HTTP 404)
+  FORECAST WATERFALL  (unchanged from v2)
 ================================================================================
 
-  {
-      "detail": "Agent could not generate recommendation for 'Wheat'."
-  }
-
-
-================================================================================
-  DEPENDENCIES
-================================================================================
-
-  External:   Backend API  →  {BACKEND_BASE_URL}/api/v1/market/prices
-  Internal:   schemas.py, config.py, logic.py, model_loader.py, service.py
-  DB Access:  ❌ NONE  (all data via Backend HTTP API only)
-  ML Model:   ✅ LSTM  (AI_Backend/ml/models/mandi_price_lstm.h5)
-              ⚠  Falls back to WMA if model file absent or TF not installed
+  1. LSTM model     — when model is loaded AND >= 30 records
+  2. Weighted MA    — when >= 3 records (7-day window, linear weights)
+  3. Last price     — fallback when 1-2 records
 
 
 ================================================================================
   ENVIRONMENT VARIABLES  (all optional — defaults shown)
 ================================================================================
 
-  Variable                   Default                          Description
-  ────────────────────────   ──────────────────────────────   ─────────────────────────────
-  BACKEND_BASE_URL           http://localhost:8000            Backend service URL
-  HTTP_TIMEOUT_SECONDS       15.0                             Per-request timeout
-  HTTP_MAX_RETRIES           3                                Retry attempts on failure
-  HTTP_RETRY_BACKOFF         1.5                              Backoff multiplier (seconds)
-  DEFAULT_FETCH_LIMIT        200                              Max records fetched per call
-  ML_MODELS_DIR              AI_Backend/ml/models             Directory for model files
-  LSTM_MODEL_FILE            mandi_price_lstm.h5              LSTM model filename
-  LSTM_SCALER_FILE           price_scaler.pkl                 Price scaler filename
-  LSTM_SEQUENCE_LENGTH       30                               Input window length
-  TREND_INCREASE_THRESHOLD   0.02                             OLS slope threshold (+2%)
-  TREND_DECREASE_THRESHOLD   -0.02                            OLS slope threshold (-2%)
-  TRANSPORT_SAME_MARKET      0.0                              ₹ same market
-  TRANSPORT_SAME_DISTRICT    50.0                             ₹ same district
-  TRANSPORT_SAME_STATE       150.0                            ₹ same state
-  TRANSPORT_ADJACENT_STATE   300.0                            ₹ adjacent state
-  TRANSPORT_DISTANT_STATE    500.0                            ₹ distant / unknown
-  HOLD_MIN_CONFIDENCE        0.40                             Min confidence to recommend HOLD
-  MIN_PROFIT_TO_TRAVEL       100.0                            Min ₹ gain to justify travel
-
-================================================================================
+  BACKEND_BASE_URL            http://localhost:8000
+  HTTP_TIMEOUT_SECONDS        15.0
+  HTTP_MAX_RETRIES            3
+  DEFAULT_FETCH_LIMIT         200
+  MARKETS_TO_RETURN           10
+  ML_MODELS_DIR               AI_Backend/ml/models
+  LSTM_MODEL_FILE             mandi_price_lstm.h5
+  LSTM_SCALER_FILE            price_scaler.pkl
+  LSTM_SEQUENCE_LENGTH        30
+  TREND_INCREASE_THRESHOLD    0.02
+  TREND_DECREASE_THRESHOLD    -0.02

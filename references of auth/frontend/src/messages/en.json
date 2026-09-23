@@ -1,0 +1,580 @@
+{
+  "metadata": {
+    "title": "Furnova — Accounting Built for Furniture Businesses",
+    "description": "Complete double-entry accounting for furniture retail: contacts, products, chart of accounts, purchase orders, sales invoices, payments and real-time financial reports — one connected ledger.",
+    "ogTitle": "Furnova — Every entry balanced, every report real-time",
+    "ogDescription": "Master data, transactions, automatic journal entries and financial reports. Built for real furniture businesses and real margins."
+  },
+  "navbar": {
+    "agents": "Modules",
+    "features": "Features",
+    "howItWorks": "How It Works",
+    "technology": "Platform",
+    "getStarted": "Get Started"
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "hi": "हिन्दी",
+    "gu": "ગુજરાતી"
+  },
+  "hero": {
+    "titleParts": {
+      "before": "Complete",
+      "accent": "Accounting",
+      "after": "With Furnova"
+    },
+    "description": "Record purchases, sales and payments once — Furnova generates the double-entry journal behind every transaction and keeps your Balance Sheet, Profit & Loss and Budget Report accurate in real time.",
+    "surfaceLabel": "Chart of Accounts — Root Level",
+    "sensors": {
+      "debtors": "Debtors",
+      "creditors": "Creditors",
+      "salesIncome": "Sales Income",
+      "purchaseExpense": "Purchase Expense",
+      "cash": "Cash",
+      "bank": "Bank",
+      "outputTax": "Output Tax",
+      "capital": "Capital",
+      "variance": "Variance"
+    },
+    "stats": {
+      "balancedEntries": "Balanced Journal Entries",
+      "fasterClose": "Faster Month-End Close",
+      "reportSpeed": "Faster Report Generation",
+      "entriesPosted": "Ledger Entries Posted",
+      "response": "Real-time Posting"
+    }
+  },
+  "agents": {
+    "eyebrow": "Connected Modules",
+    "titleParts": {
+      "before": "Eight Connected",
+      "accent": "Modules",
+      "after": "One Balanced Ledger"
+    },
+    "intro": "Master data, transactions and reporting are not separate tools. Every module writes into the same double-entry ledger, so a sale recorded once appears correctly everywhere it should.",
+    "rosterLabel": "Module list",
+    "roster": {
+      "soilHealth": {
+        "domain": "Master",
+        "name": "Contacts"
+      },
+      "smartIrrigation": {
+        "domain": "Master",
+        "name": "Products"
+      },
+      "pestDetection": {
+        "domain": "Ledger",
+        "name": "Chart of Accounts"
+      },
+      "cropAdvisor": {
+        "domain": "Ledger",
+        "name": "Journals"
+      },
+      "yieldPrediction": {
+        "domain": "Buy",
+        "name": "Purchases"
+      },
+      "marketInsight": {
+        "domain": "Sell",
+        "name": "Sales"
+      },
+      "growthMonitor": {
+        "domain": "Cash",
+        "name": "Payments"
+      },
+      "voiceAssistant": {
+        "domain": "Report",
+        "name": "Financials"
+      }
+    }
+  },
+  "features": {
+    "eyebrow": "Platform Capabilities",
+    "titleParts": {
+      "before": "Accuracy at Every",
+      "accent": "Entry",
+      "after": ""
+    },
+    "intro": "From master data to financial statements — Furnova enforces accounting rules at the database level, so the numbers you report are the numbers you can defend.",
+    "badge": {
+      "value": "8 Modules",
+      "label": "One Ledger"
+    },
+    "items": {
+      "multiAgent": {
+        "title": "Automatic Double-Entry",
+        "description": "Confirm a vendor bill or post a customer invoice and the matching journal entry is generated for you — debits and credits balanced, tax posted to its own account, never lumped into income."
+      },
+      "edgeAnalytics": {
+        "title": "Real-Time Financial Reports",
+        "description": "Balance Sheet, Profit & Loss and Budget Report are computed live from posted entries. No overnight batch, no stale figures — select a period and read the current position."
+      },
+      "satelliteFusion": {
+        "title": "Organization-Level Isolation",
+        "description": "Every record belongs to exactly one organization. Contacts, products, ledgers and reports are scoped so no business can ever see another's books."
+      },
+      "adaptiveLoop": {
+        "title": "Budget vs Actual Tracking",
+        "description": "Tag transactions to an analytic account for a project, store or department, and the Budget Report compares planned against actual spend with live variance."
+      }
+    }
+  },
+  "howItWorks": {
+    "eyebrow": "Process Flow",
+    "titleParts": {
+      "before": "From Entry to",
+      "accent": "Statement",
+      "after": ""
+    },
+    "intro": "Four steps take a real business event all the way through to an auditable financial statement — with no manual journal work in between.",
+    "steps": {
+      "ingestion": {
+        "title": "Set Up Master Data",
+        "description": "Add contacts (customers and vendors), products with prices and tax, your chart of accounts, journals and analytic accounts. Enter each fact once."
+      },
+      "analysis": {
+        "title": "Record Transactions",
+        "description": "Raise a purchase order, convert it to a vendor bill, create a sales order and generate the customer invoice — all built from your master data."
+      },
+      "fusion": {
+        "title": "Auto Journal Entries",
+        "description": "Every confirmed bill, invoice and payment posts a balanced journal entry: debtors, creditors, income, expense and tax each land in the right account."
+      },
+      "action": {
+        "title": "Generate Reports",
+        "description": "Select a period and read the Balance Sheet, Profit & Loss and Budget Report — computed directly from the posted ledger, ready to review or export."
+      }
+    }
+  },
+  "tech": {
+    "eyebrow": "Technology Stack",
+    "titleParts": {
+      "before": "Built on",
+      "accent": "Reliable",
+      "after": "Web Infrastructure"
+    },
+    "intro": "PostgreSQL-backed transactional integrity, a modular Node.js API and a fast Next.js interface — the stack an accounting system needs when every write has to be exact."
+  },
+  "chipScene": {
+    "eyebrow": "Core Architecture",
+    "titleParts": {
+      "before": "The",
+      "accent": "Ledger Core",
+      "after": "Behind Every Entry"
+    },
+    "intro": "Furnova's accounting engine — sixteen connected modules on a single transactional substrate, posting balanced entries the moment a document is confirmed.",
+    "poweredBy": "POWERED BY",
+    "tagline": "DOUBLE-ENTRY LEDGER CORE"
+  },
+  "cta": {
+    "eyebrow": "Start Today",
+    "titleParts": {
+      "before": "Your Books,",
+      "accent": "Always Balanced",
+      "after": "and Ready"
+    },
+    "intro": "Create your organization, invite your accountant, and record your first invoice today. Your chart of accounts and journals are set up for you automatically.",
+    "actions": {
+      "primary": "Create Organization",
+      "secondary": "Book a Walkthrough"
+    }
+  },
+  "footer": {
+    "copyright": "© {year} Furnova. Double-entry accounting for furniture businesses.",
+    "links": {
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "docs": "Docs",
+      "contact": "Contact"
+    }
+  },
+  "auth": {
+    "brandName": "Furnova",
+    "common": {
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "backToHome": "Back to Home"
+    },
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Only business owners can register.",
+      "switchAction": "Create an organization",
+      "organizationLabel": "Organization ID",
+      "organizationPlaceholder": "urban-furniture",
+      "organizationHint": "Ask your business owner if you don't know your organization ID.",
+      "usernameOrEmailLabel": "Email",
+      "usernameOrEmailPlaceholder": "you@company.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "rememberMe": "Remember me",
+      "forgotPasswordLink": "Forgot password?",
+      "submitButton": "Sign In",
+      "submittingButton": "Signing in…",
+      "orContinueWith": "or continue with",
+      "facebook": "Facebook",
+      "x": "X",
+      "google": "Google",
+      "noAccountNote": "Accountants and contacts are added by the business owner — you cannot sign up on your own."
+    },
+    "register": {
+      "title": "Create Your Organization",
+      "subtitle": "Already have an account?",
+      "switchAction": "Sign in",
+      "ownerOnlyBadge": "Business Owner",
+      "ownerOnlyNote": "Registration creates a new organization with you as its business owner. Accountants and contacts are added from inside the organization — they cannot register here.",
+      "organizationLabel": "Organization Name",
+      "organizationPlaceholder": "Urban Furniture",
+      "fullNameLabel": "Full Name",
+      "fullNamePlaceholder": "Amit Verma",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "you@company.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "••••••••",
+      "agreeTerms": "I agree to Terms & Privacy Policy",
+      "roleLabel": "Account Type",
+      "roleOwner": "Business Owner",
+      "submitButton": "Create Organization",
+      "submittingButton": "Creating organization…"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your registered email and we'll send you verification instructions.",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "you@company.com",
+      "submitButton": "Send Reset Code",
+      "submittingButton": "Sending code…",
+      "backToLogin": "Back to sign in",
+      "successTitle": "Check your email",
+      "successMessage": "We have sent password reset instructions and a verification code to your email.",
+      "resendPrompt": "Didn't receive the email?",
+      "resendAction": "Click to resend"
+    },
+    "verifyEmail": {
+      "title": "Email Verification",
+      "subtitle": "We sent a 6-digit verification code to your email address.",
+      "codeLabel": "Verification Code",
+      "submitButton": "Verify Email",
+      "submittingButton": "Verifying…",
+      "resendCountdown": "Resend code in {seconds}s",
+      "resendButton": "Resend Code",
+      "changeEmail": "Change email address",
+      "backToLogin": "Back to sign in",
+      "verifiedSuccess": "Email verified successfully! Redirecting..."
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "subtitle": "Create a strong new password for your account.",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "••••••••",
+      "confirmPasswordLabel": "Confirm New Password",
+      "confirmPasswordPlaceholder": "••••••••",
+      "submitButton": "Reset Password",
+      "submittingButton": "Resetting…",
+      "backToLogin": "Back to sign in"
+    },
+    "verifyResetOtp": {
+      "title": "Verify Reset Code",
+      "subtitle": "Enter the 6-digit code sent to your email to continue.",
+      "codeLabel": "Verification Code",
+      "submitButton": "Verify Code",
+      "submittingButton": "Verifying…",
+      "resendCountdown": "Resend code in {seconds}s",
+      "resendButton": "Resend Code",
+      "backToLogin": "Back to sign in",
+      "verifiedSuccess": "Reset code confirmed! Redirecting..."
+    },
+    "captcha": {
+      "label": "Security Verification",
+      "placeholder": "Solve the equation",
+      "refresh": "Refresh",
+      "loading": "Loading challenge…"
+    },
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "termsRequired": "You must agree to Terms & Privacy Policy",
+      "generic": "An error occurred. Please try again.",
+      "captchaRequired": "Please solve the security challenge",
+      "organizationRequired": "Organization ID is required"
+    },
+    "art": {
+      "welcomeTitle": "Welcome\nBack.",
+      "welcomeSub": "Sign in to your organization to pick up where you left off — your ledger, open invoices and pending bills are waiting.",
+      "registerTitle": "Books That\nBalance.",
+      "registerSub": "Create your organization and get a ready chart of accounts, journals and numbering sequences from the very first entry.",
+      "forgotTitle": "Account\nRecovery.",
+      "forgotSub": "Regain access to your organization's books securely, without disturbing a single posted entry.",
+      "verifyTitle": "Secure\nAccess.",
+      "verifySub": "Protecting your financial records, customer invoices and vendor bills with multi-layer security.",
+      "resetTitle": "Set New\nPassword.",
+      "resetSub": "Update your credentials to keep your ledger, invoices and financial reports safe."
+    }
+  },
+  "dashboard": {
+    "common": {
+      "logout": "Logout",
+      "loggingOut": "Logging out…",
+      "role": "Role",
+      "email": "Email",
+      "status": "Account Status",
+      "active": "Active",
+      "verified": "Verified",
+      "unverified": "Unverified",
+      "memberSince": "Member Since",
+      "dashboard": "Dashboard",
+      "loading": "Loading dashboard…",
+      "search": "Search invoices, bills, contacts…",
+      "searchHint": "Ctrl K",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "notifications": "Notifications",
+      "messages": "Messages",
+      "viewAll": "View all",
+      "refresh": "Refresh",
+      "noData": "No data yet",
+      "simulated": "Sample data — your live ledger is not connected yet",
+      "backToSite": "Back to site",
+      "thisYear": "This year",
+      "exportData": "Export data",
+      "loadingDirectory": "Loading users…",
+      "noUsers": "No accounts found",
+      "overview": "Overview",
+      "collapseMenu": "Collapse menu",
+      "expandMenu": "Expand menu",
+      "organization": "Organization"
+    },
+    "user": {
+      "title": "Contact Portal",
+      "subtitle": "Your invoices, bills and payment history with this organization",
+      "welcome": "Welcome back",
+      "mySensors": "Open Documents",
+      "recommendations": "Recent Activity",
+      "irrigationSchedule": "Payment Status",
+      "soilHealth": "Outstanding Balance",
+      "customerNote": "As a customer you can view every invoice raised to you and pay any unpaid invoice by card.",
+      "vendorNote": "As a vendor you can view every purchase order and bill this organization has raised against you over time.",
+      "payNow": "Pay Now",
+      "payByCard": "Pay by Card",
+      "viewInvoice": "View Invoice",
+      "downloadPdf": "Download PDF",
+      "noOpenInvoices": "You have no unpaid invoices",
+      "noBills": "No bills have been raised against you yet"
+    },
+    "manager": {
+      "title": "Accountant Workspace",
+      "subtitle": "Record transactions, manage contacts and keep the ledger balanced",
+      "welcome": "Welcome, Accountant",
+      "operationalStatus": "Books Overview",
+      "systemLoad": "Unposted Documents",
+      "activeDeployments": "Open Transactions",
+      "nodeHealth": "Ledger Health",
+      "permissionNote": "You can create contacts and record transactions, and update product prices. Adding or deleting products is reserved for the business owner."
+    },
+    "admin": {
+      "title": "Business Owner Console",
+      "subtitle": "Full control of master data, transactions, users and financial reports",
+      "welcome": "Business Owner Control Center",
+      "userDirectory": "Organization Users",
+      "totalUsers": "User Accounts",
+      "searchUsers": "Search by name or email…",
+      "addAccountant": "Add Accountant",
+      "addContact": "Add Contact",
+      "permissionNote": "Only you can add, modify or archive products and master data, and only you can create user accounts inside this organization.",
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Verified",
+        "joined": "Joined"
+      }
+    },
+    "superAdmin": {
+      "title": "Platform Administration",
+      "subtitle": "Cross-organization oversight, security controls and role provisioning",
+      "welcome": "Platform Admin Console",
+      "userManagement": "User Role Management",
+      "roleChange": "Update Role",
+      "updatingRole": "Updating…",
+      "roleUpdated": "Role updated successfully",
+      "selectRole": "Select Role",
+      "roles": {
+        "user": "Contact (Customer / Vendor)",
+        "manager": "Accountant",
+        "admin": "Business Owner"
+      }
+    },
+    "nav": {
+      "menu": "Menu",
+      "general": "General",
+      "overview": "Dashboard",
+      "contacts": "Contacts",
+      "products": "Products",
+      "accounts": "Chart of Accounts",
+      "journals": "Journals",
+      "purchases": "Purchases",
+      "sales": "Sales",
+      "payments": "Payments",
+      "budgets": "Budgets",
+      "reports": "Reports",
+      "analytics": "Analytics",
+      "masters": "Master Data",
+      "transactions": "Transactions",
+      "users": "Users",
+      "directory": "Directory",
+      "roles": "Role Control",
+      "system": "System",
+      "invoices": "My Invoices",
+      "bills": "My Bills",
+      "statements": "Statement",
+      "settings": "Settings",
+      "help": "Help"
+    },
+    "promo": {
+      "title": "Your books on",
+      "highlight": "every device",
+      "text": "Review invoices, approve bills and check your position from anywhere.",
+      "action": "Get the app"
+    },
+    "stats": {
+      "receivable": "Total Receivable",
+      "payable": "Total Payable",
+      "income": "Income",
+      "expenses": "Expenses",
+      "netProfit": "Net Profit",
+      "overdue": "Overdue Invoices",
+      "openInvoices": "Open Invoices",
+      "openBills": "Open Bills",
+      "cashBank": "Cash & Bank",
+      "totalUsers": "User Accounts",
+      "verifiedAccounts": "Verified",
+      "pendingAccounts": "Pending",
+      "roleTypes": "Role Types",
+      "outstanding": "Outstanding",
+      "paidThisYear": "Paid This Year"
+    },
+    "trend": {
+      "up": "{value}% more than last month",
+      "down": "{value}% less than last month",
+      "flat": "Unchanged since last month"
+    },
+    "charts": {
+      "analytics": "Income vs Expense",
+      "analyticsSub": "Six-month movement across posted entries",
+      "weekly": "Weekly Postings",
+      "weeklySub": "Invoices raised against payments received",
+      "progress": "Budget Consumption",
+      "progressCaption": "Overall consumption",
+      "zoneSpread": "Receivable Aging",
+      "zoneSpreadSub": "Outstanding balance per aging bucket",
+      "radar": "Financial Profile",
+      "radarSub": "Current position against target",
+      "activity": "Posting Activity",
+      "activitySub": "Entries posted per weekday and time block",
+      "plots": "Invoice Value vs Days to Pay",
+      "plotsSub": "One point per invoice, sized by value",
+      "roleMix": "Role Distribution",
+      "signups": "New Accounts",
+      "signupsSub": "Accounts added over the last six months",
+      "verification": "Verification Rate",
+      "verificationCaption": "Verified accounts",
+      "accountAge": "Account Age by Role",
+      "accountAgeSub": "Days since the account was created",
+      "indices": "Financial Indices",
+      "topCustomers": "Top Customers",
+      "topCustomersSub": "Revenue by customer this period",
+      "expenseBreakdown": "Expense Breakdown",
+      "expenseBreakdownSub": "Spend by expense account"
+    },
+    "series": {
+      "moisture": "Income",
+      "temperature": "Expense",
+      "current": "Actual",
+      "target": "Planned",
+      "signups": "New accounts",
+      "verified": "Verified"
+    },
+    "segments": {
+      "harvested": "Paid",
+      "growing": "Partially Paid",
+      "planned": "Unpaid",
+      "synced": "Posted",
+      "syncing": "Draft",
+      "offline": "Cancelled"
+    },
+    "rings": {
+      "soil": "Assets",
+      "water": "Liabilities",
+      "nutrient": "Capital"
+    },
+    "radarAxes": {
+      "soil": "Liquidity",
+      "water": "Receivables",
+      "nutrient": "Payables",
+      "pest": "Overdue",
+      "yield": "Margin",
+      "canopy": "Budget"
+    },
+    "fields": {
+      "soilProbe": "Customer Invoices",
+      "npk": "Debtors / Creditors / Cash",
+      "canopyTemp": "Vendor Bills",
+      "pestRisk": "Overdue Ratio",
+      "northSensors": "Sales Journal",
+      "westGateways": "Purchase Journal",
+      "pestTraps": "Bank Journal",
+      "weatherMasts": "Cash Journal"
+    },
+    "months": {
+      "0": "Jan",
+      "1": "Feb",
+      "2": "Mar",
+      "3": "Apr",
+      "4": "May",
+      "5": "Jun",
+      "6": "Jul",
+      "7": "Aug",
+      "8": "Sep",
+      "9": "Oct",
+      "10": "Nov",
+      "11": "Dec"
+    },
+    "weekdays": {
+      "0": "Mon",
+      "1": "Tue",
+      "2": "Wed",
+      "3": "Thu",
+      "4": "Fri",
+      "5": "Sat",
+      "6": "Sun"
+    },
+    "box": {
+      "min": "Min",
+      "q1": "Q1",
+      "median": "Median",
+      "q3": "Q3",
+      "max": "Max"
+    },
+    "zone": "Bucket {zone}",
+    "timeTracker": {
+      "title": "Session Tracker",
+      "task": "Bookkeeping session in progress",
+      "pause": "Pause timer",
+      "resume": "Resume timer",
+      "stop": "Stop timer"
+    },
+    "roles": {
+      "user": "Contact",
+      "manager": "Accountant",
+      "admin": "Business Owner",
+      "super_admin": "Platform Admin"
+    },
+    "statusLabels": {
+      "verified": "Verified",
+      "pending": "Pending",
+      "protectedRoot": "Protected root"
+    }
+  }
+}

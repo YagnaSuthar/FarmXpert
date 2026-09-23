@@ -1,0 +1,798 @@
+{
+  "format": "okf/1.0",
+  "bundle": "farmxpert-agronomy",
+  "updated": "2026-09-23",
+  "description": "Curated agronomy knowledge for FarmXpert. Crop documents are generated from the agents' own configuration plus curated guidance; practice documents are curated. Regenerate with python -m AI_Backend.knowledge.build_okf",
+  "documents": [
+    {
+      "id": "crop.ajwain",
+      "title": "Ajwain (carom)",
+      "summary": "A hardy rabi spice that needs little water and hates a wet seed set.",
+      "path": "crops/ajwain.md",
+      "tags": [
+        "aphid",
+        "crop",
+        "drought hardy",
+        "powdery mildew",
+        "rabi",
+        "seed",
+        "seed spice",
+        "spice",
+        "umbel"
+      ],
+      "crops": [
+        "ajwain"
+      ],
+      "headings": [
+        "Field facts",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Fertilization",
+        "Irrigation",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.banana",
+      "title": "Banana",
+      "summary": "Shallow roots and a large leaf area: it needs water almost continuously.",
+      "path": "crops/banana.md",
+      "tags": [
+        "bunch",
+        "crop",
+        "fruit",
+        "panama wilt",
+        "perennial",
+        "potassium",
+        "propping",
+        "sigatoka"
+      ],
+      "crops": [
+        "banana"
+      ],
+      "headings": [
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Irrigation"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.cabbage",
+      "title": "Cabbage",
+      "summary": "Head formation is the critical stage; uneven watering splits heads.",
+      "path": "crops/cabbage.md",
+      "tags": [
+        "(brassica)",
+        "boron",
+        "club root",
+        "crop",
+        "diamondback moth",
+        "head splitting",
+        "hollow stem",
+        "rabi",
+        "vegetable",
+        "whiptail"
+      ],
+      "crops": [
+        "cabbage"
+      ],
+      "headings": [
+        "Field facts",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Irrigation",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.chickpea",
+      "title": "Chickpea (gram)",
+      "summary": "A dryland crop: over-watering brings wilt, not yield.",
+      "path": "crops/chickpea.md",
+      "tags": [
+        "crop",
+        "dryland",
+        "fusarium wilt",
+        "legume",
+        "pod borer",
+        "pulse",
+        "rabi",
+        "residual moisture"
+      ],
+      "crops": [
+        "chickpea"
+      ],
+      "headings": [
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Irrigation"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.coriander",
+      "title": "Coriander",
+      "summary": "Grown for leaf or for seed, and the two want different water.",
+      "path": "crops/coriander.md",
+      "tags": [
+        "aphid",
+        "aroma",
+        "crop",
+        "herb",
+        "leaf",
+        "leafy",
+        "powdery mildew",
+        "rabi",
+        "seed",
+        "seed spice",
+        "spice",
+        "wilt"
+      ],
+      "crops": [
+        "coriander"
+      ],
+      "headings": [
+        "Field facts",
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Do and do not",
+        "Harvesting",
+        "Irrigation",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.cotton",
+      "title": "Cotton",
+      "summary": "Square and boll formation decide yield; early broad-spectrum sprays cost more than they save.",
+      "path": "crops/cotton.md",
+      "tags": [
+        "boll",
+        "crop",
+        "fibre",
+        "kharif",
+        "pink bollworm",
+        "reddening",
+        "square",
+        "whitefly"
+      ],
+      "crops": [
+        "cotton"
+      ],
+      "headings": [
+        "Field facts",
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Irrigation",
+        "Pest control",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.groundnut",
+      "title": "Groundnut",
+      "summary": "Pegging and pod filling decide the crop; calcium reaches the pod directly, not through the root.",
+      "path": "crops/groundnut.md",
+      "tags": [
+        "aflatoxin",
+        "crop",
+        "gypsum",
+        "kharif",
+        "leaf spot",
+        "legume",
+        "oilseed",
+        "pegging",
+        "pod rot",
+        "summer",
+        "white grub"
+      ],
+      "crops": [
+        "groundnut"
+      ],
+      "headings": [
+        "Field facts",
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Fertilization",
+        "Irrigation",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.guar",
+      "title": "Guar (cluster bean)",
+      "summary": "A hardy rainfed legume: it fails from too much water far more often than too little.",
+      "path": "crops/guar.md",
+      "tags": [
+        "bacterial blight",
+        "crop",
+        "gum",
+        "jassid",
+        "kharif",
+        "legume",
+        "pulse",
+        "rainfed",
+        "root rot"
+      ],
+      "crops": [
+        "guar"
+      ],
+      "headings": [
+        "Field facts",
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Fertilization",
+        "Irrigation",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.maize",
+      "title": "Maize",
+      "summary": "Tasselling and silking are the two weeks that decide the cob.",
+      "path": "crops/maize.md",
+      "tags": [
+        "black layer",
+        "cereal",
+        "crop",
+        "fall armyworm",
+        "kharif",
+        "rabi",
+        "silking",
+        "stalk rot",
+        "tasselling"
+      ],
+      "crops": [
+        "maize"
+      ],
+      "headings": [
+        "Field facts",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Irrigation",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.mango",
+      "title": "Mango (orchard)",
+      "summary": "A dry spell triggers flowering; pruning is timed to the flush, not the calendar.",
+      "path": "crops/mango.md",
+      "tags": [
+        "alternate bearing",
+        "crop",
+        "flowering",
+        "fruit",
+        "fruit fly",
+        "hopper",
+        "perennial",
+        "powdery mildew",
+        "sap burn"
+      ],
+      "crops": [
+        "mango"
+      ],
+      "headings": [
+        "Field facts",
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Irrigation",
+        "Pruning",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.mustard",
+      "title": "Mustard",
+      "summary": "Aphid at pod fill is the usual cause of loss; scout from flowering.",
+      "path": "crops/mustard.md",
+      "tags": [
+        "aphid",
+        "crop",
+        "oilseed",
+        "rabi",
+        "salt tolerant",
+        "shattering",
+        "sulphur",
+        "white rust"
+      ],
+      "crops": [
+        "mustard"
+      ],
+      "headings": [
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Pest control"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.onion",
+      "title": "Onion",
+      "summary": "Stop water before lifting, or the crop will not store.",
+      "path": "crops/onion.md",
+      "tags": [
+        "(bulb)",
+        "bulb",
+        "crop",
+        "curing",
+        "kharif",
+        "neck fall",
+        "purple blotch",
+        "rabi",
+        "sulphur",
+        "thrips",
+        "vegetable"
+      ],
+      "crops": [
+        "onion"
+      ],
+      "headings": [
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Irrigation"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.potato",
+      "title": "Potato",
+      "summary": "Steady moisture during bulking, and a killed haulm before lifting.",
+      "path": "crops/potato.md",
+      "tags": [
+        "crop",
+        "curing",
+        "haulm",
+        "hollow heart",
+        "late blight",
+        "rabi",
+        "tuber",
+        "tuber bulking"
+      ],
+      "crops": [
+        "potato"
+      ],
+      "headings": [
+        "Field facts",
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Harvesting",
+        "Irrigation",
+        "Pest control",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.rice",
+      "title": "Rice (paddy)",
+      "summary": "Water depth is the management tool: keep a shallow layer, and drain at maturity.",
+      "path": "crops/rice.md",
+      "tags": [
+        "bacterial leaf blight",
+        "blast",
+        "cereal",
+        "crop",
+        "kharif",
+        "puddling",
+        "standing water",
+        "stem borer"
+      ],
+      "crops": [
+        "rice"
+      ],
+      "headings": [
+        "Field facts",
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Fertilization",
+        "Irrigation",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.soybean",
+      "title": "Soybean",
+      "summary": "Inoculate the seed and keep nitrogen low; pod filling is the stage to protect.",
+      "path": "crops/soybean.md",
+      "tags": [
+        "crop",
+        "girdle beetle",
+        "kharif",
+        "legume",
+        "oilseed",
+        "rhizobium",
+        "semilooper",
+        "shattering",
+        "yellow mosaic"
+      ],
+      "crops": [
+        "soybean"
+      ],
+      "headings": [
+        "Field facts",
+        "Water",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Fertilization",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.sugarcane",
+      "title": "Sugarcane",
+      "summary": "The grand growth period makes the season's weight; sugar starts falling the hour it is cut.",
+      "path": "crops/sugarcane.md",
+      "tags": [
+        "borer",
+        "cash",
+        "crop",
+        "grand growth",
+        "lodging",
+        "long-duration",
+        "ratoon",
+        "sugar recovery"
+      ],
+      "crops": [
+        "sugarcane"
+      ],
+      "headings": [
+        "Field facts",
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Do and do not",
+        "Harvesting",
+        "Irrigation",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.tomato",
+      "title": "Tomato",
+      "summary": "Even moisture prevents blossom-end rot; an open canopy prevents blight.",
+      "path": "crops/tomato.md",
+      "tags": [
+        "blossom end rot",
+        "crop",
+        "early blight",
+        "fruit borer",
+        "kharif",
+        "late blight",
+        "rabi",
+        "staking",
+        "summer",
+        "vegetable"
+      ],
+      "crops": [
+        "tomato"
+      ],
+      "headings": [
+        "Field facts",
+        "Water",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Irrigation",
+        "Pest control",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.wheat",
+      "title": "Wheat",
+      "summary": "The crown root irrigation about 21 days after sowing sets tiller number and the season's yield.",
+      "path": "crops/wheat.md",
+      "tags": [
+        "cereal",
+        "crop",
+        "crown root initiation",
+        "lodging",
+        "rabi",
+        "tillering",
+        "yellow rust"
+      ],
+      "crops": [
+        "wheat"
+      ],
+      "headings": [
+        "Field facts",
+        "Water",
+        "Soil",
+        "Problems to watch",
+        "Harvest",
+        "Do and do not",
+        "Irrigation",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "crop.white-peas",
+      "title": "White peas",
+      "summary": "A cool-season pulse: sow on time, and keep the pod-fill stage watered.",
+      "path": "crops/white-peas.md",
+      "tags": [
+        "crop",
+        "legume",
+        "pod borer",
+        "pod fill",
+        "powdery mildew",
+        "pulse",
+        "rabi",
+        "shattering"
+      ],
+      "crops": [
+        "white peas"
+      ],
+      "headings": [
+        "Field facts",
+        "Nutrition",
+        "Soil",
+        "Problems to watch",
+        "Do and do not",
+        "Harvesting",
+        "Irrigation",
+        "Soil notes"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "practice.fertilizer-use",
+      "title": "Fertilizer use",
+      "summary": "Splitting nitrogen, placement, timing around rain and irrigation, and reading a soil test.",
+      "path": "practices/fertilizer-use.md",
+      "tags": [
+        "fertilizer",
+        "nitrogen",
+        "urea",
+        "npk",
+        "soil test",
+        "placement"
+      ],
+      "crops": [],
+      "headings": [
+        "Split the dose",
+        "Placement",
+        "Timing with water",
+        "Reading a soil test",
+        "Organic matter"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "practice.harvest-and-storage",
+      "title": "Harvest and storage",
+      "summary": "Judging maturity, harvesting dry, safe storage moisture, and avoiding aflatoxin.",
+      "path": "practices/harvest-and-storage.md",
+      "tags": [
+        "harvest",
+        "storage",
+        "moisture",
+        "aflatoxin",
+        "grading",
+        "post-harvest"
+      ],
+      "crops": [],
+      "headings": [
+        "Judging maturity",
+        "Harvesting",
+        "Drying and storage",
+        "Grading"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "practice.irrigation-scheduling",
+      "title": "Irrigation scheduling",
+      "summary": "When and how much to irrigate: depletion triggers, critical stages, method efficiency and leaching on saline soil.",
+      "path": "practices/irrigation-scheduling.md",
+      "tags": [
+        "irrigation",
+        "water",
+        "scheduling",
+        "salinity",
+        "fao56",
+        "depletion"
+      ],
+      "crops": [],
+      "headings": [
+        "When to irrigate",
+        "Critical stages",
+        "How much",
+        "Method efficiency",
+        "Salinity and leaching",
+        "When not to irrigate"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "practice.pesticide-safety",
+      "title": "Pesticide safety and spray practice",
+      "summary": "Pre-harvest and re-entry intervals, pollinator protection, resistance management, and the conditions a spray needs to work.",
+      "path": "practices/pesticide-safety.md",
+      "tags": [
+        "pesticide",
+        "spray",
+        "safety",
+        "residue",
+        "phi",
+        "rei",
+        "bees",
+        "resistance"
+      ],
+      "crops": [],
+      "headings": [
+        "Pre-harvest interval",
+        "Re-entry interval",
+        "Protecting pollinators",
+        "Resistance",
+        "Spray conditions",
+        "Personal safety"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "practice.soil-salinity",
+      "title": "Salinity and sodic soil",
+      "summary": "Reading EC and pH, what salt does to a crop, leaching, gypsum, and which crops tolerate it.",
+      "path": "practices/soil-salinity.md",
+      "tags": [
+        "salinity",
+        "ec",
+        "sodic",
+        "ph",
+        "gypsum",
+        "leaching",
+        "reclamation"
+      ],
+      "crops": [],
+      "headings": [
+        "What the readings mean",
+        "What salt does",
+        "Managing salinity",
+        "Sodic soil",
+        "Crop choice"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "practice.sowing-and-seedbed",
+      "title": "Seedbed preparation and sowing",
+      "summary": "Working soil at the right moisture, sowing depth and spacing, seed treatment, and why the sowing date matters.",
+      "path": "practices/sowing-and-seedbed.md",
+      "tags": [
+        "sowing",
+        "seedbed",
+        "tillage",
+        "spacing",
+        "seed treatment",
+        "germination"
+      ],
+      "crops": [],
+      "headings": [
+        "Working the soil",
+        "Seed",
+        "Sowing",
+        "Sowing date"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    },
+    {
+      "id": "practice.weather-risk",
+      "title": "Heat, frost and storm protection",
+      "summary": "Protecting a crop and the people working in it from heat, frost, hail and strong wind.",
+      "path": "practices/weather-risk.md",
+      "tags": [
+        "heat",
+        "frost",
+        "storm",
+        "wind",
+        "hail",
+        "safety",
+        "imd"
+      ],
+      "crops": [],
+      "headings": [
+        "Heat",
+        "Frost",
+        "Storm and hail",
+        "Wind"
+      ],
+      "authority": "farmxpert-agronomy",
+      "updated": "2026-09-23"
+    }
+  ]
+}

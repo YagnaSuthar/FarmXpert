@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" fill="none">
+<defs>
+  <linearGradient id="deep" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#174D2C"/><stop offset=".5" stop-color="#2F7A42"/><stop offset="1" stop-color="#76B062"/></linearGradient>
+  <linearGradient id="fresh" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2C6E3C"/><stop offset=".6" stop-color="#5FA35A"/><stop offset="1" stop-color="#B2D796"/></linearGradient>
+  <linearGradient id="euca" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#4F7F6C"/><stop offset=".55" stop-color="#7FA898"/><stop offset="1" stop-color="#C5DBCF"/></linearGradient>
+  <linearGradient id="olive" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#4A5E2E"/><stop offset=".6" stop-color="#7C8F4E"/><stop offset="1" stop-color="#B7C48E"/></linearGradient>
+  <linearGradient id="silver" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#8FA38A"/><stop offset="1" stop-color="#DCE5D3"/></linearGradient>
+  <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0B3A22" stop-opacity=".4"/><stop offset="1" stop-color="#0B3A22" stop-opacity="0"/></linearGradient>
+  <linearGradient id="stem" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#40592F"/><stop offset="1" stop-color="#86A060"/></linearGradient>
+  <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0F3D25" flood-opacity=".16"/></filter>
+
+</defs>
+<g filter="url(#soft)">
+<g transform="translate(70 128) rotate(-8) translate(0 -8)">
+<path d="M0 0 C 26 -18, 36 -74, 0 -118 C -36 -74, -26 -18, 0 0Z" fill="url(#deep)"/>
+<path d="M0 0 C -26 -18, -36 -74, 0 -118 C -14 -74, -10 -24, 0 0Z" fill="url(#shade)"/>
+<path d="M0 6 L0 -112" stroke="#E4F1D6" stroke-opacity=".6" stroke-width="1.4" stroke-linecap="round"/>
+<g stroke="#E4F1D6" stroke-opacity=".3" stroke-width=".9">
+<path d="M0 -24 Q 12 -30 18 -40"/><path d="M0 -46 Q 13 -53 20 -64"/><path d="M0 -68 Q 11 -75 15 -86"/>
+<path d="M0 -34 Q -12 -40 -18 -50"/><path d="M0 -56 Q -13 -63 -19 -74"/><path d="M0 -78 Q -9 -85 -12 -94"/></g>
+</g>
+</g>
+</svg>
